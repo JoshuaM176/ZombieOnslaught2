@@ -1,25 +1,32 @@
 import pygame as pg
-from game.entities.hitreg import HitBox
+from objects.hitreg import HitBox
 from util.resource_loading import load_sprite, ResourceLoader
+from util.event_bus import event_bus
+from registries.weapon_registries import EquippedWeaponRegistry
+
 
 class Entity(pg.sprite.Sprite):
     def __init__(
-            self,
-            x: int,
-            y: int,
-            hitbox: list[int],
-            head_hitbox: list[int],
-            sprite: pg.Surface,
-            **_):
+        self,
+        x: int,
+        y: int,
+        hitbox: list[int],
+        head_hitbox: list[int],
+        sprite: pg.Surface,
+        **_,
+    ):
         super().__init__()
         self.x = x
         self.y = y
         self.hitbox = HitBox(x, y, *hitbox)
         self.head_hitbox = HitBox(x, y, *head_hitbox)
         self.image, self.rect = sprite, sprite.get_rect()
+        self.horizontal_movement = 0
+        self.vertical_movement = 0
 
     def update(self):
         self.rect.topleft = (self.x, self.y)
+
 
 class Zombie(Entity):
     def __init__(self, x: int, y: int, round_scaling: bool = True, **attrs):
@@ -29,15 +36,90 @@ class Zombie(Entity):
         self.hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
 
+
 class Player(Entity):
     def __init__(self, x, y):
         resource_loader = ResourceLoader("player", "attributes")
         resource_loader.load_all()
         resources = resource_loader.get("player")
-        resources["sprite"] = load_sprite("player", "player", -1)
+        resources["sprite"] = load_sprite("player.png", "player", -1)
         super().__init__(x, y, **resources)
         self.render_plain = pg.sprite.RenderPlain((self))
+        self.speed = resources.get("speed") or 300
+        self.movement = {"horizontal": 0, "vertical": 0}
+        self.movement_dict = {
+            "up": False,
+            "left": False,
+            "down": False,
+            "right": False,
+            "sprint": False,
+        }
+        self.weapon_switch = {}
+        self.key_map = {
+            pg.K_w: (self.movement_dict, "up", self.update_movement),
+            pg.K_a: (self.movement_dict, "left", self.update_movement),
+            pg.K_s: (self.movement_dict, "down", self.update_movement),
+            pg.K_d: (self.movement_dict, "right", self.update_movement),
+            pg.K_LSHIFT: (self.movement_dict, "sprint", self.update_movement),
+            pg.MOUSEWHEEL: (self.weapon_switch, "next", self.switch_weapon),
+        }
+        self.weapons = EquippedWeaponRegistry()
+        self.equipped_weapon = None
 
-    def update(self):
+    def set_weapon(self, weapon, cat: str):
+        self.weapons.equip(weapon, cat)
+
+    def set_equipped_weapon(self, cat: str):
+        if cat:
+            if self.equipped_weapon:
+                self.render_plain.remove(self.equipped_weapon)
+            self.equipped_weapon = self.weapons.get(cat)
+            self.render_plain.add(self.equipped_weapon)
+
+    def switch_weapon(self):
+        if self.weapon_switch.pop("next", None):
+            self.set_equipped_weapon(self.weapons.set_next())
+        else:
+            self.set_equipped_weapon(self.weapons.set_previous())
+
+    def get_input(self):
+        input_bus = event_bus.get_events("input_bus")
+
+        def apply_input(key_pressed, input_map, inp, func=None):
+            return (
+                input_map.update({inp: key_pressed}),
+                func() if func else None,
+            )
+
+        def parse_input(key_pressed, key):
+            return apply_input(key_pressed, *self.key_map.get(key, [{}, None]))
+
+        for event in input_bus:
+            if event.type == pg.KEYDOWN:
+                parse_input(True, event.key)
+            if event.type == pg.KEYUP:
+                parse_input(False, event.key)
+            if event.type == pg.MOUSEWHEEL:
+                if event.y == 1:
+                    parse_input(True, pg.MOUSEWHEEL)
+                else:
+                    parse_input(False, pg.MOUSEWHEEL)
+
+    def update_movement(self):
+        hor = self.movement_dict["right"] - self.movement_dict["left"]
+        ver = self.movement_dict["down"] - self.movement_dict["up"]
+        sprint = self.movement_dict["sprint"] + 1
+        speed = self.speed * sprint
+        self.horizontal_movement = hor * speed
+        self.vertical_movement = ver * speed
+        if hor and ver:
+            self.horizontal_movement *= 0.7071
+            self.vertical_movement *= 0.7071
+
+    def update(self, screen, frame_time):
+        self.get_input()
+        self.x += self.horizontal_movement * frame_time
+        self.y += self.vertical_movement * frame_time
         self.rect.topleft = (self.x, self.y)
-        self.render_plain.draw()
+        self.equipped_weapon.draw(self.x, self.y)
+        self.render_plain.draw(screen)

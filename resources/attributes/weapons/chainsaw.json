@@ -1,7 +1,10 @@
 {
     "Chainsaw": {
         "player": {
-            "movement": 8
+            "movement": 8,
+            "owned": true,
+            "available": true,
+            "default": true
         },
         "weapon": {
             "sprites": {
@@ -9,21 +12,18 @@
                 "reloading": ["chainsaw.png"],
                 "fire_sprite": "chainsaw.png"
             },
+            "type": "melee",
             "firerate": 600,
             "shiftX": 40,
             "shiftY": 15,
-            "ammo": {
-                "bullets_per_mag": 50,
-                "max_mags": 50,
-                "reload_time": 0.1,
-                "reload_type": 1,
-                "bullet_in_chamber": 0
-            },
-            "recoil": {
-                "recoil": 1,
-                "recoil_control": 1,
-                "max_recoil": 10
-            }
+            "bullets_per_mag": 50,
+            "max_mags": 50,
+            "reload_time": 0.1,
+            "reload_type": 1,
+            "bullet_in_chamber": 0,
+            "recoil": 1,
+            "recoil_control": 1,
+            "max_recoil": 10
         },
         "bullet": {
             "damage": 40,
@@ -32,7 +32,7 @@
             "penetration": 1,
             "shiftX": 10,
             "shiftY": 75,
-            "tracer": "false"
+            "tracer": false
         }
     }
 }

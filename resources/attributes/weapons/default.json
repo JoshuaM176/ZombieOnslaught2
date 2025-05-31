@@ -1,7 +1,10 @@
 {
     "default": {
         "player": {
-            "movement": 0
+            "movement": 0,
+            "owned": false,
+            "available": false,
+            "default": false
         },
         "weapon":{
             "sprites": {
@@ -10,23 +13,20 @@
                 "extra_reload_sprite": "none.png",
                 "fire_sprite": "none.png"
             },
+            "type": "melee",
             "firerate": 60,
             "burst": 0,
             "shiftX": 0,
             "shiftY": 0,
-            "recoil": {
-                "recoil": 0,
-                "recoil_control": 1,
-                "max_recoil": 0
-            },
-            "ammo": {
-                "bullets_per_mag": 30,
-                "max_mags": 10,
-                "reload_time": 1,
-                "reload_type": 0,
-                "bullet_in_chamber": 1,
-                "reload_on_empty": 0
-            }
+            "recoil": 0,
+            "recoil_control": 1,
+            "max_recoil": 0,
+            "bullets_per_mag": 30,
+            "max_mags": 10,
+            "reload_time": 1,
+            "reload_type": 0,
+            "bullet_in_chamber": 1,
+            "reload_on_empty": 0
         },
         "bullet": {
             "damage": 10,
@@ -36,7 +36,7 @@
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,
-            "tracer": "true"
+            "tracer": true
         }
     }
 }

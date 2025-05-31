@@ -7,7 +7,7 @@ from copy import deepcopy
 ROOT = os.path.abspath(os.curdir)
 
 def load_sprite(name: str, category: str, colorkey=None, scale=8):
-    fullname = Path(ROOT, 'resources', 'textures', category, name+'.png')
+    fullname = Path(ROOT, 'resources', 'textures', category, name)
     image = pg.image.load(fullname)
     size = image.get_size()
     size = (size[0] * scale, size[1] * scale)
@@ -25,7 +25,6 @@ class ResourceLoader:
         self.resources = {}
         path = Path(ROOT, 'resources', location, resource)
         self.files = path.glob("*")
-        print(path)
 
     def load(self, path: Path):
         with open(path, 'r') as f:
@@ -38,13 +37,16 @@ class ResourceLoader:
             self.load(file)
 
     def update(self, data: dict, new_data: dict):
-        data = deepcopy(data)
+        rtn_data = deepcopy(data)
         for key, value in new_data.items():
-            if type(data[key]) == dict and new_data.get(key) is not None:
-                self.update(data[key], new_data[key])
+            if isinstance(new_data[key], dict):
+                if rtn_data.get(key) is not None:
+                    rtn_data[key] = self.update(rtn_data[key], new_data[key])
+                else:
+                    rtn_data[key] = new_data[key]
             else:
-                data[key] = value
-        return data
+                rtn_data[key] = value
+        return rtn_data
     
     def set_defaults(self):
         for key in self.resources.keys():

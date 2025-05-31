@@ -10,7 +10,7 @@ class EntityRegistry():
         resource_loader.set_defaults()
         self.resources = resource_loader.get_all()
         for key in self.resources.keys():
-            self.resources[key]["sprite"] = load_sprite(key, entity_type, -1)
+            self.resources[key]["sprite"] = load_sprite(self.resources[key]["sprite"], entity_type, -1)
         self.entities: list[Entity] = []
 
     def update(self, screen: pg.Surface):
