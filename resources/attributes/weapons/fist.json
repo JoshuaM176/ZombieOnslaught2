@@ -1,0 +1,27 @@
+{
+    "fist": {
+        "player": {
+            "movement": 0
+        },
+        "weapon":{
+            "sprites": {
+                "default": "none.png"
+            },
+            "firerate": 60,
+            "recoil": {
+                "recoil": 1,
+                "recoil_control": 1,
+                "max_recoil": 10
+            }
+        },
+        "bullet": {
+            "damage": 10,
+            "dropoff": 10,
+            "speed": -25,
+            "penetration": 0,
+            "shiftX": 80,
+            "shiftY": 60,
+            "tracer": "false"
+        }
+    }
+}

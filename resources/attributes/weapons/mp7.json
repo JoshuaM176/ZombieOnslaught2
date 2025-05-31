@@ -1,0 +1,37 @@
+{
+    "MP7": {
+        "player": {
+            "movement": 6
+        },
+        "weapon": {
+            "sprites": {
+                "default": "mp7.png",
+                "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
+                "extra_reload_sprite": "mp7-F.png",
+                "fire_sprite": "mp7-F.png"
+            },
+            "firerate": 1200,
+            "shiftX": 40,
+            "shiftY": 20,
+            "recoil": {
+                "recoil": 0.07,
+                "recoil_control": 0.21,
+                "max_recoil": 1
+            },
+            "ammo": {
+                "bullets_per_mag": 30,
+                "max_mags": 10,
+                "reload_time": 2,
+                "reload_on_empty": 0.5
+            }
+        },
+        "bullet": {
+            "damage": 10,
+            "dropoff": 0.5,
+            "speed": 45,
+            "penetration": 0.1,
+            "shiftX": 45,
+            "shiftY": 60
+        }
+    }
+}
