@@ -2,7 +2,8 @@ import pygame as pg
 from util.resource_loading import ResourceLoader, load_sprite
 from objects.entities import Entity, Zombie
 
-class EntityRegistry():
+
+class EntityRegistry:
     def __init__(self, entity_type: str):
         self.render_plain = pg.sprite.RenderPlain(())
         resource_loader = ResourceLoader(entity_type, "attributes")
@@ -10,7 +11,9 @@ class EntityRegistry():
         resource_loader.set_defaults()
         self.resources = resource_loader.get_all()
         for key in self.resources.keys():
-            self.resources[key]["sprite"] = load_sprite(self.resources[key]["sprite"], entity_type, -1)
+            self.resources[key]["sprite"] = load_sprite(
+                self.resources[key]["sprite"], entity_type, -1
+            )
         self.entities: list[Entity] = []
 
     def update(self, screen: pg.Surface):
@@ -27,16 +30,17 @@ class EntityRegistry():
 
     def get(self):
         return self.entities
-    
+
     def is_empty(self):
         if len(self.entities > 0):
             return False
         return True
-    
+
+
 class ZombieRegistry(EntityRegistry):
     def __init__(self):
         super().__init__("zombies")
-    
+
     def create_zombie(self, x, y, zombie_type: str):
         zombie = Zombie(x, y, True, **self.resources[zombie_type])
         self.register(zombie)

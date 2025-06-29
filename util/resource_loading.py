@@ -6,8 +6,9 @@ from copy import deepcopy
 
 ROOT = os.path.abspath(os.curdir)
 
+
 def load_sprite(name: str, category: str, colorkey=None, scale=8):
-    fullname = Path(ROOT, 'resources', 'textures', category, name)
+    fullname = Path(ROOT, "resources", "textures", category, name)
     image = pg.image.load(fullname)
     size = image.get_size()
     size = (size[0] * scale, size[1] * scale)
@@ -19,15 +20,15 @@ def load_sprite(name: str, category: str, colorkey=None, scale=8):
         image.set_colorkey(colorkey, pg.RLEACCEL)
     return image
 
-class ResourceLoader:
 
+class ResourceLoader:
     def __init__(self, resource: str, location: str):
         self.resources = {}
-        path = Path(ROOT, 'resources', location, resource)
+        path = Path(ROOT, "resources", location, resource)
         self.files = path.glob("*")
 
     def load(self, path: Path):
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             data = json.load(f)
         for key, value in data.items():
             self.resources[key] = value
@@ -47,13 +48,15 @@ class ResourceLoader:
             else:
                 rtn_data[key] = value
         return rtn_data
-    
+
     def set_defaults(self):
         for key in self.resources.keys():
-            self.resources[key] = self.update(self.resources["default"], self.resources[key])
+            self.resources[key] = self.update(
+                self.resources["default"], self.resources[key]
+            )
 
     def get(self, name: str):
         return self.resources[name]
-    
+
     def get_all(self):
         return self.resources

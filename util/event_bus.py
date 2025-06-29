@@ -1,9 +1,10 @@
 from queue import Queue
 
-class EventBus(): 
+
+class EventBus:
     def __init__(self):
-        self.busses: dict [str: Queue] = {}
-    
+        self.busses: dict[str:Queue] = {}
+
     def create_bus(self, name: str):
         q = Queue()
         self.busses[name] = q
@@ -15,5 +16,6 @@ class EventBus():
         q: Queue = self.busses[name]
         while not q.empty():
             yield q.get()
+
 
 event_bus = EventBus()

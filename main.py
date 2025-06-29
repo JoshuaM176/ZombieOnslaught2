@@ -4,16 +4,14 @@ from util.event_bus import event_bus
 
 clock = pg.time.Clock()
 screen = pg.display.set_mode((1920, 1080))
-from game.gameplay import Game
+from game.gameplay import Game  # noqa: E402
+
 running = True
-
-
 
 # Set so that first frame runs as if at 60fps
 frame_start_time = time() - 0.017
 event_bus.create_bus("input_bus")
 game = Game()
-
 
 while running:
     current_time = time()

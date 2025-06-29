@@ -38,7 +38,8 @@ class Zombie(Entity):
 
 
 class Player(Entity):
-    def __init__(self, x, y):
+    def __init__(self, x, y, bullet_registry):
+        self.bullet_registry = bullet_registry
         resource_loader = ResourceLoader("player", "attributes")
         resource_loader.load_all()
         resources = resource_loader.get("player")
@@ -47,23 +48,25 @@ class Player(Entity):
         self.render_plain = pg.sprite.RenderPlain((self))
         self.speed = resources.get("speed") or 300
         self.movement = {"horizontal": 0, "vertical": 0}
-        self.movement_dict = {
+        self.input_dict = {
             "up": False,
             "left": False,
             "down": False,
             "right": False,
             "sprint": False,
+            "shooting": False,
         }
-        self.weapon_switch = {}
         self.key_map = {
-            pg.K_w: (self.movement_dict, "up", self.update_movement),
-            pg.K_a: (self.movement_dict, "left", self.update_movement),
-            pg.K_s: (self.movement_dict, "down", self.update_movement),
-            pg.K_d: (self.movement_dict, "right", self.update_movement),
-            pg.K_LSHIFT: (self.movement_dict, "sprint", self.update_movement),
-            pg.MOUSEWHEEL: (self.weapon_switch, "next", self.switch_weapon),
+            pg.K_w: (self.input_dict, "up", self.update_movement),
+            pg.K_a: (self.input_dict, "left", self.update_movement),
+            pg.K_s: (self.input_dict, "down", self.update_movement),
+            pg.K_d: (self.input_dict, "right", self.update_movement),
+            pg.K_LSHIFT: (self.input_dict, "sprint", self.update_movement),
+            pg.K_SPACE: (self.input_dict, "shooting", None),
+            "mwup": (self.input_dict, "next", self.switch_weapon),
+            "mwdown": (self.input_dict, "previous", self.switch_weapon),
         }
-        self.weapons = EquippedWeaponRegistry()
+        self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
 
     def set_weapon(self, weapon, cat: str):
@@ -77,9 +80,9 @@ class Player(Entity):
             self.render_plain.add(self.equipped_weapon)
 
     def switch_weapon(self):
-        if self.weapon_switch.pop("next", None):
+        if self.input_dict.pop("next", None):
             self.set_equipped_weapon(self.weapons.set_next())
-        else:
+        if self.input_dict.pop("previous", None):
             self.set_equipped_weapon(self.weapons.set_previous())
 
     def get_input(self):
@@ -101,14 +104,14 @@ class Player(Entity):
                 parse_input(False, event.key)
             if event.type == pg.MOUSEWHEEL:
                 if event.y == 1:
-                    parse_input(True, pg.MOUSEWHEEL)
+                    parse_input(True, "mwup")
                 else:
-                    parse_input(False, pg.MOUSEWHEEL)
+                    parse_input(True, "mwdown")
 
     def update_movement(self):
-        hor = self.movement_dict["right"] - self.movement_dict["left"]
-        ver = self.movement_dict["down"] - self.movement_dict["up"]
-        sprint = self.movement_dict["sprint"] + 1
+        hor = self.input_dict["right"] - self.input_dict["left"]
+        ver = self.input_dict["down"] - self.input_dict["up"]
+        sprint = self.input_dict["sprint"] + 1
         speed = self.speed * sprint
         self.horizontal_movement = hor * speed
         self.vertical_movement = ver * speed
@@ -121,5 +124,5 @@ class Player(Entity):
         self.x += self.horizontal_movement * frame_time
         self.y += self.vertical_movement * frame_time
         self.rect.topleft = (self.x, self.y)
-        self.equipped_weapon.draw(self.x, self.y)
+        self.equipped_weapon.draw(self.x, self.y, frame_time)
         self.render_plain.draw(screen)
