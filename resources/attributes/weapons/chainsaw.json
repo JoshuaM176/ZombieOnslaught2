@@ -20,7 +20,7 @@
             "max_mags": 50,
             "reload_time": 0.1,
             "reload_type": 1,
-            "bullet_in_chamber": 0,
+            "bullet_in_chamber": false,
             "recoil_per_shot": 1,
             "recoil_control": 1,
             "max_recoil": 10
@@ -32,7 +32,7 @@
             "penetration": 1,
             "shiftX": 10,
             "shiftY": 75,
-            "tracer": false
+            "tracer": true
         }
     }
 }

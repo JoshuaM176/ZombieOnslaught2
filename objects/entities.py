@@ -48,6 +48,8 @@ class Player(Entity):
         self.render_plain = pg.sprite.RenderPlain((self))
         self.speed = resources.get("speed") or 300
         self.movement = {"horizontal": 0, "vertical": 0}
+        self.shooting = False
+        self.reloading = False
         self.input_dict = {
             "up": False,
             "left": False,
@@ -55,6 +57,7 @@ class Player(Entity):
             "right": False,
             "sprint": False,
             "shooting": False,
+            "reloading": False,
         }
         self.key_map = {
             pg.K_w: (self.input_dict, "up", self.update_movement),
@@ -62,9 +65,10 @@ class Player(Entity):
             pg.K_s: (self.input_dict, "down", self.update_movement),
             pg.K_d: (self.input_dict, "right", self.update_movement),
             pg.K_LSHIFT: (self.input_dict, "sprint", self.update_movement),
-            pg.K_SPACE: (self.input_dict, "shooting", None),
+            pg.K_SPACE: (self.input_dict, "shooting", self.update_shooting),
             "mwup": (self.input_dict, "next", self.switch_weapon),
             "mwdown": (self.input_dict, "previous", self.switch_weapon),
+            pg.K_r: (self.input_dict, "reloading", self.update_shooting),
         }
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
@@ -119,10 +123,16 @@ class Player(Entity):
             self.horizontal_movement *= 0.7071
             self.vertical_movement *= 0.7071
 
+    def update_shooting(self, shooting: bool = None, reloading: bool = None):
+        self.shooting = shooting or self.input_dict["shooting"]
+        self.reloading = reloading or self.input_dict["reloading"]
+
     def update(self, screen, frame_time):
         self.get_input()
         self.x += self.horizontal_movement * frame_time
         self.y += self.vertical_movement * frame_time
         self.rect.topleft = (self.x, self.y)
-        self.equipped_weapon.draw(self.x, self.y, frame_time)
+        self.equipped_weapon.draw(
+            self.x, self.y, frame_time, self.shooting, self.reloading
+        )
         self.render_plain.draw(screen)

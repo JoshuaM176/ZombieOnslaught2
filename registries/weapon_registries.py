@@ -36,7 +36,6 @@ class WeaponRegistry:
             for weapon in weapons:
                 if weapon["player"].get("default"):
                     defaults[cat] = weapon
-                    break
         return defaults
 
 

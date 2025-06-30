@@ -11,7 +11,7 @@ running = True
 # Set so that first frame runs as if at 60fps
 frame_start_time = time() - 0.017
 event_bus.create_bus("input_bus")
-game = Game()
+game = Game(screen)
 
 while running:
     current_time = time()

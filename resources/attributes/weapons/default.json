@@ -15,6 +15,7 @@
             },
             "type": "melee",
             "firerate": 60,
+            "fire_animation_length": 0.01,
             "burst": 0,
             "shiftX": 0,
             "shiftY": 0,
@@ -25,7 +26,7 @@
             "max_mags": 10,
             "reload_time": 1,
             "reload_type": 0,
-            "bullet_in_chamber": 1,
+            "bullet_in_chamber": true,
             "reload_on_empty": 0
         },
         "bullet": {
