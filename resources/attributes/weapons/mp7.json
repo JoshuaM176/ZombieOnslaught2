@@ -20,9 +20,12 @@
             "shiftY": 20,
             "recoil_per_shot": 0.005,
             "recoil_control": 0.005,
-            "max_recoil": 0.02,
-            "bullets_per_mag": 30,
-            "max_mags": 10,
+            "max_recoil": 0.02
+        },
+        "ammo": {
+            "bullets": 30,
+            "mags": 10,
+            "mag_time": 20,
             "reload_time": 2,
             "reload_on_empty": 0.5
         },

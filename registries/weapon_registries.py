@@ -91,6 +91,6 @@ class EquippedWeaponRegistry:
             return self.equipped_list[self.equipped_list.index(self.equipped) - 1]
         return False
 
-    def update(self):
+    def update(self, frame_time):
         for _, weapon in self.weapons.items():
-            weapon.update()
+            weapon.update(frame_time)

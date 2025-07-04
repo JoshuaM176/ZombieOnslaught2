@@ -10,20 +10,25 @@
             "sprites": {
                 "default": "chainsaw.png",
                 "reloading": ["chainsaw.png"],
-                "fire_sprite": "chainsaw.png"
+                "fire_sprite": "chainsaw.png",
+                "extra_reload_sprite": "chainsaw.png"
             },
             "type": "melee",
             "firerate": 600,
             "shiftX": 40,
             "shiftY": 15,
-            "bullets_per_mag": 50,
-            "max_mags": 50,
-            "reload_time": 0.1,
-            "reload_type": 1,
-            "bullet_in_chamber": false,
+            "bullets": 50,
             "recoil_per_shot": 1,
             "recoil_control": 1,
             "max_recoil": 10
+        },
+        "ammo":{
+            "bullets": 50,
+            "bullet_in_chamber": false,
+            "mags": 50,
+            "mag_time": 1,
+            "reload_time": 0.1,
+            "reload_type": 1
         },
         "bullet": {
             "damage": 40,

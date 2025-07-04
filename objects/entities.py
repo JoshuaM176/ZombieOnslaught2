@@ -72,6 +72,8 @@ class Player(Entity):
         }
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
+        self.ui_bus = event_bus.put_events("ui_bus")
+        self.ui_bus.send(None)
 
     def set_weapon(self, weapon, cat: str):
         self.weapons.equip(weapon, cat)
@@ -82,6 +84,15 @@ class Player(Entity):
                 self.render_plain.remove(self.equipped_weapon)
             self.equipped_weapon = self.weapons.get(cat)
             self.render_plain.add(self.equipped_weapon)
+            self.ui_bus.send(
+                {
+                    "weapon": self.equipped_weapon.name,
+                    "bullets": self.equipped_weapon.ammo.bullets,
+                    "max_bullets": self.equipped_weapon.ammo.max_bullets,
+                    "mags": self.equipped_weapon.ammo.mags,
+                    "max_mags": self.equipped_weapon.ammo.max_mags,
+                }
+            )
 
     def switch_weapon(self):
         if self.input_dict.pop("next", None):
@@ -135,4 +146,5 @@ class Player(Entity):
         self.equipped_weapon.draw(
             self.x, self.y, frame_time, self.shooting, self.reloading
         )
+        self.weapons.update(frame_time)
         self.render_plain.draw(screen)

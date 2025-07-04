@@ -2,6 +2,7 @@ from registries.entity_registries import ZombieRegistry
 from registries.weapon_registries import WeaponRegistry
 from registries.bullet_registries import BulletRegistry
 from objects.entities import Player
+from game.menus import UI
 
 
 class Game:
@@ -13,8 +14,10 @@ class Game:
         for cat, weapon in self.weapon_registry.get_default_weapons().items():
             self.player.set_weapon(weapon, cat)
         self.player.set_equipped_weapon("smg")
+        self.ui = UI(screen)
 
     def update(self, screen, frame_time):
         screen.fill(color=(150, 150, 150))
         self.player_bullet_registry.update(frame_time)
         self.player.update(screen, frame_time)
+        self.ui.update()

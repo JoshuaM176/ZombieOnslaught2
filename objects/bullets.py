@@ -3,10 +3,21 @@ from math import sqrt
 
 class Bullet:
     def __init__(
-        self, x, y, damage, dropoff, speed, recoil, penetration, head_mult, tracer
+        self,
+        x,
+        y,
+        shiftX,
+        shiftY,
+        damage,
+        dropoff,
+        speed,
+        recoil,
+        penetration,
+        head_mult,
+        tracer,
     ):
-        self.x = x
-        self.y = y
+        self.x = x + shiftX
+        self.y = y + shiftY
         self.start_damge = damage
         self.damage = damage
         self.dropoff = dropoff

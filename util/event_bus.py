@@ -12,6 +12,12 @@ class EventBus:
     def add_event(self, bus: str, event: str):
         self.busses[bus].put(event)
 
+    def put_events(self, name: str):
+        q: Queue = self.busses[name]
+        while True:
+            event = yield
+            q.put(event)
+
     def get_events(self, name: str):
         q: Queue = self.busses[name]
         while not q.empty():
