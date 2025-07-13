@@ -2,6 +2,8 @@
     "player": {
         "sprite": "player.png",
         "hitbox": [24, 16, 72, 112],
-        "head_hitbox": [24, 16, 72, 32]
+        "head_hitbox": [24, 16, 72, 32],
+        "speed": 300,
+        "health": 10
     }
 }

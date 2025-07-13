@@ -158,6 +158,7 @@ class Ammo:
         self.reload_progress += frame_time
         rtn = self.reload_progress / self.reload_time
         if self.reload_progress >= time:
+            rtn = 0.99
             self.mags -= 1
             self.reload_progress = 0
             if self.reload_type == 0:

@@ -1,6 +1,7 @@
 import pygame as pg
 from util.resource_loading import ResourceLoader, load_sprite
 from objects.entities import Entity, Zombie
+from registries.bullet_registries import BulletRegistry
 
 
 class EntityRegistry:
@@ -16,8 +17,12 @@ class EntityRegistry:
             )
         self.entities: list[Entity] = []
 
-    def update(self, screen: pg.Surface):
-        self.render_plain.update()
+    def update(self, screen: pg.Surface, frame_time):
+        #debug
+        #for entity in self.entities:
+            #entity.head_hitbox.display(screen)
+            #entity.hitbox.display(screen)
+        self.render_plain.update(frame_time)
         self.render_plain.draw(screen)
 
     def register(self, entity: Entity):
@@ -32,15 +37,38 @@ class EntityRegistry:
         return self.entities
 
     def is_empty(self):
-        if len(self.entities > 0):
+        if len(self.entities) > 0:
             return False
         return True
+    
+    def hit_check(self, bullets: BulletRegistry):
+        for entity in self.entities:
+            for bullet in bullets.bullets:
+                if bullet is not None and bullet.damage > 0:
+                    if entity not in bullet.recent_hits:
+                        if entity.head_hitbox.check(bullet.x, bullet.y):
+                            entity.hit(bullet.damage*bullet.head_mult)
+                            bullet.hit(entity)
+                        elif entity.hitbox.check(bullet.x, bullet.y):
+                            entity.hit(bullet.damage)
+                            bullet.hit(entity)
 
 
 class ZombieRegistry(EntityRegistry):
     def __init__(self):
         super().__init__("zombies")
 
-    def create_zombie(self, x, y, zombie_type: str):
-        zombie = Zombie(x, y, True, **self.resources[zombie_type])
+    def create_zombie(self, x, y, round: int, zombie_type: str):
+        zombie = Zombie(x, y, round, **self.resources[zombie_type])
         self.register(zombie)
+
+    def update(self, screen: pg.Surface, frame_time):
+        #debug
+        #for entity in self.entities:
+            #entity.head_hitbox.display(screen)
+            #entity.hitbox.display(screen)
+        self.render_plain.update(frame_time)
+        self.render_plain.draw(screen)
+        for zombie in self.entities:
+            if zombie.health <= 0:
+                self.deregister(zombie)

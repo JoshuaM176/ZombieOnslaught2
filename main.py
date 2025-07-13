@@ -6,6 +6,7 @@ pg.init()
 clock = pg.time.Clock()
 screen = pg.display.set_mode((1920, 1080))
 from game.gameplay import Game  # noqa: E402
+from game.menus import MainMenu # noqa E402
 
 running = True
 
@@ -13,7 +14,10 @@ running = True
 frame_start_time = time() - 0.017
 event_bus.create_bus("input_bus")
 event_bus.create_bus("ui_bus")
+event_bus.create_bus("game_event_bus")
 game = Game(screen)
+main_menu = MainMenu(screen)
+curr_screen = "main_menu"
 
 while running:
     current_time = time()
@@ -30,8 +34,18 @@ while running:
             pg.MOUSEWHEEL,
         ):
             event_bus.add_event("input_bus", event)
-    game.update(screen, time_since_last_frame)
+    if curr_screen == "main_menu":
+        curr_screen = main_menu.update()
+    elif curr_screen == "game":
+        game.update(screen, time_since_last_frame)
+    
     pg.display.flip()
     clock.tick(180)
 
 pg.quit()
+
+#TODO 
+#Zombies need weapons
+#Health bars
+#Add functions to zombies in order to allow custom abilities?
+#Need registry for available weapons?

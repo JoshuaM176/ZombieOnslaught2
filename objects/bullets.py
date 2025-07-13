@@ -26,14 +26,18 @@ class Bullet:
         self.tracer = tracer
         self.horizontal_movement = speed / sqrt(recoil + 1)
         self.vertical_movement = -self.horizontal_movement * recoil
+        self.gravity = 0
+        self.recent_hits = {}
 
     def update(self, frame_time):
-        self.damage -= self.dropoff * frame_time
         if self.damage > 0:
+            self.damage -= self.dropoff * frame_time
             start_x = self.x
             start_y = self.y
             self.x += self.horizontal_movement * frame_time
             self.y += self.vertical_movement * frame_time
+            self.y += self.gravity * frame_time
+            self.gravity += 100 * frame_time
             return (
                 Tracer(
                     start_x,
@@ -46,7 +50,13 @@ class Bullet:
                 else None
             )
         return None
-
+    
+    def hit(self, entity):
+        self.recent_hits[entity] = True
+        self.damage *= self.penetration
+        speed_mult = 0.75 + self.penetration * 0.1
+        self.horizontal_movement *= speed_mult
+        self.vertical_movement *= speed_mult
 
 class Tracer:
     def __init__(

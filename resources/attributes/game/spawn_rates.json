@@ -1,0 +1,26 @@
+{
+    "spawn_rates": [
+        {
+            "zombie": "zombie",
+            "start_round": 1,
+            "end_round": 25,
+            "rate": {
+                "function": {
+                    "name": "flat"
+                },
+                "mult": 1
+            }
+        },
+        {
+            "zombie": "brute",
+            "start_round": 5,
+            "end_round": 15,
+            "rate": {
+                "function": {
+                    "name": "flat"
+                },
+                "mult": 10
+            }
+        }
+    ]
+}

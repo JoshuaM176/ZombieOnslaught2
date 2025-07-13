@@ -3,6 +3,7 @@ from objects.hitreg import HitBox
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
 from registries.weapon_registries import EquippedWeaponRegistry
+from math import sqrt
 
 
 class Entity(pg.sprite.Sprite):
@@ -13,6 +14,8 @@ class Entity(pg.sprite.Sprite):
         hitbox: list[int],
         head_hitbox: list[int],
         sprite: pg.Surface,
+        speed: int,
+        health: int,
         **_,
     ):
         super().__init__()
@@ -21,19 +24,30 @@ class Entity(pg.sprite.Sprite):
         self.hitbox = HitBox(x, y, *hitbox)
         self.head_hitbox = HitBox(x, y, *head_hitbox)
         self.image, self.rect = sprite, sprite.get_rect()
+        self.speed = speed
+        self.health = health
+        self.max_health = health
         self.horizontal_movement = 0
         self.vertical_movement = 0
 
     def update(self):
         self.rect.topleft = (self.x, self.y)
 
+    def hit(self, damage):
+        self.health -= damage
+
 
 class Zombie(Entity):
-    def __init__(self, x: int, y: int, round_scaling: bool = True, **attrs):
+    def __init__(self, x: int, y: int, round_scaling: int = 0, **attrs):
+        scale = sqrt(round_scaling)*0.1
         super().__init__(x, y, **attrs)
+        self.speed *= scale + 1
+        self.health *= scale + 1
 
-    def update(self):
+    def update(self, frame_time):
+        self.x -= self.speed * frame_time
         self.hitbox.update(self.x, self.y)
+        self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
 
 
@@ -46,7 +60,6 @@ class Player(Entity):
         resources["sprite"] = load_sprite("player.png", "player", -1)
         super().__init__(x, y, **resources)
         self.render_plain = pg.sprite.RenderPlain((self))
-        self.speed = resources.get("speed") or 300
         self.movement = {"horizontal": 0, "vertical": 0}
         self.shooting = False
         self.reloading = False

@@ -2,6 +2,6 @@
     "brute": {
         "sprite": "brute.png",
         "health": 25,
-        "speed": 2
+        "speed": 40
     }
 }

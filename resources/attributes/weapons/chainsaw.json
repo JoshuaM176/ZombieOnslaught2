@@ -18,9 +18,9 @@
             "shiftX": 40,
             "shiftY": 15,
             "bullets": 50,
-            "recoil_per_shot": 1,
+            "recoil_per_shot": 0,
             "recoil_control": 1,
-            "max_recoil": 10
+            "max_recoil": 0
         },
         "ammo":{
             "bullets": 50,
@@ -33,11 +33,11 @@
         "bullet": {
             "damage": 40,
             "dropoff": 75,
-            "speed": 10,
+            "speed": 100,
             "penetration": 1,
-            "shiftX": 10,
-            "shiftY": 75,
-            "tracer": true
+            "shiftX": 70,
+            "shiftY": 85,
+            "tracer": false
         }
     }
 }
