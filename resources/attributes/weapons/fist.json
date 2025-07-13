@@ -20,7 +20,7 @@
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,
-            "tracer": false
+            "tracer": true
         }
     }
 }

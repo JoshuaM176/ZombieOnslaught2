@@ -43,6 +43,7 @@ class Zombie(Entity):
         super().__init__(x, y, **attrs)
         self.speed *= scale + 1
         self.health *= scale + 1
+        self.max_health *= scale+1
 
     def update(self, frame_time):
         self.x -= self.speed * frame_time
@@ -156,8 +157,18 @@ class Player(Entity):
         self.x += self.horizontal_movement * frame_time
         self.y += self.vertical_movement * frame_time
         self.rect.topleft = (self.x, self.y)
+        self.hitbox.update(self.x, self.y)
+        self.head_hitbox.update(self.x, self.y)
         self.equipped_weapon.draw(
             self.x, self.y, frame_time, self.shooting, self.reloading
         )
         self.weapons.update(frame_time)
         self.render_plain.draw(screen)
+        x, y, _, _ = self.head_hitbox.get()
+        pg.draw.rect(screen, (0,255,0), (x - 16, y - 24, self.health/self.max_health*80, 20))
+        pg.draw.rect(screen, (0,0,0), (x - 16, y - 24, 80, 20), 1)
+        font = pg.font.Font(pg.font.get_default_font(), 20)
+        text = font.render(str(round(self.health)), 1, (0,0,0))
+        text_rect = text.get_rect(center=(x+24, y-14))
+        screen.blit(text, text_rect)
+

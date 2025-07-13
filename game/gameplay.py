@@ -13,8 +13,9 @@ class Game:
     def __init__(self, screen):
         self.screen = screen
         self.event_map = {"add_money": self.add_money}
-        self.zombie_registry = ZombieRegistry()
         self.weapon_registry = WeaponRegistry()
+        self.zombie_bullet_registry = BulletRegistry(400, screen)
+        self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_bullet_registry)
         self.player_bullet_registry = BulletRegistry(200, screen)
         self.player = Player(200, 500, self.player_bullet_registry)
         for cat, weapon in self.weapon_registry.get_default_weapons().items():

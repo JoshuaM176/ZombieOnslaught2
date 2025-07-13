@@ -5,8 +5,11 @@
         "speed": 50,
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
-        "weapon": "fist",
         "regen": 0,
-        "reward": 10
+        "reward": 10,
+        "weapon_stats": {
+            "name": "fist",
+            "category": "melee"
+        }
     }
 }
