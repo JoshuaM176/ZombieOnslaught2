@@ -1,5 +1,6 @@
 import pygame as pg
 from objects.hitreg import HitBox
+from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
 from registries.weapon_registries import EquippedWeaponRegistry
@@ -38,18 +39,22 @@ class Entity(pg.sprite.Sprite):
 
 
 class Zombie(Entity):
-    def __init__(self, x: int, y: int, round_scaling: int = 0, **attrs):
+    def __init__(self, x: int, y: int, weapon_registry, bullet_registry, round_scaling: int = 0, **attrs):
         scale = sqrt(round_scaling)*0.1
         super().__init__(x, y, **attrs)
         self.speed *= scale + 1
         self.health *= scale + 1
         self.max_health *= scale+1
+        weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
+        self.weapon = Weapon(**weapon, bullet_registry=bullet_registry)
+        self.weapon.flip_sprites()
 
     def update(self, frame_time):
         self.x -= self.speed * frame_time
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
+        self.weapon.draw(self.x, self.y, frame_time, False, False)
 
 
 class Player(Entity):

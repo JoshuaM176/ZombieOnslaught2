@@ -16,19 +16,22 @@ def convert_files_to_sprites(resource: dict):
 
 class WeaponRegistry:
     def __init__(self):
-        self.weapons: dict[str, list[dict]] = {"melee": {}, "smg": {}}
+        self.weapons: dict[str, dict] = {"melee": {}, "smg": {}}
         self.render_plain = pg.sprite.RenderPlain(())
         resource_loader = ResourceLoader("weapons", "attributes")
         resource_loader.load_all()
         resource_loader.set_defaults()
         resources = resource_loader.get_all()
-        for key, value in resources.items():
-            value["weapon"]["sprites"] = convert_files_to_sprites(
-                value["weapon"]["sprites"]
+        for name, data in resources.items():
+            data["weapon"]["sprites"] = convert_files_to_sprites(
+                data["weapon"]["sprites"]
             )
-            weapon = {key: resources[key]}
-            weapon[key].update({"name": key})
-            self.weapons[value["weapon"]["type"]].update(weapon)
+            weapon = {name: resources[name]}
+            weapon[name].update({"name": name})
+            self.weapons[data["weapon"]["type"]].update(weapon)
+
+    def get_weapon(self, cat: str, name: str) -> dict:
+        return self.weapons.get(cat).get(name)
 
     def get_default_weapons(self) -> dict[str, dict]:
         defaults = {}

@@ -19,13 +19,14 @@ class Weapon(pg.sprite.Sprite):
     ):
         super().__init__()
         self.name = name
-        self.sprites = weapon.pop("sprites")
+        self.sprites = weapon["sprites"]
         self.image, self.rect = (
             self.sprites["default"],
             self.sprites["default"].get_rect(),
         )
         for key, value in weapon.items():
-            setattr(self, key, value)
+            if key != "sprites":
+                setattr(self, key, value)
         self.time_per_bullet = 60 / self.firerate
         self.time_since_last_bullet = 0
         self.bullet = bullet
@@ -39,6 +40,21 @@ class Weapon(pg.sprite.Sprite):
         self.ammo = Ammo(**ammo)
         self.ui_bus = event_bus.put_events("ui_bus")
         self.ui_bus.send(None)
+
+    def flip_sprites(self):
+        print(self.sprites)
+        new_sprites = {}
+        for key, sprite in self.sprites.items():
+            if isinstance(sprite, list):
+                new_list = []
+                for each in sprite:
+                    new_list.append(pg.transform.flip(each, True, False))
+                new_sprites[key] = new_list
+            else:
+                new_sprites[key] = pg.transform.flip(sprite, True, False)
+        print(new_sprites)
+        self.sprites = new_sprites
+        self.shiftX *= -1
 
     def shoot(self, x, y):
         if self.ammo.get():

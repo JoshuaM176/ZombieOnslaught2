@@ -8,8 +8,8 @@
         "regen": 0,
         "reward": 10,
         "weapon_stats": {
-            "name": "fist",
-            "category": "melee"
+            "name": "MP7",
+            "category": "smg"
         }
     }
 }

@@ -62,8 +62,18 @@ class ZombieRegistry(EntityRegistry):
         self.weapon_registry = weapon_registry
 
     def create_zombie(self, x, y, round: int, zombie_type: str):
-        zombie = Zombie(x, y, round, **self.resources[zombie_type])
+        zombie = Zombie(x, y, self.weapon_registry, self.bullet_registry, round,**self.resources[zombie_type])
         self.register(zombie)
+
+    def register(self, entity: Entity):
+        self.entities.append(entity)
+        self.render_plain.add(entity)
+        self.render_plain.add(entity.weapon)
+
+    def deregister(self, entity: Entity):
+        self.entities.remove(entity)
+        self.render_plain.remove(entity)
+        self.render_plain.remove(entity.weapon)
 
     def update(self, screen: pg.Surface, frame_time):
         #debug
