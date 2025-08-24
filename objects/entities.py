@@ -34,19 +34,30 @@ class Entity(pg.sprite.Sprite):
     def update(self):
         self.rect.topleft = (self.x, self.y)
 
+    def hit_check(self, bullet):
+        if bullet is not None and bullet.damage > 0:
+            if self not in bullet.recent_hits:
+                if self.head_hitbox.check(bullet.x, bullet.y):
+                    self.hit(bullet.damage * bullet.head_mult)
+                    bullet.hit(self)
+                elif self.hitbox.check(bullet.x, bullet.y):
+                    self.hit(bullet.damage)
+                    bullet.hit(self)
+
     def hit(self, damage):
         self.health -= damage
 
 
 class Zombie(Entity):
     def __init__(self, x: int, y: int, weapon_registry, bullet_registry, round_scaling: int = 0, **attrs):
-        scale = sqrt(round_scaling)*0.1
+        scale = sqrt(round_scaling)*0.1 + 1
         super().__init__(x, y, **attrs)
-        self.speed *= scale + 1
-        self.health *= scale + 1
-        self.max_health *= scale+1
+        self.reward = attrs["reward"]*scale
+        self.speed *= scale
+        self.health *= scale
+        self.max_health *= scale
         weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
-        self.weapon = Weapon(**weapon, bullet_registry=bullet_registry)
+        self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
         self.weapon.flip_sprites()
 
     def update(self, frame_time):
@@ -54,7 +65,7 @@ class Zombie(Entity):
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
-        self.weapon.draw(self.x, self.y, frame_time, False, False)
+        self.weapon.draw(self.x, self.y, frame_time, True, False)
 
 
 class Player(Entity):

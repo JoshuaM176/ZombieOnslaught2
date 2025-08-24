@@ -3,6 +3,7 @@ from util.resource_loading import ResourceLoader, load_sprite
 from objects.entities import Entity, Zombie
 from registries.bullet_registries import BulletRegistry
 from registries.weapon_registries import WeaponRegistry
+from util.event_bus import event_bus
 
 
 class EntityRegistry:
@@ -45,14 +46,7 @@ class EntityRegistry:
     def hit_check(self, bullets: BulletRegistry):
         for entity in self.entities:
             for bullet in bullets.bullets:
-                if bullet is not None and bullet.damage > 0:
-                    if entity not in bullet.recent_hits:
-                        if entity.head_hitbox.check(bullet.x, bullet.y):
-                            entity.hit(bullet.damage*bullet.head_mult)
-                            bullet.hit(entity)
-                        elif entity.hitbox.check(bullet.x, bullet.y):
-                            entity.hit(bullet.damage)
-                            bullet.hit(entity)
+                entity.hit_check(bullet)
 
 
 class ZombieRegistry(EntityRegistry):
@@ -84,6 +78,7 @@ class ZombieRegistry(EntityRegistry):
         self.render_plain.draw(screen)
         for zombie in self.entities:
             if zombie.health <= 0:
+                event_bus.add_event("game_event_bus", {"add_money": zombie.reward})
                 self.deregister(zombie)
             else:
                 x, y, _, _ = zombie.head_hitbox.get()

@@ -15,11 +15,13 @@ frame_start_time = time() - 0.017
 event_bus.create_bus("input_bus")
 event_bus.create_bus("ui_bus")
 event_bus.create_bus("game_event_bus")
+event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
 curr_screen = "main_menu"
 
 while running:
+    event_bus.clear_events("trash")
     current_time = time()
     time_since_last_frame = current_time - frame_start_time
     frame_start_time = current_time

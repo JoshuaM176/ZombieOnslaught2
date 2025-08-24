@@ -1,7 +1,10 @@
 {
     "fist": {
         "player": {
-            "movement": 0
+            "movement": 0,
+            "owned": false,
+            "available": false,
+            "default": false
         },
         "weapon":{
             "sprites": {
@@ -16,11 +19,11 @@
         "bullet": {
             "damage": 10,
             "dropoff": 10,
-            "speed": -25,
+            "speed": 10,
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,
-            "tracer": true
+            "tracer": false
         }
     }
 }

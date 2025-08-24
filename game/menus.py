@@ -1,5 +1,6 @@
 import pygame as pg
 from util.event_bus import event_bus
+from util.ui_objects import text
 
 class MainMenu():
     def __init__(self, screen: pg.Surface):
@@ -36,17 +37,6 @@ class UI:
         scr_width = self.screen.get_width()  # noqa
         scr_height = self.screen.get_height()
         # ammo
-        font = pg.font.Font(pg.font.get_default_font(), 75)
-        text = font.render(
-            f"{self.data.get('bullets')}/{self.data.get('max_bullets')}",
-            True,
-            (0, 0, 0),
-        )
-        self.screen.blit(text, (50, scr_height - 125))
-        font = pg.font.Font(pg.font.get_default_font(), 25)
-        text = font.render(
-            f"{self.data.get('mags')}/{self.data.get('max_mags')}", True, (0, 0, 0)
-        )
-        self.screen.blit(text, (50, scr_height - 50))
-        text = font.render(self.data.get("weapon"), True, (0, 0, 0))
-        self.screen.blit(text, (50, scr_height - 150))
+        text(self.screen, f"{self.data.get('bullets')}/{self.data.get('max_bullets')}", 75, 50, scr_height-125)
+        text(self.screen, f"{self.data.get('mags')}/{self.data.get('max_mags')}", 25, 50, scr_height-50)
+        text(self.screen, self.data.get('weapon'), 25, 50, scr_height-150)

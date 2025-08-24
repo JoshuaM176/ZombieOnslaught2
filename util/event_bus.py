@@ -23,5 +23,11 @@ class EventBus:
         while not q.empty():
             yield q.get()
 
+    def clear_events(self, name: str):
+        q: Queue = self.busses[name]
+        while not q.empty():
+            q.get()
+        
+
 
 event_bus = EventBus()

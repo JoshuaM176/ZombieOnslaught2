@@ -63,7 +63,7 @@ class EquippedWeaponRegistry:
 
     def equip(self, weapon: dict, cat: str):
         self.equipped = cat
-        self.weapons[cat] = Weapon(**weapon, bullet_registry=self.bullet_registry)
+        self.weapons[cat] = Weapon(**weapon, bullet_registry=self.bullet_registry, bus="ui_bus")
 
     def get(self, cat: str):
         return self.weapons.get(cat)

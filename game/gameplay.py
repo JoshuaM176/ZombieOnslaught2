@@ -37,8 +37,11 @@ class Game:
             self.new_round(screen)
         screen.fill(color=(150, 150, 150))
         self.zombie_registry.hit_check(self.player_bullet_registry)
+        for bullet in self.zombie_bullet_registry.bullets:
+            self.player.hit_check(bullet)
         self.player_bullet_registry.update(frame_time)
         self.zombie_registry.update(screen, frame_time)
+        self.zombie_bullet_registry.update(frame_time)
         self.player.update(screen, frame_time)
         self.ui.update()
 
@@ -53,7 +56,7 @@ class Game:
 
     def generate_zombies(self, round: int, screen):
         for i in range(0,floor(sqrt(round))):
-            self.zombie_registry.create_zombie(screen.get_width()+uniform(0,100), uniform(0,screen.get_height()-350), round, choice(self.game_info.pool))
+            self.zombie_registry.create_zombie(screen.get_width()+uniform(0,100), uniform(0,screen.get_height()-375), round, choice(self.game_info.pool))
 
 @dataclass
 class GameInfo():
