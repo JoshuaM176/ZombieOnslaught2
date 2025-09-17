@@ -18,7 +18,7 @@ event_bus.create_bus("game_event_bus")
 event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
-curr_screen = "main_menu"
+curr_screen = "game"
 
 while running:
     event_bus.clear_events("trash")
@@ -33,13 +33,20 @@ while running:
             pg.KEYUP,
             pg.MOUSEBUTTONDOWN,
             pg.MOUSEBUTTONUP,
-            pg.MOUSEWHEEL,
+            pg.MOUSEWHEEL
         ):
             event_bus.add_event("input_bus", event)
-    if curr_screen == "main_menu":
-        curr_screen = main_menu.update()
-    elif curr_screen == "game":
-        game.update(screen, time_since_last_frame)
+    match curr_screen:
+        case "main_menu":
+            curr_screen = main_menu.update()
+        case "game":
+            curr_screen = game.update(screen, time_since_last_frame)
+        case "store":
+            curr_screen = game.store.update()
+        case "game_over":
+            curr_screen = game.game_over.update()
+        case _:
+            pass
     
     pg.display.flip()
     clock.tick(180)
@@ -47,7 +54,6 @@ while running:
 pg.quit()
 
 #TODO 
-#Zombies need weapons
 #Health bars
 #Add functions to zombies in order to allow custom abilities?
 #Need registry for available weapons?

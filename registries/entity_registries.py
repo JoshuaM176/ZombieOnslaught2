@@ -4,6 +4,7 @@ from objects.entities import Entity, Zombie
 from registries.bullet_registries import BulletRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
+from util.ui_objects import health_bar
 
 
 class EntityRegistry:
@@ -69,6 +70,10 @@ class ZombieRegistry(EntityRegistry):
         self.render_plain.remove(entity)
         self.render_plain.remove(entity.weapon)
 
+    def clear(self):
+        for entity in self.entities:
+            self.deregister(entity)
+
     def update(self, screen: pg.Surface, frame_time):
         #debug
         #for entity in self.entities:
@@ -82,10 +87,5 @@ class ZombieRegistry(EntityRegistry):
                 self.deregister(zombie)
             else:
                 x, y, _, _ = zombie.head_hitbox.get()
-                pg.draw.rect(screen, (0,255,0), (x - 16, y - 24, zombie.health/zombie.max_health*80, 20))
-                pg.draw.rect(screen, (0,0,0), (x - 16, y - 24, 80, 20), 1)
-                font = pg.font.Font(pg.font.get_default_font(), 20)
-                text = font.render(str(round(zombie.health)), 1, (0,0,0))
-                text_rect = text.get_rect(center=(x+24, y-14))
-                screen.blit(text, text_rect)
+                health_bar(screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20)
                 

@@ -1,19 +1,20 @@
+from game.screenpage import ScreenPage
 from registries.entity_registries import ZombieRegistry
-from registries.weapon_registries import WeaponRegistry
+from registries.weapon_registries import weapon_registry
 from registries.bullet_registries import BulletRegistry
 from objects.entities import Player
-from game.menus import UI
+from game.menus import UI, Store, GameOver
 from dataclasses import dataclass, field
 from random import choice, uniform
 from math import sqrt, floor
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader
 
-class Game:
+class Game(ScreenPage):
     def __init__(self, screen):
-        self.screen = screen
+        super().__init__(screen, "game")
         self.event_map = {"add_money": self.add_money}
-        self.weapon_registry = WeaponRegistry()
+        self.weapon_registry = weapon_registry
         self.zombie_bullet_registry = BulletRegistry(400, screen)
         self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_bullet_registry)
         self.player_bullet_registry = BulletRegistry(200, screen)
@@ -26,9 +27,11 @@ class Game:
         resource_loader = ResourceLoader("game", "attributes")
         resource_loader.load_all()
         self.game_info.spawn_data = resource_loader.get("spawn_rates")
-
+        self.store = Store(screen, self.weapon_registry, self.player.weapons, self.game_info)
+        self.game_over = GameOver(screen)
 
     def update(self, screen, frame_time: float):
+        self.go2 = self.page_name
         game_event_bus = event_bus.get_events("game_event_bus")
         for event in game_event_bus:
             for event_type, value in event.items():
@@ -44,9 +47,19 @@ class Game:
         self.zombie_bullet_registry.update(frame_time)
         self.player.update(screen, frame_time)
         self.ui.update()
+        if self.player.health < 0:
+            self.end_game()
+        return self.go2
+    
+    def end_game(self):
+        self.player.reset()
+        self.game_info.round = 1
+        self.zombie_registry.clear()
+        self.go2 = "game_over"
 
     def add_money(self, money):
         self.game_info.money += money
+        event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
     def new_round(self, screen):
         self.game_info.money+=self.game_info.round

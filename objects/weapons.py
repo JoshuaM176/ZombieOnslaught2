@@ -16,7 +16,8 @@ class Weapon(pg.sprite.Sprite):
         ammo: dict,
         bullet: dict,
         bullet_registry: BulletRegistry,
-        bus: str
+        bus: str,
+        **_
     ):
         super().__init__()
         self.name = name

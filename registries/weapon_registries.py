@@ -40,7 +40,15 @@ class WeaponRegistry:
                 if data["player"].get("default"):
                     defaults[cat] = data
         return defaults
-
+    
+    def get_available_weapons(self, cat) -> list[Weapon]:
+        available = []
+        for weapon, data in self.weapons[cat].items():
+            if data["player"].get("available"):
+                available.append(data)
+        return available
+    
+weapon_registry = WeaponRegistry()
 
 class CustomWeaponRegistry:
     def __init__(self):
@@ -56,7 +64,7 @@ class CustomWeaponRegistry:
 class EquippedWeaponRegistry:
     def __init__(self, bullet_registry):
         self.bullet_registry = bullet_registry
-        self.weapons: dict[str, Weapon] = {}
+        self.weapons: dict[str, Weapon] = {"melee": None, "smg": None}
         self.equipped_list: list = ["melee", "smg"]
         self.equipped = "smg"
         self.render_plain = pg.sprite.RenderPlain(())
@@ -97,3 +105,7 @@ class EquippedWeaponRegistry:
     def update(self, frame_time):
         for _, weapon in self.weapons.items():
             weapon.update(frame_time)
+
+    def reset(self):
+        pass
+        ##TODO reset all weapons

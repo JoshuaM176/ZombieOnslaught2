@@ -9,35 +9,39 @@
         "weapon": {
             "sprites": {
                 "default": "chainsaw.png",
-                "reloading": ["chainsaw.png"],
-                "fire_sprite": "chainsaw.png",
+                "reloading": ["chainsaw-R1.png"],
+                "fire_sprite": "chainsaw-F.png",
                 "extra_reload_sprite": "chainsaw.png"
             },
             "type": "melee",
-            "firerate": 600,
+            "firerate": 1200,
             "shiftX": 40,
             "shiftY": 15,
-            "bullets": 50,
             "recoil_per_shot": 0,
             "recoil_control": 1,
             "max_recoil": 0
         },
         "ammo":{
-            "bullets": 50,
+            "bullets": 100,
             "bullet_in_chamber": false,
-            "mags": 50,
-            "mag_time": 1,
-            "reload_time": 0.1,
+            "mags": 100,
+            "mag_time": 0.5,
+            "reload_time": 0.05,
             "reload_type": 1
         },
         "bullet": {
-            "damage": 40,
-            "dropoff": 75,
+            "damage": 20,
+            "dropoff": 37,
             "speed": 100,
             "penetration": 1,
             "shiftX": 70,
             "shiftY": 85,
             "tracer": false
+        },
+        "store": {
+            "price": 1000,
+            "shiftX": 18,
+            "shiftY": -12
         }
     }
 }

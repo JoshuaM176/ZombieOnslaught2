@@ -3,6 +3,7 @@ from objects.hitreg import HitBox
 from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
+from util.ui_objects import health_bar
 from registries.weapon_registries import EquippedWeaponRegistry
 from math import sqrt
 
@@ -130,10 +131,10 @@ class Player(Entity):
         if self.input_dict.pop("previous", None):
             self.set_equipped_weapon(self.weapons.set_previous())
 
-    def get_input(self):
+    def get_input(self): #TODO fix this
         input_bus = event_bus.get_events("input_bus")
 
-        def apply_input(key_pressed, input_map, inp, func=None):
+        def apply_input(key_pressed: bool, input_map, inp, func=None):
             return (
                 input_map.update({inp: key_pressed}),
                 func() if func else None,
@@ -152,6 +153,23 @@ class Player(Entity):
                     parse_input(True, "mwup")
                 else:
                     parse_input(True, "mwdown")
+
+    def reset(self):
+        self.x = 100
+        self.health = self.max_health
+        self.movement.update({"horizontal": 0, "vertical": 0})
+        self.shooting = False
+        self.reloading = False
+        self.input_dict.update({
+            "up": False,
+            "left": False,
+            "down": False,
+            "right": False,
+            "sprint": False,
+            "shooting": False,
+            "reloading": False,
+        })
+        self.update_movement()
 
     def update_movement(self):
         hor = self.input_dict["right"] - self.input_dict["left"]
@@ -181,10 +199,5 @@ class Player(Entity):
         self.weapons.update(frame_time)
         self.render_plain.draw(screen)
         x, y, _, _ = self.head_hitbox.get()
-        pg.draw.rect(screen, (0,255,0), (x - 16, y - 24, self.health/self.max_health*80, 20))
-        pg.draw.rect(screen, (0,0,0), (x - 16, y - 24, 80, 20), 1)
-        font = pg.font.Font(pg.font.get_default_font(), 20)
-        text = font.render(str(round(self.health)), 1, (0,0,0))
-        text_rect = text.get_rect(center=(x+24, y-14))
-        screen.blit(text, text_rect)
+        health_bar(screen, self.health, self.max_health, x-16, y-24, 80, 20)
 

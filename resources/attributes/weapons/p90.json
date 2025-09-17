@@ -1,0 +1,41 @@
+{
+    "P90": {
+        "player": {
+            "movement": 5.7,
+            "owned": false,
+            "available": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "p90.png",
+                "reloading": ["p90.png", "p90.png", "p90.png", "p90.png", "p90.png"],
+                "extra_reload_sprite": "p90.png",
+                "fire_sprite": "p90.png"
+            },
+            "type": "smg",
+            "firerate": 950,
+            "fire_animation_length": 0.03,
+            "shiftX": 40,
+            "shiftY": 20,
+            "recoil_per_shot": 0.005,
+            "recoil_control": 0.075,
+            "max_recoil": 0.012
+        },
+        "ammo": {
+            "bullets": 30,
+            "mags": 8,
+            "mag_time": 25,
+            "reload_time": 1.3,
+            "reload_on_empty": 0.65
+        },
+        "bullet": {
+            "damage": 10,
+            "head_mult": 1.5,
+            "dropoff": 10,
+            "speed": 2700,
+            "penetration": 0.1,
+            "shiftX": 88,
+            "shiftY": 88
+        }
+    }
+}

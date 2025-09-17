@@ -26,11 +26,12 @@
             "bullets": 30,
             "mags": 10,
             "mag_time": 20,
-            "reload_time": 2,
-            "reload_on_empty": 0.5
+            "reload_time": 1,
+            "reload_on_empty": 0.35
         },
         "bullet": {
             "damage": 10,
+            "head_mult": 1.4,
             "dropoff": 10,
             "speed": 2700,
             "penetration": 0.1,
