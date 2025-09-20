@@ -1,0 +1,18 @@
+{
+    "regen_brute": {
+        "sprites": {
+            "default": "regen_brute.png",
+            "animation": ["regen_brute-A1.png", "regen_brute-A2.png", "regen_brute-A1.png", "regen_brute.png", "regen_brute-A3.png", "regen_brute-A4.png", "regen_brute-A3.png", "regen_brute.png"]
+        },
+        "health": 100,
+        "speed": 80,
+        "abilities": [
+            {
+                "ability": "regen",
+                "values": {
+                    "regen": "{self.health} * 0.07"
+                }
+            }
+        ]
+    }
+}

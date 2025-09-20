@@ -6,6 +6,14 @@ from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
 from util.ui_objects import health_bar
 
+def convert_files_to_sprites(resource: dict):
+    for key, value in resource.items():
+        if isinstance(value, list):
+            for item in range(len(value)):
+                value[item] = load_sprite(value[item], "zombies", -1)
+        else:
+            resource[key] = load_sprite(resource[key], "zombies", -1)
+    return resource
 
 class EntityRegistry:
     def __init__(self, entity_type: str):
@@ -18,6 +26,7 @@ class EntityRegistry:
             self.resources[key]["sprite"] = load_sprite(
                 self.resources[key]["sprite"], entity_type, -1
             )
+            convert_files_to_sprites(self.resources[key]["sprites"])
         self.entities: list[Entity] = []
 
     def update(self, screen: pg.Surface, frame_time):

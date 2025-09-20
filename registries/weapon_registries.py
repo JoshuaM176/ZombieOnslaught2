@@ -2,7 +2,7 @@ from util.resource_loading import ResourceLoader, load_sprite
 from objects.weapons import Weapon
 import pygame as pg
 
-weapon_categories = ["melee", "smg", "rifle"]
+weapon_categories = ["melee", "pistol", "smg", "rifle", "shotgun", "sniper"]
 
 def convert_files_to_sprites(resource: dict):
     for key, value in resource.items():

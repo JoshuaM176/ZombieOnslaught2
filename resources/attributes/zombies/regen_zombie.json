@@ -1,6 +1,9 @@
 {
     "regen_zombie": {
-        "sprite": "regen_zombie.png",
+        "sprites": {
+            "default": "regen_zombie.png",
+            "animation": ["regen_zombie-A1.png", "regen_zombie-A2.png", "regen_zombie-A1.png", "regen_zombie.png", "regen_zombie-A3.png", "regen_zombie-A4.png", "regen_zombie-A3.png", "regen_zombie.png"]
+        },
         "abilities": [
             {
                 "ability": "regen",

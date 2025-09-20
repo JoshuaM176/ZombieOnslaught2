@@ -1,6 +1,11 @@
 {
     "default": {
         "sprite": "zombie.png",
+        "sprites": {
+            "default": "zombie.png",
+            "animation": ["zombie-A1.png", "zombie-A2.png", "zombie-A1.png", "zombie.png", "zombie-A3.png", "zombie-A4.png", "zombie-A3.png", "zombie.png"]
+        },
+        "animation_length": 1,
         "health": 50,
         "speed": 100,
         "hitbox": [36, 48, 72, 80],

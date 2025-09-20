@@ -18,7 +18,7 @@ event_bus.create_bus("game_event_bus")
 event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
-curr_screen = "store"
+curr_screen = "game"
 
 while running:
     event_bus.clear_events("trash")

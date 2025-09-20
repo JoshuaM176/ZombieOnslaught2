@@ -42,6 +42,7 @@ class Weapon(pg.sprite.Sprite):
         self.ammo = Ammo(**ammo)
         self.ui_bus = event_bus.put_events(bus)
         self.ui_bus.send(None)
+        self.burst_fired = 0
 
     def flip_sprites(self):
         new_sprites = {}
@@ -59,11 +60,13 @@ class Weapon(pg.sprite.Sprite):
 
     def shoot(self, x, y):
         if self.ammo.get():
-            self.fire_bullet(x, y)
-            ammo = self.ammo.get()
-            self.ui_bus.send({"bullets": ammo})
-            if ammo == 0:
-                self.reloading = True
+            if not self.burst or self.burst_fired < self.burst:
+                self.burst_fired += 1
+                self.fire_bullet(x, y)
+                ammo = self.ammo.get()
+                self.ui_bus.send({"bullets": ammo})
+                if ammo == 0:
+                    self.reloading = True
 
     def fire_bullet(self, x, y):
         self.ammo.shoot()
@@ -110,6 +113,8 @@ class Weapon(pg.sprite.Sprite):
     def draw(self, x, y, frame_time, shooting, reloading):
         self.get_sprite(frame_time)
         self.shooting = shooting
+        if not self.shooting:
+            self.burst_fired = 0
         if reloading and self.ammo.bullets < self.ammo.max_bullets:
             self.reloading = reloading
         if self.recoil > 0:

@@ -7,6 +7,7 @@ from util.ui_objects import health_bar
 from registries.weapon_registries import EquippedWeaponRegistry
 from math import sqrt
 from objects.zombie_abilities import ability_map
+import random
 
 
 class Entity(pg.sprite.Sprite):
@@ -70,10 +71,18 @@ class Zombie(Entity):
                 self.__setattr__(name, value)
                 values.append(name)
             self.abilities.append((func, values))
-
+        self.animation_sprites = attrs["sprites"]["animation"]
+        self.animation_length = attrs["animation_length"]
+        self.animation_step_length = self.animation_length/len(self.animation_sprites)
+        self.animation_time = random.uniform(0, 2)
+        self.animation_step = 0
 
     def update(self, frame_time):
         self.x -= self.speed * frame_time
+        self.animation_time += frame_time
+        if self.animation_time > self.animation_length:
+            self.animation_time -= self.animation_length
+        self.image = self.animation_sprites[int(self.animation_time/self.animation_step_length)]
         if self.x < -100:
             self.x = 2000
         for ability in self.abilities:
@@ -112,6 +121,7 @@ class Player(Entity):
             pg.K_d: (self.input_dict, "right", self.update_movement),
             pg.K_LSHIFT: (self.input_dict, "sprint", self.update_movement),
             pg.K_SPACE: (self.input_dict, "shooting", self.update_shooting),
+            "lmb": (self.input_dict, "shooting", self.update_shooting),
             "mwup": (self.input_dict, "next", self.switch_weapon),
             "mwdown": (self.input_dict, "previous", self.switch_weapon),
             pg.K_r: (self.input_dict, "reloading", self.update_shooting),
@@ -170,6 +180,12 @@ class Player(Entity):
                     parse_input(True, "mwup")
                 else:
                     parse_input(True, "mwdown")
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    parse_input(True, "lmb")
+            if event.type == pg.MOUSEBUTTONUP:
+                if event.button == 1:
+                    parse_input(False, "lmb")
 
     def reset(self):
         self.x = 100

@@ -1,0 +1,47 @@
+{
+    "P250": {
+        "player": {
+            "movement": 6.6,
+            "owned": true,
+            "available": true,
+            "default": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "p250.png",
+                "reloading": ["p250-R1.png", "p250-R2.png", "p250.png", "p250-R2.png", "p250-R1.png"],
+                "extra_reload_sprite": "p250.png",
+                "fire_sprite": "p250-F.png"
+            },
+            "type": "pistol",
+            "firerate": 600,
+            "fire_animation_length": 0.001,
+            "burst": 1,
+            "shiftX": 62,
+            "shiftY": 10,
+            "recoil_per_shot": 0.0075,
+            "recoil_control": 0.0075,
+            "max_recoil": 0.025
+        },
+        "ammo": {
+            "bullets": 17,
+            "mags": 20,
+            "mag_time": 10,
+            "reload_time": 0.75,
+            "reload_on_empty": 0.25
+        },
+        "bullet": {
+            "damage": 12,
+            "head_mult": 1.4,
+            "dropoff": 10,
+            "speed": 2400,
+            "penetration": 0,
+            "shiftX": 80,
+            "shiftY": 76
+        },
+        "store": {
+            "shiftX": 24,
+            "shiftY": -16
+        }
+    }
+}
