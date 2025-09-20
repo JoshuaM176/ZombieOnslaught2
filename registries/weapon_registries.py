@@ -29,6 +29,34 @@ class WeaponRegistry:
             weapon = {name: resources[name]}
             weapon[name].update({"name": name})
             self.weapons[data["weapon"]["type"]].update(weapon)
+        self._calc_total_weapons_cost()
+
+    def _calc_total_weapons_cost(self):
+        for cat, weapons in self.weapons.items():
+            for weapon, data in weapons.items():
+                data["store"]["total_cost"] = self._calc_weapon_cost(cat, weapon, [])
+
+    def _calc_weapon_cost(self, cat, name, visited):
+        if name in visited:
+            raise Exception(f"Circular dependency in requirements, {name} {cat}")
+        visited.append(name)
+        weapon = self.weapons[cat].get(name)
+        if not weapon:
+            print(f"{name} {cat} not found, skipping")
+            return 0
+        total_cost = weapon["store"]["price"]
+        for req in weapon["store"]["requirements"]:
+            if(req["type"]) == "weapon":
+                total_cost += self._calc_weapon_cost(req["cat"],req["name"], visited)
+        return total_cost
+    
+    def check_requirements(self, cat, name):
+        weapon = self.weapons[cat][name]
+        for req in weapon["store"]["requirements"]:
+            if(req["type"]) == "weapon":
+                if not self.weapons[req["cat"]][req["name"]]["player"]["owned"]:
+                    return False
+        return True
 
     def get_weapon(self, cat: str, name: str) -> dict:
         return self.weapons.get(cat).get(name)

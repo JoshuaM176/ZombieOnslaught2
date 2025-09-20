@@ -10,3 +10,6 @@ class ScreenPage():
 
     def update(self):
         return self.go2
+    
+    def set_screen(self, go2: str):
+        self.go2 = go2

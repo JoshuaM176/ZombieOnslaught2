@@ -45,7 +45,9 @@
         "store": {
             "price": 1000,
             "shiftX": 0,
-            "shiftY": 0
+            "shiftY": 0,
+            "requirements": [
+            ]
         }
     }
 }

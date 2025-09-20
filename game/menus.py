@@ -26,12 +26,11 @@ class Store(ScreenPage):
         self.ui_buttons = []
         self.weapon_buttons = []
         self.buttons = [self.ui_buttons, self.weapon_buttons]
-        self.set_weapon_buttons()
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
+        self.set_weapon_buttons()
         self.ui_buttons.append(self.BuyOrEquip(self.screen.get_width()/2-100, 150, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected))
+        self.ui_buttons.append(FuncButton(self.screen.get_width() - 100, self.screen.get_height()-100, 50, 50, self.screen, self.set_screen, ["game"], "X"))  
         
-        
-
     def get_input(self):
         mouse_x, mouse_y = pg.mouse.get_pos()
         input_bus = event_bus.get_events("input_bus")
@@ -45,6 +44,7 @@ class Store(ScreenPage):
                     check_buttons(mouse_x, mouse_y, temp)
 
     def update(self):
+        self.go2 = self.page_name
         self.get_input()
         self.screen.fill(color=(100, 200, 100))
         text(self.screen, self.category.upper(), 50, self.screen.get_width()/2, 50, align="CENTER")
@@ -53,16 +53,17 @@ class Store(ScreenPage):
         for button in self.weapon_buttons:
             button.update()
         self.ui_buttons[0].update(self.weapon)
+        self.ui_buttons[1].update()
         return self.go2
 
     def set_weapon_buttons(self):
         self.weapon_buttons.clear()
         available_weapons = self.weapon_registry.get_available_weapons(self.category)
-        available_weapons.sort(key=lambda weapon: weapon["store"]["price"])
+        available_weapons.sort(key=lambda weapon: weapon["store"]["total_cost"])
         x = 50
         y = 450
         for weapon in available_weapons:
-            self.weapon_buttons.append(self.WeaponButton(x, y, 100, 100, self.screen, weapon, self.select_weapon))
+            self.weapon_buttons.append(self.WeaponButton(x, y, 100, 100, self.screen, weapon, self.select_weapon, self.weapon_registry.check_requirements(self.category, weapon["name"])))
             x += 150
             if x > 1000:
                 x = 50
@@ -74,12 +75,13 @@ class Store(ScreenPage):
     def buy_or_equip_selected(self):
         if self.weapon["player"]["owned"]:
             self.equipped_weapons.equip(self.weapon, self.category)
-        elif self.game_info.money >= self.weapon["store"]["price"]:
+        elif self.game_info.money >= self.weapon["store"]["price"] and self.weapon_registry.check_requirements(self.category, self.weapon["name"]):
             self.game_info.money -= self.weapon["store"]["price"]
             self.weapon["player"]["owned"] = True
+            self.set_weapon_buttons()
 
     class WeaponButton(Button):
-        def __init__(self, x, y, width, height, screen, weapon, func):
+        def __init__(self, x, y, width, height, screen, weapon, func, reqs_met):
             self.func = func
             self.weapon_dict = weapon
             self.weapon = pg.sprite.Sprite()
@@ -87,6 +89,7 @@ class Store(ScreenPage):
             self.weapon.rect = weapon["weapon"]["sprites"]["default"].get_rect()
             self.weapon.rect.topleft = (x + weapon["store"]["shiftX"], y + weapon["store"]["shiftY"])
             self.price = weapon["store"]["price"]
+            self.reqs_met = reqs_met
             super().__init__(x, y, width, height, screen)
 
         def click(self):
@@ -94,7 +97,10 @@ class Store(ScreenPage):
 
         def update(self):
             if not self.weapon_dict["player"]["owned"]:
-                pg.draw.rect(self.screen, (100, 50, 50), (self.x, self.y, self.width, self.height), 0)
+                if self.reqs_met:
+                    pg.draw.rect(self.screen, (100, 100, 100), (self.x, self.y, self.width, self.height), 0)
+                else:
+                    pg.draw.rect(self.screen, (20, 20, 20), (self.x, self.y, self.width, self.height), 0)
             pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
             self.screen.blit(self.weapon.sprite, self.weapon.rect)
 
@@ -139,9 +145,6 @@ class GameOver(ScreenPage):
         for button in self.buttons:
             button.update()
         return self.go2
-
-    def set_screen(self, go2: str):
-        self.go2 = go2
 
 class UI:
     def __init__(self, screen: pg.Surface):

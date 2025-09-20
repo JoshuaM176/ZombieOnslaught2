@@ -22,7 +22,7 @@
             "max_recoil": 0.012
         },
         "ammo": {
-            "bullets": 30,
+            "bullets": 50,
             "mags": 8,
             "mag_time": 25,
             "reload_time": 1.3,
@@ -36,6 +36,15 @@
             "penetration": 0.1,
             "shiftX": 88,
             "shiftY": 88
+        },
+        "store": {
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "MP9",
+                    "cat": "smg"
+                }
+            ]
         }
     }
 }
