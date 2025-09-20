@@ -1,8 +1,8 @@
 from util.resource_loading import ResourceLoader, load_sprite
 from objects.weapons import Weapon
 import pygame as pg
-# Fire animation length needs added back to json
 
+weapon_categories = ["melee", "smg", "rifle"]
 
 def convert_files_to_sprites(resource: dict):
     for key, value in resource.items():
@@ -16,7 +16,9 @@ def convert_files_to_sprites(resource: dict):
 
 class WeaponRegistry:
     def __init__(self):
-        self.weapons: dict[str, dict] = {"melee": {}, "smg": {}}
+        self.weapons = {}
+        for cat in weapon_categories:
+            self.weapons.update({cat: {}})
         self.render_plain = pg.sprite.RenderPlain(())
         resource_loader = ResourceLoader("weapons", "attributes")
         resource_loader.load_all()
@@ -92,31 +94,30 @@ class CustomWeaponRegistry:
 class EquippedWeaponRegistry:
     def __init__(self, bullet_registry):
         self.bullet_registry = bullet_registry
-        self.weapons: dict[str, Weapon] = {"melee": None, "smg": None}
-        self.equipped_list: list = ["melee", "smg"]
+        self.weapons = {}
+        for cat in weapon_categories:
+            self.weapons.update({cat: None})
+        self.equipped_list: list = weapon_categories
         self.equipped = "smg"
         self.render_plain = pg.sprite.RenderPlain(())
 
     def equip(self, weapon: dict, cat: str):
-        self.equipped = cat
         self.weapons[cat] = Weapon(**weapon, bullet_registry=self.bullet_registry, bus="ui_bus")
 
     def get(self, cat: str):
         return self.weapons.get(cat)
 
     def set_next(self):
-        if self.equipped_list.index(self.equipped) < len(self.equipped_list) - 1:
-            self.equipped = self.equipped_list[
-                self.equipped_list.index(self.equipped) + 1
-            ]
+        next_cat = self.get_next()
+        if self.weapons.get(next_cat):
+            self.equipped = next_cat
             return self.equipped
         return False
 
     def set_previous(self):
-        if self.equipped_list.index(self.equipped) > 0:
-            self.equipped = self.equipped_list[
-                self.equipped_list.index(self.equipped) - 1
-            ]
+        prev_cat = self.get_prev()
+        if self.weapons.get(prev_cat):
+            self.equipped = prev_cat
             return self.equipped
         return False
 
@@ -125,15 +126,29 @@ class EquippedWeaponRegistry:
             return self.equipped_list[self.equipped_list.index(self.equipped) + 1]
         return False
 
-    def get_previous(self):
+    def get_prev(self):
         if self.equipped_list.index(self.equipped) > 0:
             return self.equipped_list[self.equipped_list.index(self.equipped) - 1]
+        return False
+    
+    def get_next_name(self):
+        cat = self.get_next()
+        if self.get(cat):
+            return self.get(cat).name
+        return False
+
+    def get_prev_name(self):
+        cat = self.get_prev()
+        if self.get(cat):
+            return self.get(cat).name
         return False
 
     def update(self, frame_time):
         for _, weapon in self.weapons.items():
-            weapon.update(frame_time)
+            if weapon:
+                weapon.update(frame_time)
 
     def reset(self):
-        pass
-        ##TODO reset all weapons
+        for _, weapon in self.weapons.items():
+            if weapon:
+                weapon.reset()

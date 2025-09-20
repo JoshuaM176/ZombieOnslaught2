@@ -34,9 +34,13 @@
             "head_mult": 1.4,
             "dropoff": 10,
             "speed": 2700,
-            "penetration": 0.1,
+            "penetration": 0,
             "shiftX": 80,
             "shiftY": 80
+        },
+        "store": {
+            "shiftX": 24,
+            "shiftY": -16
         }
     }
 }

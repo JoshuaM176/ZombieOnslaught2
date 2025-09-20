@@ -2,15 +2,14 @@
     "P90": {
         "player": {
             "movement": 5.7,
-            "owned": false,
             "available": true
         },
         "weapon": {
             "sprites": {
                 "default": "p90.png",
-                "reloading": ["p90.png", "p90.png", "p90.png", "p90.png", "p90.png"],
-                "extra_reload_sprite": "p90.png",
-                "fire_sprite": "p90.png"
+                "reloading": ["p90-R1.png", "p90-R2.png", "p90-R3.png", "p90-R4.png", "p90-R5.png"],
+                "extra_reload_sprite": "p90-F.png",
+                "fire_sprite": "p90-F.png"
             },
             "type": "smg",
             "firerate": 950,
@@ -33,8 +32,8 @@
             "head_mult": 1.5,
             "dropoff": 10,
             "speed": 2700,
-            "penetration": 0.1,
-            "shiftX": 88,
+            "penetration": 0.2,
+            "shiftX": 104,
             "shiftY": 88
         },
         "store": {
@@ -44,7 +43,9 @@
                     "name": "MP9",
                     "cat": "smg"
                 }
-            ]
+            ],
+            "shiftX": 18,
+            "shiftY": -16
         }
     }
 }

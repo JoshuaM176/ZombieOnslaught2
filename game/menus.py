@@ -1,8 +1,11 @@
 import pygame as pg
 from util.event_bus import event_bus
-from util.ui_objects import text, Button, check_buttons
-from registries.weapon_registries import WeaponRegistry, EquippedWeaponRegistry
+from util.ui_objects import text, Button, check_buttons, get_font, progress_bar
+from registries.weapon_registries import WeaponRegistry, EquippedWeaponRegistry, weapon_categories
 from game.screenpage import ScreenPage
+from util.resource_loading import load_sprite
+
+player_sprite = load_sprite("player.png", "player", -1)
 
 class MainMenu():
     def __init__(self, screen: pg.Surface):
@@ -23,14 +26,30 @@ class Store(ScreenPage):
         self.equipped_weapons = equipped_weapons
         self.category = "smg"
         self.weapon = None
+        self.weapon_sprite = None
         self.ui_buttons = []
         self.weapon_buttons = []
         self.buttons = [self.ui_buttons, self.weapon_buttons]
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
         self.set_weapon_buttons()
-        self.ui_buttons.append(self.BuyOrEquip(self.screen.get_width()/2-100, 150, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected))
-        self.ui_buttons.append(FuncButton(self.screen.get_width() - 100, self.screen.get_height()-100, 50, 50, self.screen, self.set_screen, ["game"], "X"))  
+        self.ui_buttons.append(self.BuyOrEquip(self.screen.get_width()/2-100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected))
+        self.ui_buttons.append(FuncButton(self.screen.get_width() - 100, self.screen.get_height()-100, 50, 50, self.screen, self.set_screen, ["game"], "X"))
+        self.ui_buttons.append(FuncButton(self.screen.get_width()/2 + 100, 50, 50, 50, self.screen, self.next_page, [], ">"))
+        self.ui_buttons.append(FuncButton(self.screen.get_width()/2 - 150, 50, 50, 50, self.screen, self.prev_page, [], "<"))
+        self.reload_type = {0: "Full", 1: "Single"}
         
+    def next_page(self):
+        if weapon_categories.index(self.category) < len(weapon_categories)-1:
+            self.category = weapon_categories[weapon_categories.index(self.category) + 1]
+        self.set_weapon_buttons()
+        self.select_weapon(self.weapon_registry.get_weapon(self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]))
+
+    def prev_page(self):
+        if weapon_categories.index(self.category) > 0:
+            self.category = weapon_categories[weapon_categories.index(self.category) - 1]
+        self.set_weapon_buttons()
+        self.select_weapon(self.weapon_registry.get_weapon(self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]))
+
     def get_input(self):
         mouse_x, mouse_y = pg.mouse.get_pos()
         input_bus = event_bus.get_events("input_bus")
@@ -52,9 +71,57 @@ class Store(ScreenPage):
         text(self.screen, f"${round(self.game_info.money)}", 30, 25, 25)
         for button in self.weapon_buttons:
             button.update()
-        self.ui_buttons[0].update(self.weapon)
+        if self.weapon["player"]["owned"]:
+            self.ui_buttons[0].update(self.weapon)
+        elif self.weapon_registry.check_requirements(self.category, self.weapon["name"]):
+            self.ui_buttons[0].update(self.weapon)
+            text(self.screen, f"${self.weapon["store"]["price"]}", 25, self.screen.get_width()/2+100, 160)
+        else:
+            y = 0
+            text(self.screen, "Requirements", 25, self.screen.get_width()/2, 130, align="CENTER")
+            for req in self.weapon["store"]["requirements"]:
+                text(self.screen, req["name"], 25, self.screen.get_width()/2, y + 155, align="CENTER")
+                y+=25
         self.ui_buttons[1].update()
+        self.ui_buttons[2].update()
+        self.ui_buttons[3].update()
+        text(self.screen, "Stats", 30, self.screen.get_width()/2, 240, align="CENTER")
+        self.stats(
+            [
+                f"Damage: {self.weapon["bullet"]["damage"]}",
+                f"Dropoff: {self.weapon["bullet"]["dropoff"]}",
+                f"Firerate: {self.weapon["weapon"]["firerate"]}",
+                f"Headshot Damage: {self.weapon["bullet"]["head_mult"]}",
+                f"Reload Time: {self.weapon["ammo"]["reload_time"]}(+{self.weapon["ammo"]["reload_on_empty"]})",
+                f"Ammo Capacity: {self.weapon["ammo"]["bullets"]}",
+                f"Bullet in Chamber: {self.weapon["ammo"]["bullet_in_chamber"]}",
+                f"Bullet Speed: {self.weapon["bullet"]["speed"]}",
+                f"Bullet Penetration: {self.weapon["bullet"]["penetration"]*100}%",
+                f"Movement Speed: {self.weapon["player"]["movement"]}",
+                f"Recoil {self.weapon["weapon"]["recoil_per_shot"]*100}",
+                f"Recoil Control {self.weapon["weapon"]["recoil_control"]*100}",
+                f"Max Recoil: {self.weapon["weapon"]["max_recoil"]*100}",
+                f"Magazines: {self.weapon["ammo"]["mags"]}",
+                f"Resupply Time: {self.weapon["ammo"]["mag_time"]}",
+                f"Reload Type: {self.reload_type[self.weapon["ammo"]["reload_type"]]}"
+                ]
+        )
+        equipped_weapon = self.equipped_weapons.get(self.category)
+        if equipped_weapon:
+            self.screen.blit(player_sprite, (50, 60, 50, 50))
+            self.screen.blit(equipped_weapon.sprites["default"], (50+equipped_weapon.shiftX, 60+equipped_weapon.shiftY, 50, 50))
         return self.go2
+    
+    def stats(self, stats: list):
+        x = -300
+        y = 255
+        for stat in stats:
+            text(self.screen, stat, 25, self.screen.get_width()/2+x, y)
+            y += 25
+            if y > 450:
+                y  = 255
+                x += 350
+
 
     def set_weapon_buttons(self):
         self.weapon_buttons.clear()
@@ -100,7 +167,7 @@ class Store(ScreenPage):
                 if self.reqs_met:
                     pg.draw.rect(self.screen, (100, 100, 100), (self.x, self.y, self.width, self.height), 0)
                 else:
-                    pg.draw.rect(self.screen, (20, 20, 20), (self.x, self.y, self.width, self.height), 0)
+                    pg.draw.rect(self.screen, (100, 20, 20), (self.x, self.y, self.width, self.height), 0)
             pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
             self.screen.blit(self.weapon.sprite, self.weapon.rect)
 
@@ -156,7 +223,12 @@ class UI:
             "max_bullets": 0,
             "max_mags": 0,
             "money": 0,
+            "round": 0,
+            "next_weapon": False,
+            "prev_weapon": False,
+            "mag_progress": 0
         }
+        self.consolas = get_font("consolas")
 
     def update(self):
         ui_bus = event_bus.get_events("ui_bus")
@@ -175,6 +247,12 @@ class UI:
         text(self.screen, f"{self.data.get('mags')}/{self.data.get('max_mags')}", 25, 50, scr_height-50)
         text(self.screen, self.data.get('weapon'), 25, 50, scr_height-150)
         text(self.screen, f"Money: {self.data.get("money"):.0f}", 30, 25, scr_height-215)
+        text(self.screen, f"Round: {self.data.get("round"):.0f}", 30, 25, 35)
+        next_weapon = self.data.get("next_weapon") or ""
+        prev_weapon =self.data.get("prev_weapon") or ""
+        text(self.screen, f"{prev_weapon:<10} <--> {next_weapon:>10}", 10, 5, scr_height-165, font = self.consolas)
+        if(self.data["mag_progress"]):
+            progress_bar(self.screen, self.data["mag_progress"], 50, scr_height-25, 100, 20)
 
 class FuncButton(Button):
     def __init__(self, x, y, width, height, screen, func, args, text, text_kwargs: dict = {}):

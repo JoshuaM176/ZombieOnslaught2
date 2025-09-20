@@ -6,6 +6,7 @@ from util.event_bus import event_bus
 from util.ui_objects import health_bar
 from registries.weapon_registries import EquippedWeaponRegistry
 from math import sqrt
+from objects.zombie_abilities import ability_map
 
 
 class Entity(pg.sprite.Sprite):
@@ -60,9 +61,23 @@ class Zombie(Entity):
         weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
         self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
         self.weapon.flip_sprites()
+        self.abilities = []
+        for ability in attrs["abilities"]:
+            func = ability_map.get(ability["ability"])
+            values = []
+            for name, value in ability["values"].items():
+                value = eval(value.format(self=self))
+                self.__setattr__(name, value)
+                values.append(name)
+            self.abilities.append((func, values))
+
 
     def update(self, frame_time):
         self.x -= self.speed * frame_time
+        if self.x < -100:
+            self.x = 2000
+        for ability in self.abilities:
+            ability[0](self, frame_time, **{name: self.__getattribute__(name) for name in ability[1]})
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
@@ -118,10 +133,12 @@ class Player(Entity):
             self.ui_bus.send(
                 {
                     "weapon": self.equipped_weapon.name,
-                    "bullets": self.equipped_weapon.ammo.bullets,
+                    "bullets": self.equipped_weapon.ammo.get(),
                     "max_bullets": self.equipped_weapon.ammo.max_bullets,
                     "mags": self.equipped_weapon.ammo.mags,
                     "max_mags": self.equipped_weapon.ammo.max_mags,
+                    "next_weapon": self.weapons.get_next_name(),
+                    "prev_weapon": self.weapons.get_prev_name()
                 }
             )
 
@@ -170,6 +187,18 @@ class Player(Entity):
             "reloading": False,
         })
         self.update_movement()
+        self.weapons.reset()
+        self.ui_bus.send(
+            {
+                "weapon": self.equipped_weapon.name,
+                "bullets": self.equipped_weapon.ammo.get(),
+                "max_bullets": self.equipped_weapon.ammo.max_bullets,
+                "mags": self.equipped_weapon.ammo.mags,
+                "max_mags": self.equipped_weapon.ammo.max_mags,
+                "next_weapon": self.weapons.get_next_name(),
+                "prev_weapon": self.weapons.get_prev_name()
+            }
+        )
 
     def update_movement(self):
         hor = self.input_dict["right"] - self.input_dict["left"]

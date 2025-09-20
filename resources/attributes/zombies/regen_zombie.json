@@ -1,0 +1,13 @@
+{
+    "regen_zombie": {
+        "sprite": "regen_zombie.png",
+        "abilities": [
+            {
+                "ability": "regen",
+                "values": {
+                    "regen": "{self.health} * 0.05"
+                }
+            }
+        ]
+    }
+}

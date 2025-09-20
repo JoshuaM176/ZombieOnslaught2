@@ -1,10 +1,8 @@
 {
-    "MP7": {
+    "MP9": {
         "player": {
             "movement": 6.3,
-            "owned": true,
-            "available": true,
-            "default": true
+            "available": true
         },
         "weapon": {
             "sprites": {
@@ -34,7 +32,7 @@
             "head_mult": 1.4,
             "dropoff": 11,
             "speed": 2650,
-            "penetration": 0.1,
+            "penetration": 0,
             "shiftX": 80,
             "shiftY": 80
         },
@@ -45,7 +43,9 @@
                     "name": "MP7",
                     "cat": "smg"
                 }
-            ]
+            ],
+            "shiftX": 24,
+            "shiftY": -16
         }
     }
 }

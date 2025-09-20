@@ -1,0 +1,15 @@
+{
+    "brute_regen": {
+        "sprite": "regen_brute.png",
+        "health": 100,
+        "speed": 80,
+        "abilities": [
+            {
+                "ability": "regen",
+                "values": {
+                    "regen": "{self.health} * 0.07"
+                }
+            }
+        ]
+    }
+}

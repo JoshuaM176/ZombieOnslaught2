@@ -1,8 +1,8 @@
 {
     "default": {
         "sprite": "zombie.png",
-        "health": 10,
-        "speed": 50,
+        "health": 50,
+        "speed": 100,
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
         "regen": 0,
@@ -10,6 +10,7 @@
         "weapon_stats": {
             "name": "fist",
             "category": "melee"
-        }
+        },
+        "abilities": []
     }
 }

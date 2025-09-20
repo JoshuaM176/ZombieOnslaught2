@@ -1,0 +1,51 @@
+{
+    "AK-47": {
+        "player": {
+            "movement": 5.5,
+            "available": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "ak-47.png",
+                "reloading": ["ak-47-R1.png", "ak-47-R2.png", "ak-47-R3.png", "ak-47-R2.png", "ak-47-R1.png"],
+                "extra_reload_sprite": "ak-47-F.png",
+                "fire_sprite": "ak-47-F.png"
+            },
+            "type": "rifle",
+            "firerate": 650,
+            "fire_animation_length": 0.04,
+            "shiftX": 40,
+            "shiftY": 20,
+            "recoil_per_shot": 0.01,
+            "recoil_control": 0.005,
+            "max_recoil": 0.04
+        },
+        "ammo": {
+            "bullets": 30,
+            "mags": 5,
+            "mag_time": 25,
+            "reload_time": 1.5,
+            "reload_on_empty": 0.35
+        },
+        "bullet": {
+            "damage": 20,
+            "head_mult": 1.6,
+            "dropoff": 5,
+            "speed": 3300,
+            "penetration": 0.5,
+            "shiftX": 80,
+            "shiftY": 80
+        },
+        "store": {
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "MP9",
+                    "cat": "smg"
+                }
+            ],
+            "shiftX": 16,
+            "shiftY": -16
+        }
+    }
+}

@@ -110,7 +110,7 @@ class Weapon(pg.sprite.Sprite):
     def draw(self, x, y, frame_time, shooting, reloading):
         self.get_sprite(frame_time)
         self.shooting = shooting
-        if reloading:
+        if reloading and self.ammo.bullets < self.ammo.max_bullets:
             self.reloading = reloading
         if self.recoil > 0:
             self.recoil -= self.recoil_control * frame_time
@@ -122,11 +122,14 @@ class Weapon(pg.sprite.Sprite):
             self.shoot(x, y)
         if self.reloading:
             self.reload(frame_time)
-        self.ui_bus.send({"mags": self.ammo.mags})
+        self.ui_bus.send({"mags": self.ammo.mags, "mag_progress": self.ammo.mag_progress/self.ammo.mag_time})
         self.rect.topleft = x + self.shiftX, y + self.shiftY
 
     def update(self, frame_time):
         self.ammo.update(frame_time)
+
+    def reset(self):
+        self.ammo.reset()
 
 
 @dataclass
@@ -186,4 +189,10 @@ class Ammo:
                 self.bullets = self.max_bullets
             elif self.reload_type == 1:
                 self.bullets += 1
-        return rtn, False if self.bullets == self.max_bullets else True
+        return rtn, False if self.bullets >= self.max_bullets else True
+    
+    def reset(self):
+        self.bullets = self.max_bullets
+        self.mags = self.max_mags
+        if self.bullet_in_chamber:
+            self.rounds_in_chamber = 1

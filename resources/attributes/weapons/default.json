@@ -36,7 +36,7 @@
             "damage": 10,
             "head_mult": 1.2,
             "dropoff": 10,
-            "speed": -25,
+            "speed": 25,
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,

@@ -18,7 +18,7 @@ event_bus.create_bus("game_event_bus")
 event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
-curr_screen = "game"
+curr_screen = "store"
 
 while running:
     event_bus.clear_events("trash")
@@ -52,8 +52,3 @@ while running:
     clock.tick(180)
 
 pg.quit()
-
-#TODO 
-#Health bars
-#Add functions to zombies in order to allow custom abilities?
-#Need registry for available weapons?

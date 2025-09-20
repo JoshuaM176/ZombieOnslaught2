@@ -52,20 +52,23 @@ class Game(ScreenPage):
         return self.go2
     
     def end_game(self):
-        self.player.reset()
-        self.game_info.round = 1
+        self.game_info.round = 0
         self.zombie_registry.clear()
-        self.go2 = "game_over"
+        self.game_info.reset()
+        self.set_screen("game_over")
 
     def add_money(self, money):
         self.game_info.money += money
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
     def new_round(self, screen):
+        if self.game_info.round == 0:
+            self.player.reset()
         self.game_info.money+=self.game_info.round
         self.game_info.round+=1
         self.game_info.update_spawn_rates()
         self.generate_zombies(self.game_info.round, screen)
+        event_bus.add_event("ui_bus", {"round": self.game_info.round})
 
     def generate_zombies(self, round: int, screen):
         for i in range(0,floor(sqrt(round))):
@@ -92,9 +95,17 @@ class GameInfo():
                             self.update_pool(data["zombie"])
                     case _:
                         pass
+        if False:
+            zombies = set(self.pool)
+            for zombie in zombies:
+                print(f"{zombie}: {self.pool.count(zombie)/len(self.pool)}")
 
     def update_pool(self, zombie: str):
         self.pool[self.pool_index] = zombie
         self.pool_index += 1
         if self.pool_index >= 200:
             self.pool_index = 0
+
+    def reset(self):
+        self.pool_index = 0
+        self.pool = ["zombie"] * 200

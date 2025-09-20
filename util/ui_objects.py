@@ -1,7 +1,10 @@
 import pygame as pg
 
-def text(screen, text, size, x, y, color = (0,0,0), align="LEFT"):
-    font = pg.font.Font(pg.font.get_default_font(), size)
+def text(screen, text, size, x, y, color = (0,0,0), align="LEFT", font = None):
+    if font:
+        font = pg.font.Font(font, size)
+    else:
+        font = pg.font.Font(pg.font.get_default_font(), size)
     text = font.render(text, True, color)
     match align:
         case "LEFT":
@@ -14,11 +17,18 @@ def health_bar(screen, health, max_health, x, y, width, height):
     pg.draw.rect(screen, (0,0,0), (x , y, width, height), 1)
     text(screen, f"{health:.0f}", height, x+width/2, y+height/2, align="CENTER")
 
+def progress_bar(screen, progress, x, y, width, height):
+    pg.draw.rect(screen, (0,255,0), (x, y, progress*width, height))
+    pg.draw.rect(screen, (0,0,0), (x , y, width, height), 1)
+
 def check_buttons(x: int, y: int, buttons: list):
     for button in buttons:
         if(x > button.x and x < button.x + button.width and y > button.y and y < button.y + button.height):
             button.click()
             break
+
+def get_font(name):
+    return pg.font.match_font(name) or pg.font.get_default_font()
 
 class Button():
     def __init__(self, x, y, width, height, screen):
