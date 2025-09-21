@@ -1,0 +1,36 @@
+{
+    "rat": {
+        "sprites": {
+            "default": "rat.png",
+            "animation": ["rat.png"]
+        },
+        "hitbox": [36, 100, 72, 28],
+        "head_hitbox": [40, 14, 72, 0],
+        "health": 10,
+        "speed": 200,
+        "abilities": [
+            {
+                "ability": "initial_velocity",
+                "values": [
+                    {
+                        "type": "default",
+                        "attribute": true,
+                        "name": "x_vel",
+                        "value": 1200
+                    },
+                    {
+                        "type": "eval",
+                        "attribute": true,
+                        "name": "y_vel",
+                        "value": "random.uniform(-1000, 1000)"
+                    },
+                    {
+                        "type": "default",
+                        "name": "decay",
+                        "value": 0.98
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -18,6 +18,8 @@ class Bullet:
     ):
         self.x = x + shiftX
         self.y = y + shiftY
+        self.start_x = self.x
+        self.start_y = self.y
         self.start_damge = damage
         self.damage = damage
         self.dropoff = dropoff

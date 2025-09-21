@@ -1,0 +1,28 @@
+{
+    "infested_zombie": {
+        "sprites": {
+            "default": "infested_zombie.png",
+            "animation": ["infested_zombie.png", "infested_zombie-A1.png", "infested_zombie-A2.png", "infested_zombie-A3.png", "infested_zombie-A4.png", "infested_zombie-A5.png", "infested_zombie-A6.png", "infested_zombie-A7.png"]
+        },
+        "health": 60,
+        "speed": 90,
+        "abilities": [
+            {
+                "ability": "spawn_zombie",
+                "trigger": "death",
+                "values": [
+                    {
+                        "type": "default",
+                        "name": "spawn_zombie",
+                        "value": "rat"
+                    },
+                    {
+                        "type": "default",
+                        "name": "count",
+                        "value": 3
+                    }
+                ]
+            }
+        ]
+    }
+}

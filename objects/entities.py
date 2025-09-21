@@ -53,6 +53,8 @@ class Entity(pg.sprite.Sprite):
 
 class Zombie(Entity):
     def __init__(self, x: int, y: int, weapon_registry, bullet_registry, round_scaling: int = 0, **attrs):
+        if round_scaling:
+            round_scaling = max(round_scaling - attrs["base_round"], 0)
         scale = sqrt(round_scaling)*0.1 + 1
         super().__init__(x, y, **attrs)
         self.reward = attrs["reward"]*scale
@@ -63,30 +65,63 @@ class Zombie(Entity):
         self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
         self.weapon.flip_sprites()
         self.abilities = []
+        self.death_abilities = []
         for ability in attrs["abilities"]:
             func = ability_map.get(ability["ability"])
             values = []
-            for name, value in ability["values"].items():
-                value = eval(value.format(self=self))
-                self.__setattr__(name, value)
-                values.append(name)
-            self.abilities.append((func, values))
+            for value_dict in ability["values"]:
+                match value_dict["type"]:
+                    case "format":
+                        value = format(self=self)
+                    case "eval":
+                        value = eval(value_dict["value"])
+                    case "format_eval":
+                        value = eval(value_dict["value"].format(self=self))
+                    case "default":
+                        value = value_dict["value"]
+                if value_dict.get("attribute"):
+                    self.__setattr__(value_dict["name"], value)
+                    values.append({"attribute": True, "name": value_dict["name"]})
+                else:
+                    values.append({"name": value_dict["name"], "value": value_dict["value"]})
+            match ability.get("trigger"):
+                case "death":
+                    self.death_abilities.append((func, values))
+                case _:
+                    self.abilities.append((func, values))
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
         self.animation_step_length = self.animation_length/len(self.animation_sprites)
-        self.animation_time = random.uniform(0, 2)
+        self.animation_time = random.uniform(0, self.animation_length)
         self.animation_step = 0
+
+    def use_ability(self, frame_time, ability):
+        func = ability[0]
+        kwargs = {}
+        for arg in ability[1]:
+            if arg.get("attribute"):
+                kwargs.update({arg["name"]: self.__getattribute__(arg["name"])})
+            else:
+                kwargs.update({arg["name"]: arg["value"]})
+        func(self, frame_time, **kwargs)
 
     def update(self, frame_time):
         self.x -= self.speed * frame_time
+        if self.y < 0:
+            self.y += self.speed * frame_time
+        if self.y > 700:
+            self.y -= self.speed * frame_time
         self.animation_time += frame_time
         if self.animation_time > self.animation_length:
-            self.animation_time -= self.animation_length
+            self.animation_time = 0
         self.image = self.animation_sprites[int(self.animation_time/self.animation_step_length)]
         if self.x < -100:
             self.x = 2000
         for ability in self.abilities:
-            ability[0](self, frame_time, **{name: self.__getattribute__(name) for name in ability[1]})
+            self.use_ability(frame_time, ability)
+        if self.health < 0:
+            for ability in self.death_abilities:
+                self.use_ability(frame_time, ability)
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)

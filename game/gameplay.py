@@ -13,7 +13,7 @@ from util.resource_loading import ResourceLoader
 class Game(ScreenPage):
     def __init__(self, screen):
         super().__init__(screen, "game")
-        self.event_map = {"add_money": self.add_money}
+        self.event_map = {"add_money": self.add_money, "spawn_zombie": self.create_zombie}
         self.weapon_registry = weapon_registry
         self.zombie_bullet_registry = BulletRegistry(400, screen)
         self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_bullet_registry)
@@ -35,7 +35,7 @@ class Game(ScreenPage):
         game_event_bus = event_bus.get_events("game_event_bus")
         for event in game_event_bus:
             for event_type, value in event.items():
-                self.event_map.get(event_type)(value)
+                self.event_map.get(event_type)(**value)
         if self.zombie_registry.is_empty():
             self.new_round(screen)
         screen.fill(color=(150, 150, 150))
@@ -72,7 +72,10 @@ class Game(ScreenPage):
 
     def generate_zombies(self, round: int, screen):
         for i in range(0,floor(sqrt(round))):
-            self.zombie_registry.create_zombie(screen.get_width()+uniform(0,100), uniform(0,screen.get_height()-375), round, choice(self.game_info.pool))
+            self.create_zombie(screen.get_width()+uniform(0,100), uniform(0,screen.get_height()-375), round+uniform(-5, 5), choice(self.game_info.pool))
+
+    def create_zombie(self, x, y, round, zombie):
+        self.zombie_registry.create_zombie(x, y, round, zombie)
 
 @dataclass
 class GameInfo():
@@ -92,6 +95,14 @@ class GameInfo():
                 match func["name"]:
                     case "flat":
                         for i in range(mult):
+                            self.update_pool(data["zombie"])
+                    case "slope_up":
+                        rounds_passed = self.round - data.get("start_round")
+                        for i in range(round(mult * rounds_passed)):
+                            self.update_pool(data["zombie"])
+                    case "slope_down":
+                        rounds_left = data.get("end_round") - self.round
+                        for i in range(round(mult * rounds_left)):
                             self.update_pool(data["zombie"])
                     case _:
                         pass

@@ -92,7 +92,7 @@ class ZombieRegistry(EntityRegistry):
         self.render_plain.draw(screen)
         for zombie in self.entities:
             if zombie.health <= 0:
-                event_bus.add_event("game_event_bus", {"add_money": zombie.reward})
+                event_bus.add_event("game_event_bus", {"add_money": {"money": zombie.reward}})
                 self.deregister(zombie)
             else:
                 x, y, _, _ = zombie.head_hitbox.get()

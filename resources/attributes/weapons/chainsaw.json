@@ -31,7 +31,7 @@
         },
         "bullet": {
             "damage": 20,
-            "dropoff": 37,
+            "dropoff": 45,
             "speed": 100,
             "penetration": 1,
             "shiftX": 70,

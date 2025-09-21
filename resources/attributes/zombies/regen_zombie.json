@@ -7,9 +7,14 @@
         "abilities": [
             {
                 "ability": "regen",
-                "values": {
-                    "regen": "{self.health} * 0.05"
-                }
+                "values": [
+                    {
+                        "type": "format_eval",
+                        "attribute": true,
+                        "name": "regen",
+                        "value": "{self.health} * 0.05"
+                    }
+                ]
             }
         ]
     }
