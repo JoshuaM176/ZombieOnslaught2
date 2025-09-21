@@ -17,7 +17,7 @@ class Weapon(pg.sprite.Sprite):
         bullet: dict,
         bullet_registry: BulletRegistry,
         bus: str,
-        **_
+        **_,
     ):
         super().__init__()
         self.name = name
@@ -127,7 +127,12 @@ class Weapon(pg.sprite.Sprite):
             self.shoot(x, y)
         if self.reloading:
             self.reload(frame_time)
-        self.ui_bus.send({"mags": self.ammo.mags, "mag_progress": self.ammo.mag_progress/self.ammo.mag_time})
+        self.ui_bus.send(
+            {
+                "mags": self.ammo.mags,
+                "mag_progress": self.ammo.mag_progress / self.ammo.mag_time,
+            }
+        )
         self.rect.topleft = x + self.shiftX, y + self.shiftY
 
     def update(self, frame_time):
@@ -175,7 +180,7 @@ class Ammo:
             self.mag_progress += frame_time
             if self.mag_progress >= self.mag_time:
                 self.mag_progress = 0
-                self.mags +=1
+                self.mags += 1
 
     def reload(self, frame_time):
         if self.reload_type == 0:
@@ -195,7 +200,7 @@ class Ammo:
             elif self.reload_type == 1:
                 self.bullets += 1
         return rtn, False if self.bullets >= self.max_bullets else True
-    
+
     def reset(self):
         self.bullets = self.max_bullets
         self.mags = self.max_mags

@@ -52,16 +52,26 @@ class Entity(pg.sprite.Sprite):
 
 
 class Zombie(Entity):
-    def __init__(self, x: int, y: int, weapon_registry, bullet_registry, round_scaling: int = 0, **attrs):
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        weapon_registry,
+        bullet_registry,
+        round_scaling: int = 0,
+        **attrs,
+    ):
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
-        scale = sqrt(round_scaling)*0.1 + 1
+        scale = sqrt(round_scaling) * 0.1 + 1
         super().__init__(x, y, **attrs)
-        self.reward = attrs["reward"]*scale
+        self.reward = attrs["reward"] * scale
         self.speed *= scale
         self.health *= scale
         self.max_health *= scale
-        weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
+        weapon = weapon_registry.get_weapon(
+            attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
+        )
         self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
         self.weapon.flip_sprites()
         self.abilities = []
@@ -83,7 +93,9 @@ class Zombie(Entity):
                     self.__setattr__(value_dict["name"], value)
                     values.append({"attribute": True, "name": value_dict["name"]})
                 else:
-                    values.append({"name": value_dict["name"], "value": value_dict["value"]})
+                    values.append(
+                        {"name": value_dict["name"], "value": value_dict["value"]}
+                    )
             match ability.get("trigger"):
                 case "death":
                     self.death_abilities.append((func, values))
@@ -91,7 +103,7 @@ class Zombie(Entity):
                     self.abilities.append((func, values))
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
-        self.animation_step_length = self.animation_length/len(self.animation_sprites)
+        self.animation_step_length = self.animation_length / len(self.animation_sprites)
         self.animation_time = random.uniform(0, self.animation_length)
         self.animation_step = 0
 
@@ -114,7 +126,9 @@ class Zombie(Entity):
         self.animation_time += frame_time
         if self.animation_time > self.animation_length:
             self.animation_time = 0
-        self.image = self.animation_sprites[int(self.animation_time/self.animation_step_length)]
+        self.image = self.animation_sprites[
+            int(self.animation_time / self.animation_step_length)
+        ]
         if self.x < -100:
             self.x = 2000
         for ability in self.abilities:
@@ -160,13 +174,14 @@ class Player(Entity):
             "mwup": (self.input_dict, "next", self.switch_weapon),
             "mwdown": (self.input_dict, "previous", self.switch_weapon),
             pg.K_r: (self.input_dict, "reloading", self.update_shooting),
+            pg.K_p: ({}, "", self.go_to_settings),
         }
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
         self.ui_bus = event_bus.put_events("ui_bus")
         self.ui_bus.send(None)
 
-    def set_weapon(self, weapon, cat: str):
+    def set_weapon(self, weapon: dict, cat: str):
         self.weapons.equip(weapon, cat)
 
     def set_equipped_weapon(self, cat: str):
@@ -183,7 +198,7 @@ class Player(Entity):
                     "mags": self.equipped_weapon.ammo.mags,
                     "max_mags": self.equipped_weapon.ammo.max_mags,
                     "next_weapon": self.weapons.get_next_name(),
-                    "prev_weapon": self.weapons.get_prev_name()
+                    "prev_weapon": self.weapons.get_prev_name(),
                 }
             )
 
@@ -193,7 +208,10 @@ class Player(Entity):
         if self.input_dict.pop("previous", None):
             self.set_equipped_weapon(self.weapons.set_previous())
 
-    def get_input(self): #TODO fix this
+    def go_to_settings(self):
+        event_bus.add_event("game_event_bus", {"set_screen": {"go2": "settings"}})
+
+    def get_input(self):  # TODO fix this
         input_bus = event_bus.get_events("input_bus")
 
         def apply_input(key_pressed: bool, input_map, inp, func=None):
@@ -228,15 +246,17 @@ class Player(Entity):
         self.movement.update({"horizontal": 0, "vertical": 0})
         self.shooting = False
         self.reloading = False
-        self.input_dict.update({
-            "up": False,
-            "left": False,
-            "down": False,
-            "right": False,
-            "sprint": False,
-            "shooting": False,
-            "reloading": False,
-        })
+        self.input_dict.update(
+            {
+                "up": False,
+                "left": False,
+                "down": False,
+                "right": False,
+                "sprint": False,
+                "shooting": False,
+                "reloading": False,
+            }
+        )
         self.update_movement()
         self.weapons.reset()
         self.ui_bus.send(
@@ -247,7 +267,7 @@ class Player(Entity):
                 "mags": self.equipped_weapon.ammo.mags,
                 "max_mags": self.equipped_weapon.ammo.max_mags,
                 "next_weapon": self.weapons.get_next_name(),
-                "prev_weapon": self.weapons.get_prev_name()
+                "prev_weapon": self.weapons.get_prev_name(),
             }
         )
 
@@ -279,5 +299,4 @@ class Player(Entity):
         self.weapons.update(frame_time)
         self.render_plain.draw(screen)
         x, y, _, _ = self.head_hitbox.get()
-        health_bar(screen, self.health, self.max_health, x-16, y-24, 80, 20)
-
+        health_bar(screen, self.health, self.max_health, x - 16, y - 24, 80, 20)

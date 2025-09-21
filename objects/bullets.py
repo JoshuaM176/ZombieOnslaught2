@@ -52,13 +52,14 @@ class Bullet:
                 else None
             )
         return None
-    
+
     def hit(self, entity):
         self.recent_hits[entity] = True
         self.damage *= self.penetration
         speed_mult = 0.75 + self.penetration * 0.1
         self.horizontal_movement *= speed_mult
         self.vertical_movement *= speed_mult
+
 
 class Tracer:
     def __init__(

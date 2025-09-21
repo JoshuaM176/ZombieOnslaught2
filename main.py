@@ -1,12 +1,14 @@
 import pygame as pg
 from time import time
 from util.event_bus import event_bus
+from game.settings import Settings
 
 pg.init()
 clock = pg.time.Clock()
 screen = pg.display.set_mode((1920, 1080))
 from game.gameplay import Game  # noqa: E402
-from game.menus import MainMenu # noqa E402
+from game.main_menu import MainMenu  # noqa E402
+
 
 running = True
 
@@ -18,7 +20,8 @@ event_bus.create_bus("game_event_bus")
 event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
-curr_screen = "game"
+settings = Settings(screen)
+curr_screen = "main_menu"
 
 while running:
     event_bus.clear_events("trash")
@@ -33,7 +36,7 @@ while running:
             pg.KEYUP,
             pg.MOUSEBUTTONDOWN,
             pg.MOUSEBUTTONUP,
-            pg.MOUSEWHEEL
+            pg.MOUSEWHEEL,
         ):
             event_bus.add_event("input_bus", event)
     match curr_screen:
@@ -45,9 +48,11 @@ while running:
             curr_screen = game.store.update()
         case "game_over":
             curr_screen = game.game_over.update()
+        case "settings":
+            curr_screen = settings.update()
         case _:
             pass
-    
+
     pg.display.flip()
     clock.tick(180)
 

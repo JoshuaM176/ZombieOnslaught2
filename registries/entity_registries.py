@@ -6,6 +6,7 @@ from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
 from util.ui_objects import health_bar
 
+
 def convert_files_to_sprites(resource: dict):
     for key, value in resource.items():
         if isinstance(value, list):
@@ -14,6 +15,7 @@ def convert_files_to_sprites(resource: dict):
         else:
             resource[key] = load_sprite(resource[key], "zombies", -1)
     return resource
+
 
 class EntityRegistry:
     def __init__(self, entity_type: str):
@@ -30,10 +32,10 @@ class EntityRegistry:
         self.entities: list[Entity] = []
 
     def update(self, screen: pg.Surface, frame_time):
-        #debug
-        #for entity in self.entities:
-            #entity.head_hitbox.display(screen)
-            #entity.hitbox.display(screen)
+        # debug
+        # for entity in self.entities:
+        # entity.head_hitbox.display(screen)
+        # entity.hitbox.display(screen)
         self.render_plain.update(frame_time)
         self.render_plain.draw(screen)
 
@@ -52,7 +54,7 @@ class EntityRegistry:
         if len(self.entities) > 0:
             return False
         return True
-    
+
     def hit_check(self, bullets: BulletRegistry):
         for entity in self.entities:
             for bullet in bullets.bullets:
@@ -60,13 +62,22 @@ class EntityRegistry:
 
 
 class ZombieRegistry(EntityRegistry):
-    def __init__(self, weapon_registry: WeaponRegistry, bullet_registry: BulletRegistry):
+    def __init__(
+        self, weapon_registry: WeaponRegistry, bullet_registry: BulletRegistry
+    ):
         super().__init__("zombies")
         self.bullet_registry = bullet_registry
         self.weapon_registry = weapon_registry
 
     def create_zombie(self, x, y, round: int, zombie_type: str):
-        zombie = Zombie(x, y, self.weapon_registry, self.bullet_registry, round,**self.resources[zombie_type])
+        zombie = Zombie(
+            x,
+            y,
+            self.weapon_registry,
+            self.bullet_registry,
+            round,
+            **self.resources[zombie_type],
+        )
         self.register(zombie)
 
     def register(self, entity: Entity):
@@ -84,17 +95,20 @@ class ZombieRegistry(EntityRegistry):
             self.deregister(entity)
 
     def update(self, screen: pg.Surface, frame_time):
-        #debug
-        #for entity in self.entities:
-            #entity.head_hitbox.display(screen)
-            #entity.hitbox.display(screen)
+        # debug
+        # for entity in self.entities:
+        # entity.head_hitbox.display(screen)
+        # entity.hitbox.display(screen)
         self.render_plain.update(frame_time)
         self.render_plain.draw(screen)
         for zombie in self.entities:
             if zombie.health <= 0:
-                event_bus.add_event("game_event_bus", {"add_money": {"money": zombie.reward}})
+                event_bus.add_event(
+                    "game_event_bus", {"add_money": {"money": zombie.reward}}
+                )
                 self.deregister(zombie)
             else:
                 x, y, _, _ = zombie.head_hitbox.get()
-                health_bar(screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20)
-                
+                health_bar(
+                    screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20
+                )

@@ -27,7 +27,6 @@ class EventBus:
         q: Queue = self.busses[name]
         while not q.empty():
             q.get()
-        
 
 
 event_bus = EventBus()

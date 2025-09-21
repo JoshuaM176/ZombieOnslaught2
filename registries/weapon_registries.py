@@ -48,14 +48,14 @@ class WeaponRegistry:
             return 0
         total_cost = weapon["store"]["price"]
         for req in weapon["store"]["requirements"]:
-            if(req["type"]) == "weapon":
-                total_cost += self._calc_weapon_cost(req["cat"],req["name"], visited)
+            if (req["type"]) == "weapon":
+                total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited)
         return total_cost
-    
+
     def check_requirements(self, cat, name):
         weapon = self.weapons[cat][name]
         for req in weapon["store"]["requirements"]:
-            if(req["type"]) == "weapon":
+            if (req["type"]) == "weapon":
                 if not self.weapons[req["cat"]][req["name"]]["player"]["owned"]:
                     return False
         return True
@@ -70,15 +70,14 @@ class WeaponRegistry:
                 if data["player"].get("default"):
                     defaults[cat] = data
         return defaults
-    
+
     def get_available_weapons(self, cat) -> list[Weapon]:
         available = []
         for weapon, data in self.weapons[cat].items():
             if data["player"].get("available"):
                 available.append(data)
         return available
-    
-weapon_registry = WeaponRegistry()
+
 
 class CustomWeaponRegistry:
     def __init__(self):
@@ -98,11 +97,13 @@ class EquippedWeaponRegistry:
         for cat in weapon_categories:
             self.weapons.update({cat: None})
         self.equipped_list: list = weapon_categories
-        self.equipped = "smg"
+        self.equipped = self.equipped_list[0]
         self.render_plain = pg.sprite.RenderPlain(())
 
     def equip(self, weapon: dict, cat: str):
-        self.weapons[cat] = Weapon(**weapon, bullet_registry=self.bullet_registry, bus="ui_bus")
+        self.weapons[cat] = Weapon(
+            **weapon, bullet_registry=self.bullet_registry, bus="ui_bus"
+        )
 
     def get(self, cat: str):
         return self.weapons.get(cat)
@@ -130,7 +131,7 @@ class EquippedWeaponRegistry:
         if self.equipped_list.index(self.equipped) > 0:
             return self.equipped_list[self.equipped_list.index(self.equipped) - 1]
         return False
-    
+
     def get_next_name(self):
         cat = self.get_next()
         if self.get(cat):

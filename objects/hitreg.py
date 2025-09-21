@@ -16,8 +16,8 @@ class HitBox:
         return (
             self.start_x,
             self.start_y,
-            self.end_x-self.start_x,
-            self.end_y-self.start_y,
+            self.end_x - self.start_x,
+            self.end_y - self.start_y,
         )
 
     def update(self, x, y):
