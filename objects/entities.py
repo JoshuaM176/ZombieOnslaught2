@@ -117,11 +117,11 @@ class Zombie(Entity):
                 kwargs.update({arg["name"]: arg["value"]})
         func(self, frame_time, **kwargs)
 
-    def update(self, frame_time):
+    def update(self, frame_time, screen_width, screen_height):
         self.x -= self.speed * frame_time
         if self.y < 0:
             self.y += self.speed * frame_time
-        if self.y > 700:
+        if self.y > screen_height-300:
             self.y -= self.speed * frame_time
         self.animation_time += frame_time
         if self.animation_time > self.animation_length:
@@ -130,7 +130,7 @@ class Zombie(Entity):
             int(self.animation_time / self.animation_step_length)
         ]
         if self.x < -100:
-            self.x = 2000
+            self.x = screen_width+100
         for ability in self.abilities:
             self.use_ability(frame_time, ability)
         if self.health < 0:
@@ -297,6 +297,14 @@ class Player(Entity):
             self.x, self.y, frame_time, self.shooting, self.reloading
         )
         self.weapons.update(frame_time)
+        if self.x < -50:
+            self.x = -50
+        if self.x > screen.get_width():
+            self.x = screen.get_width()
+        if self.y > screen.get_height()-250:
+            self.y = screen.get_height()-250
+        if self.y < -100:
+            self.y = -100
         self.render_plain.draw(screen)
         x, y, _, _ = self.head_hitbox.get()
         health_bar(screen, self.health, self.max_health, x - 16, y - 24, 80, 20)

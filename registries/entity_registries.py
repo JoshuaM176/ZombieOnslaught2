@@ -99,7 +99,7 @@ class ZombieRegistry(EntityRegistry):
         # for entity in self.entities:
         # entity.head_hitbox.display(screen)
         # entity.hitbox.display(screen)
-        self.render_plain.update(frame_time)
+        self.render_plain.update(frame_time, screen.get_width(), screen.get_height())
         self.render_plain.draw(screen)
         for zombie in self.entities:
             if zombie.health <= 0:

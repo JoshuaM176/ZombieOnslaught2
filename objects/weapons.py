@@ -135,7 +135,7 @@ class Weapon(pg.sprite.Sprite):
         )
         self.rect.topleft = x + self.shiftX, y + self.shiftY
 
-    def update(self, frame_time):
+    def update(self, frame_time, *_):
         self.ammo.update(frame_time)
 
     def reset(self):

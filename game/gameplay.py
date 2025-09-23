@@ -78,6 +78,7 @@ class Game(ScreenPage):
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
     def new_round(self, screen):
+        self.save_game()
         if self.game_info.round == 0:
             self.player.reset()
         self.game_info.money += self.game_info.round

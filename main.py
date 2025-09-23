@@ -5,7 +5,7 @@ from game.settings import Settings
 
 pg.init()
 clock = pg.time.Clock()
-screen = pg.display.set_mode((1920, 1080))
+screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h-100), pg.RESIZABLE)
 from game.gameplay import Game  # noqa: E402
 from game.main_menu import MainMenu  # noqa E402
 
