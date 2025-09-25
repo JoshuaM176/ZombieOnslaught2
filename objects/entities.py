@@ -6,7 +6,7 @@ from util.event_bus import event_bus
 from util.ui_objects import health_bar
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
-from objects.zombie_abilities import ability_map
+from objects.zombie_effects import effect_map
 import random
 
 
@@ -75,9 +75,8 @@ class Zombie(Entity):
         self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
         self.weapon.flip_sprites()
         self.abilities = []
-        self.death_abilities = []
         for ability in attrs["abilities"]:
-            func = ability_map.get(ability["ability"])
+            func = effect_map.get(ability["ability"])
             values = []
             for value_dict in ability["values"]:
                 match value_dict["type"]:
@@ -96,11 +95,10 @@ class Zombie(Entity):
                     values.append(
                         {"name": value_dict["name"], "value": value_dict["value"]}
                     )
-            match ability.get("trigger"):
-                case "death":
-                    self.death_abilities.append((func, values))
-                case _:
-                    self.abilities.append((func, values))
+            trigger = ability["trigger"]
+            self.abilities.append({"func": func, "values": values, "trigger": trigger, "id": len(self.abilities)})
+            if trigger == "init":
+                self.use_ability(self, None, self.abilities[-1])
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
         self.animation_step_length = self.animation_length / len(self.animation_sprites)
@@ -108,9 +106,9 @@ class Zombie(Entity):
         self.animation_step = 0
 
     def use_ability(self, frame_time, ability):
-        func = ability[0]
-        kwargs = {}
-        for arg in ability[1]:
+        func = ability["func"]
+        kwargs = {"id": ability["id"]}
+        for arg in ability["values"]:
             if arg.get("attribute"):
                 kwargs.update({arg["name"]: self.__getattribute__(arg["name"])})
             else:
@@ -132,10 +130,12 @@ class Zombie(Entity):
         if self.x < -100:
             self.x = screen_width+100
         for ability in self.abilities:
-            self.use_ability(frame_time, ability)
-        if self.health < 0:
-            for ability in self.death_abilities:
-                self.use_ability(frame_time, ability)
+            match ability["trigger"]:
+                case "default":
+                    self.use_ability(frame_time, ability)
+                case "death":
+                    if self.health < 0:
+                        self.use_ability(frame_time, ability)
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
