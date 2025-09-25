@@ -95,7 +95,7 @@ class Zombie(Entity):
                     values.append(
                         {"name": value_dict["name"], "value": value_dict["value"]}
                     )
-            trigger = effect["trigger"]
+            trigger = effect.get("trigger") or "default"
             self.effects.append({"func": func, "values": values, "trigger": trigger, "id": len(self.effects)})
             if trigger == "init":
                 self.use_effect(self, None, self.effects[-1])

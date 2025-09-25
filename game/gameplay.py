@@ -123,7 +123,7 @@ class GameInfo:
     spawn_data: dict = field(default_factory=dict)
 
     def __post_init__(self):
-        self.pool = ["zombie"] * 200
+        self.pool = ["infested_zombie"] * 200
 
     def update_spawn_rates(self):
         for data in self.spawn_data:
