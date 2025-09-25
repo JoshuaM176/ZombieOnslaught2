@@ -6,9 +6,9 @@
         },
         "health": 100,
         "speed": 80,
-        "abilities": [
+        "effects": [
             {
-                "ability": "regen",
+                "effect": "regen",
                 "values": [
                     {
                         "type": "format_eval",

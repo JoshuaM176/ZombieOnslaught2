@@ -8,9 +8,9 @@
         "head_hitbox": [40, 14, 72, 0],
         "health": 10,
         "speed": 200,
-        "abilities": [
+        "effects": [
             {
-                "ability": "initial_velocity",
+                "effect": "initial_velocity",
                 "values": [
                     {
                         "type": "default",

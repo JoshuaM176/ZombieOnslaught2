@@ -6,9 +6,9 @@
         },
         "health": 60,
         "speed": 90,
-        "abilities": [
+        "effects": [
             {
-                "ability": "spawn_zombie",
+                "effect": "spawn_zombie",
                 "trigger": "death",
                 "values": [
                     {
