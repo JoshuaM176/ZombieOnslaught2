@@ -1,6 +1,30 @@
 import pygame as pg
 
 
+class ButtonContainer():
+    def __init__(self):
+        self.buttons = []
+
+    def check_buttons(self, event, x: int, y: int):
+        for button in self.buttons:
+            if (
+                x > button.x
+                and x < button.x + button.width
+                and y > button.y
+                and y < button.y + button.height
+            ):
+                match event.type:
+                    case pg.MOUSEBUTTONUP:
+                        if event.button == 1:
+                            button.click(x, y)
+                    case pg.MOUSEWHEEL:
+                        match event.y:
+                            case 1:
+                                button.scroll(True)
+                            case -1:
+                                button.scroll(False)
+                break
+
 def text(screen, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
     if font:
         font = pg.font.Font(font, size)
@@ -24,19 +48,6 @@ def progress_bar(screen, progress, x, y, width, height):
     pg.draw.rect(screen, (0, 255, 0), (x, y, progress * width, height))
     pg.draw.rect(screen, (0, 0, 0), (x, y, width, height), 1)
 
-
-def check_buttons(x: int, y: int, buttons: list):
-    for button in buttons:
-        if (
-            x > button.x
-            and x < button.x + button.width
-            and y > button.y
-            and y < button.y + button.height
-        ):
-            button.click()
-            break
-
-
 def get_font(name):
     return pg.font.match_font(name) or pg.font.get_default_font()
 
@@ -52,8 +63,12 @@ class Button:
     def click():
         pass
 
-    def update():
+    def scroll(scroll: bool):
         pass
+
+    def update(**kwargs):
+        pass
+
 
 
 class FuncButton(Button):
@@ -73,10 +88,10 @@ class FuncButton(Button):
         }
         self.text_kwargs.update(text_kwargs)
 
-    def click(self):
+    def click(self, x, y):
         self.func(*self.args)
 
-    def update(self):
+    def update(self, **kwargs):
         pg.draw.rect(
             self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10
         )

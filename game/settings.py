@@ -1,10 +1,10 @@
 import pygame as pg
 from game.screenpage import ScreenPage
-from util.ui_objects import text, check_buttons, FuncButton
+from util.ui_objects import text, ButtonContainer, FuncButton
 from util.event_bus import event_bus
 
 
-class Settings(ScreenPage):
+class Settings(ScreenPage, ButtonContainer):
     def __init__(self, screen: pg.Surface):
         super().__init__(screen, "settings")
         self.buttons = []
@@ -32,6 +32,18 @@ class Settings(ScreenPage):
                 "Return to Game",
             )
         )
+        self.buttons.append(
+            FuncButton(
+                self.screen.get_width()/2-250,
+                self.screen.get_height() - 150,
+                500,
+                100,
+                self.screen,
+                self.set_screen,
+                ["main_menu"],
+                "Main Menu",
+            )
+        )
 
     def go_to_store(self):
         event_bus.add_event("game_event_bus", {"reset": {}})
@@ -40,11 +52,8 @@ class Settings(ScreenPage):
     def get_input(self):
         mouse_x, mouse_y = pg.mouse.get_pos()
         input_bus = event_bus.get_events("input_bus")
-
         for event in input_bus:
-            match event.type:
-                case pg.MOUSEBUTTONUP:
-                    check_buttons(mouse_x, mouse_y, self.buttons)
+            self.check_buttons(event, mouse_x, mouse_y)
 
     def update(self):
         self.go2 = self.page_name

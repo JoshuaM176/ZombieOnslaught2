@@ -1,6 +1,6 @@
 import pygame as pg
 from util.event_bus import event_bus
-from util.ui_objects import text, Button, FuncButton, check_buttons
+from util.ui_objects import text, Button, FuncButton, ButtonContainer
 from game.screenpage import ScreenPage
 from registries.weapon_registries import (
     WeaponRegistry,
@@ -12,7 +12,7 @@ from util.resource_loading import load_sprite
 player_sprite = load_sprite("player.png", "player", -1)
 
 
-class Store(ScreenPage):
+class Store(ScreenPage, ButtonContainer):
     def __init__(
         self,
         screen: pg.Surface,
@@ -29,7 +29,6 @@ class Store(ScreenPage):
         self.weapon_sprite = None
         self.ui_buttons = []
         self.weapon_buttons = []
-        self.buttons = [self.ui_buttons, self.weapon_buttons]
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
         self.set_weapon_buttons()
         self.ui_buttons.append(
@@ -80,6 +79,7 @@ class Store(ScreenPage):
             )
         )
         self.reload_type = {0: "Full", 1: "Single"}
+        self.buttons = self.ui_buttons + self.weapon_buttons
 
     def next_page(self):
         if weapon_categories.index(self.category) < len(weapon_categories) - 1:
@@ -112,12 +112,7 @@ class Store(ScreenPage):
         input_bus = event_bus.get_events("input_bus")
 
         for event in input_bus:
-            match event.type:
-                case pg.MOUSEBUTTONUP:
-                    temp = []
-                    for button in self.buttons:
-                        temp += button
-                    check_buttons(mouse_x, mouse_y, temp)
+            self.check_buttons(event, mouse_x, mouse_y)
 
     def update(self):
         self.go2 = self.page_name
@@ -243,6 +238,7 @@ class Store(ScreenPage):
             if x > 1000:
                 x = 50
                 y += 150
+        self.buttons = self.ui_buttons + self.weapon_buttons
 
     def select_weapon(self, weapon):
         self.weapon = weapon
@@ -274,7 +270,7 @@ class Store(ScreenPage):
             self.reqs_met = reqs_met
             super().__init__(x, y, width, height, screen)
 
-        def click(self):
+        def click(self, x, y):
             self.func(self.weapon_dict)
 
         def update(self):
@@ -304,7 +300,7 @@ class Store(ScreenPage):
             self.weapon = weapon
             super().__init__(x, y, width, height, screen)
 
-        def click(self):
+        def click(self, *_):
             self.func()
 
         def update(self, weapon):

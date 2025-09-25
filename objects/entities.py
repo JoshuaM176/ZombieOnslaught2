@@ -4,7 +4,7 @@ from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
 from util.ui_objects import health_bar
-from registries.weapon_registries import EquippedWeaponRegistry
+from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_abilities import ability_map
 import random
@@ -143,7 +143,7 @@ class Zombie(Entity):
 
 
 class Player(Entity):
-    def __init__(self, x, y, bullet_registry):
+    def __init__(self, x, y, bullet_registry, weapon_registry: WeaponRegistry):
         self.bullet_registry = bullet_registry
         resource_loader = ResourceLoader("player", "attributes")
         resource_loader.load_all()
@@ -178,6 +178,9 @@ class Player(Entity):
         }
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
+        for weapon in resources["equipped_weapons"]:
+            weapon_dict = weapon_registry.get_weapon(weapon["cat"], weapon["name"])
+            self.set_weapon(weapon_dict, weapon["cat"])
         self.ui_bus = event_bus.put_events("ui_bus")
         self.ui_bus.send(None)
 

@@ -2,10 +2,14 @@ import pygame as pg
 from time import time
 from util.event_bus import event_bus
 from game.settings import Settings
+import sys
 
 pg.init()
 clock = pg.time.Clock()
-screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h-100), pg.RESIZABLE)
+if len(sys.argv) > 2:
+    screen = pg.display.set_mode((int(sys.argv[1]), int(sys.argv[2])), pg.RESIZABLE)
+else:
+    screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h-100), pg.RESIZABLE)
 from game.gameplay import Game  # noqa: E402
 from game.main_menu import MainMenu  # noqa E402
 
@@ -42,6 +46,8 @@ while running:
     match curr_screen:
         case "main_menu":
             curr_screen = main_menu.update()
+            if curr_screen != "main_menu":
+                game = Game(screen)
         case "game":
             curr_screen = game.update(screen, time_since_last_frame)
         case "store":

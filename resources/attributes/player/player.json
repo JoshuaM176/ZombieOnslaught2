@@ -4,6 +4,20 @@
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
         "speed": 300,
-        "health": 10
+        "health": 10,
+        "equipped_weapons": [
+            {
+                "name": "Chainsaw",
+                "cat": "melee"
+            },
+            {
+                "name": "P250",
+                "cat": "pistol"
+            },
+            {
+                "name": "MP7",
+                "cat": "smg"
+            }
+        ]
     }
 }

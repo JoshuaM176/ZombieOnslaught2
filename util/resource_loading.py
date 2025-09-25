@@ -2,6 +2,7 @@ import pygame as pg
 from pathlib import Path
 import json
 import os
+import shutil
 from copy import deepcopy
 
 ROOT = os.path.abspath(os.curdir)
@@ -11,6 +12,11 @@ save_profile = "default"
 def set_save_profile(profile):
     global save_profile
     save_profile = profile
+
+def delete_save_profile(profile):
+    path = Path(ROOT, "saves", profile)
+    if path.exists():
+        shutil.rmtree(Path(ROOT, "saves", profile))
 
 
 def load_sprite(name: str, category: str, colorkey=None, scale=8):

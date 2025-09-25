@@ -28,9 +28,7 @@ class Game(ScreenPage):
             self.weapon_registry, self.zombie_bullet_registry
         )
         self.player_bullet_registry = BulletRegistry(200, screen)
-        self.player = Player(200, 500, self.player_bullet_registry)
-        for cat, weapon in self.weapon_registry.get_default_weapons().items():
-            self.player.set_weapon(weapon, cat)
+        self.player = Player(200, 500, self.player_bullet_registry, self.weapon_registry)
         self.ui = UI(screen)
         self.player.set_equipped_weapon(weapon_categories[0])
         resource_loader = ResourceLoader("game", "attributes")
@@ -107,6 +105,14 @@ class Game(ScreenPage):
             for weapon in self.weapon_registry.get_available_weapons(cat):
                 weapon_info.update({weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}})
         save_data("weapons", "attributes", weapon_info)
+        player_info = {}
+        player_weapons = []
+        for cat in self.player.weapons.equipped_list:
+            if self.player.weapons.get(cat):
+                player_weapons.append({"name": self.player.weapons.get(cat).name, "cat": cat})
+        player_info.update({"player": {"equipped_weapons": player_weapons}})
+        save_data("player", "attributes", player_info)
+        
 
 
 @dataclass
