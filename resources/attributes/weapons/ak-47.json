@@ -33,7 +33,7 @@
             "dropoff": 5,
             "speed": 3300,
             "penetration": 0.5,
-            "shiftX": 80,
+            "shiftX": 96,
             "shiftY": 80
         },
         "store": {

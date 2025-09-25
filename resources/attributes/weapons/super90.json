@@ -6,20 +6,21 @@
         },
         "weapon": {
             "sprites": {
-                "default": "mp7.png",
-                "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
-                "extra_reload_sprite": "mp7-F.png",
-                "fire_sprite": "mp7-F.png"
+                "default": "super90.png",
+                "reloading": ["super90-R1.png", "super90-R1.png", "super90.png"],
+                "extra_reload_sprite": "super90-F.png",
+                "fire_sprite": "super90-F.png"
             },
             "type": "shotgun",
             "firerate": 75,
             "bullets": 8,
-            "fire_animation_length": 0.05,
+            "fire_animation_length": 0.5,
             "shiftX": 40,
             "shiftY": 20,
+            "downwards_recoil": true,
             "recoil_per_shot": 0.05,
             "recoil_control": 0.05,
-            "max_recoil": 0.0125
+            "max_recoil": 0.125
         },
         "ammo": {
             "bullets": 8,
@@ -31,10 +32,10 @@
             "reload_type": 1
         },
         "bullet": {
-            "damage": 34,
+            "damage": 28,
             "head_mult": 1,
-            "dropoff": 17,
-            "speed": 2000,
+            "dropoff": 45,
+            "speed": 2500,
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 80

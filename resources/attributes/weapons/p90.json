@@ -23,15 +23,15 @@
         "ammo": {
             "bullets": 50,
             "mags": 8,
-            "mag_time": 25,
+            "mag_time": 24,
             "reload_time": 1.3,
             "reload_on_empty": 0.65
         },
         "bullet": {
             "damage": 10,
             "head_mult": 1.5,
-            "dropoff": 10,
-            "speed": 2700,
+            "dropoff": 9,
+            "speed": 2800,
             "penetration": 0.2,
             "shiftX": 104,
             "shiftY": 88

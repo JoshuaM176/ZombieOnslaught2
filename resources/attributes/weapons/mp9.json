@@ -30,8 +30,8 @@
         "bullet": {
             "damage": 10.2,
             "head_mult": 1.4,
-            "dropoff": 11,
-            "speed": 2650,
+            "dropoff": 12,
+            "speed": 2600,
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 80

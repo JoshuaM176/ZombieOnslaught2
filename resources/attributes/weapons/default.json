@@ -20,7 +20,7 @@
             "bullets": 1,
             "shiftX": 0,
             "shiftY": 0,
-	    "downwards_recoil": false,
+	        "downwards_recoil": false,
             "recoil_per_shot": 0,
             "recoil_control": 1,
             "max_recoil": 0
