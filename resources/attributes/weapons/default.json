@@ -17,6 +17,7 @@
             "firerate": 60,
             "fire_animation_length": 0.01,
             "burst": 0,
+            "bullets": 1,
             "shiftX": 0,
             "shiftY": 0,
             "recoil_per_shot": 0,

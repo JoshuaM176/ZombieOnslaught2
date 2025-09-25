@@ -71,16 +71,17 @@ class Weapon(pg.sprite.Sprite):
     def fire_bullet(self, x, y):
         self.ammo.shoot()
         self.set_sprite(self.sprites["fire_sprite"], self.fire_animation_length)
-        bullet = Bullet(
-            x,
-            y,
-            **self.bullet,
-            recoil=self.recoil + uniform(0, 0.005),
-        )
-        self.bullet_registry.add(bullet)
-        self.recoil += self.recoil_per_shot
-        if self.recoil > self.max_recoil:
-            self.recoil = self.max_recoil
+        for i in range(self.bullets):
+            bullet = Bullet(
+                x,
+                y,
+                **self.bullet,
+                recoil=self.recoil + uniform(0, 0.005),
+            )
+            self.bullet_registry.add(bullet)
+            self.recoil += self.recoil_per_shot
+            if self.recoil > self.max_recoil:
+                self.recoil = self.max_recoil
         self.time_since_last_bullet -= self.time_per_bullet
         if self.ammo.reload_type == 1:
             self.reloading = False

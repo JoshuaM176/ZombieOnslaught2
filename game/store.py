@@ -176,8 +176,8 @@ class Store(ScreenPage, ButtonContainer):
         text(self.screen, "Stats", 30, self.screen.get_width() / 2, 240, align="CENTER")
         self.stats(
             [
-                f"Damage: {self.weapon['bullet']['damage']}",
-                f"Dropoff: {self.weapon['bullet']['dropoff']}",
+                f"Damage: {self.weapon['bullet']['damage']*self.weapon['weapon']['bullets']}",
+                f"Dropoff: {self.weapon['bullet']['dropoff']*self.weapon['weapon']['bullets']}",
                 f"Firerate: {self.weapon['weapon']['firerate']}",
                 f"Headshot Damage: {self.weapon['bullet']['head_mult']}",
                 f"Reload Time: {self.weapon['ammo']['reload_time']}(+{self.weapon['ammo']['reload_on_empty']})",

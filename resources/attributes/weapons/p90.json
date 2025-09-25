@@ -37,6 +37,7 @@
             "shiftY": 88
         },
         "store": {
+            "price": 5000,
             "requirements": [
                 {
                     "type": "weapon",
