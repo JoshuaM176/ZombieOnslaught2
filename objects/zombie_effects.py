@@ -27,14 +27,14 @@ def spawn_zombie(self, _, id, spawn_zombie, count):
 def initial_velocity(
     self, frame_time, id, x_vel, y_vel, decay
 ):  # velocity formula is velocity*decay^seconds_passed
-    if self.x_vel > 1 or self.y_vel > 1:
+    if x_vel > 1 or y_vel > 1:
         decay = 1 - decay
         log_decay = log(decay)
         decay = pow(decay, frame_time)
-        self.x += self.x_vel * (decay / log_decay - 1 / log_decay)
-        self.y += self.y_vel * (decay / log_decay - 1 / log_decay)
-        self.x_vel *= decay
-        self.y_vel *= decay
+        self.x += x_vel * (decay / log_decay - 1 / log_decay)
+        self.y += y_vel * (decay / log_decay - 1 / log_decay)
+        self.effects[id]['values']['x_vel']['value'] *= decay
+        self.effects[id]['values']['y_vel']['value'] *= decay
 
 
 effect_map = {

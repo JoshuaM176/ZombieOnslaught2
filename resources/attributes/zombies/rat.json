@@ -14,13 +14,11 @@
                 "values": [
                     {
                         "type": "default",
-                        "attribute": true,
                         "name": "x_vel",
                         "value": 1200
                     },
                     {
                         "type": "eval",
-                        "attribute": true,
                         "name": "y_vel",
                         "value": "random.uniform(-1000, 1000)"
                     },

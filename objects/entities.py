@@ -77,7 +77,7 @@ class Zombie(Entity):
         self.effects = []
         for effect in attrs["effects"]:
             func = effect_map.get(effect["effect"])
-            values = []
+            values = {}
             for value_dict in effect["values"]:
                 match value_dict["type"]:
                     case "format":
@@ -86,15 +86,17 @@ class Zombie(Entity):
                         value = eval(value_dict["value"])
                     case "format_eval":
                         value = eval(value_dict["value"].format(self=self))
+                    case "repeat_format_eval":
+                        value = value_dict["value"]
                     case "default":
                         value = value_dict["value"]
                 if value_dict.get("attribute"):
                     self.__setattr__(value_dict["name"], value)
-                    values.append({"attribute": True, "name": value_dict["name"]})
+                    values[value_dict["name"]] = {"attribute": True}
                 else:
-                    values.append(
-                        {"name": value_dict["name"], "value": value_dict["value"]}
-                    )
+                    values[value_dict["name"]] = {"value": value}
+                    if value_dict["type"] == "repeat_format_eval":
+                        values[value_dict["name"]].update({"repeat_format_eval": True})
             trigger = effect.get("trigger") or "default"
             self.effects.append({"func": func, "values": values, "trigger": trigger, "id": len(self.effects)})
             if trigger == "init":
@@ -108,11 +110,13 @@ class Zombie(Entity):
     def use_effect(self, frame_time, effect):
         func = effect["func"]
         kwargs = {"id": effect["id"]}
-        for arg in effect["values"]:
-            if arg.get("attribute"):
-                kwargs.update({arg["name"]: self.__getattribute__(arg["name"])})
+        for arg, value in effect["values"].items():
+            if value.get("attribute"):
+                kwargs.update({arg: self.__getattribute__(arg)})
+            elif value.get("repeat_format_eval"):
+                kwargs.update({arg: eval(value["value"].format(self=self))})
             else:
-                kwargs.update({arg["name"]: arg["value"]})
+                kwargs.update({arg: value["value"]})
         func(self, frame_time, **kwargs)
 
     def update(self, frame_time, screen_width, screen_height):
