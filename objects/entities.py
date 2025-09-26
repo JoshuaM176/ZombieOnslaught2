@@ -98,9 +98,12 @@ class Zombie(Entity):
                     if value_dict["type"] == "repeat_format_eval":
                         values[value_dict["name"]].update({"repeat_format_eval": True})
             trigger = effect.get("trigger") or "default"
+            if trigger == "timer":
+                values["time"] = {"value": 0}
             self.effects.append({"func": func, "values": values, "trigger": trigger, "id": len(self.effects)})
             if trigger == "init":
                 self.use_effect(self, None, self.effects[-1])
+            
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
         self.animation_step_length = self.animation_length / len(self.animation_sprites)
@@ -117,7 +120,7 @@ class Zombie(Entity):
                 kwargs.update({arg: eval(value["value"].format(self=self))})
             else:
                 kwargs.update({arg: value["value"]})
-        func(self, frame_time, **kwargs)
+        func(self=self, frame_time=frame_time, **kwargs)
 
     def update(self, frame_time, screen_width, screen_height):
         self.x -= self.speed * frame_time
@@ -140,6 +143,11 @@ class Zombie(Entity):
                 case "death":
                     if self.health < 0:
                         self.use_effect(frame_time, effect)
+                case "timer":
+                    effect["values"]["time"]["value"] += frame_time
+                    if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"]:
+                        self.use_effect(frame_time, effect)
+                        effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)

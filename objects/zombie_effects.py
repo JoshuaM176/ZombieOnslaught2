@@ -4,12 +4,12 @@ from math import log
 # all abilities should take self representing the zombie calling it, frame_time, id, even if unused, followed by an other arguments
 
 
-def regen(self, frame_time, id, regen):
+def regen(self, frame_time, regen, **_):
     if self.health < self.max_health:
         self.health += regen * frame_time
 
 
-def spawn_zombie(self, _, id, spawn_zombie, count):
+def spawn_zombie(self, spawn_zombie, count, **_):
     for i in range(count):
         event_bus.add_event(
             "game_event_bus",
@@ -25,7 +25,7 @@ def spawn_zombie(self, _, id, spawn_zombie, count):
 
 
 def initial_velocity(
-    self, frame_time, id, x_vel, y_vel, decay
+    self, frame_time, id, x_vel, y_vel, decay, **_
 ):  # velocity formula is velocity*decay^seconds_passed
     if x_vel > 1 or y_vel > 1:
         decay = 1 - decay

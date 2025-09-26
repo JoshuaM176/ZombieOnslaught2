@@ -46,8 +46,8 @@ class ResourceLoader:
         self.save_resources = {}
         path = Path(ROOT, "resources", location, resource)
         save_path = Path(ROOT, "saves", save_profile, location, resource)
-        self.files = path.glob("*")
-        self.save_files = save_path.glob("*")
+        self.files = path.glob("*json")
+        self.save_files = save_path.glob("*json")
 
     def load(self, path: Path):
         with open(path, "r") as f:
