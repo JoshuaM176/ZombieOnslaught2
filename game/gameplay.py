@@ -11,11 +11,13 @@ from random import choice, uniform
 from math import sqrt, floor
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, save_data
+import pygame as pg
 
 
 class Game(ScreenPage):
-    def __init__(self, screen):
+    def __init__(self, screen: pg.Surface):
         super().__init__(screen, "game")
+        self.alpha_screen = pg.Surface(screen.get_size(), pg.SRCALPHA)
         self.event_map = {
             "add_money": self.add_money,
             "spawn_zombie": self.create_zombie,
@@ -23,11 +25,11 @@ class Game(ScreenPage):
             "reset": self.reset,
         }
         self.weapon_registry = WeaponRegistry()
-        self.zombie_bullet_registry = BulletRegistry(400, screen)
+        self.zombie_bullet_registry = BulletRegistry(400, self.alpha_screen)
         self.zombie_registry = ZombieRegistry(
-            self.weapon_registry, self.zombie_bullet_registry
+            self.weapon_registry, self.zombie_bullet_registry, self.screen, self.alpha_screen
         )
-        self.player_bullet_registry = BulletRegistry(200, screen)
+        self.player_bullet_registry = BulletRegistry(200, self.alpha_screen)
         self.player = Player(200, 500, self.player_bullet_registry, self.weapon_registry)
         self.ui = UI(screen)
         self.player.set_equipped_weapon(weapon_categories[0])
@@ -48,14 +50,16 @@ class Game(ScreenPage):
             for event_type, value in event.items():
                 self.event_map.get(event_type)(**value)
         if self.zombie_registry.is_empty():
-            self.new_round(screen)
+            self.new_round(self.screen)
         screen.fill(color=(150, 150, 150))
+        self.alpha_screen.fill((0,0,0,0))
         self.zombie_registry.hit_check(self.player_bullet_registry)
         for bullet in self.zombie_bullet_registry.bullets:
             self.player.hit_check(bullet)
         self.player_bullet_registry.update(frame_time)
         self.zombie_registry.update(screen, frame_time)
         self.zombie_bullet_registry.update(frame_time)
+        screen.blit(self.alpha_screen, (0,0))
         self.player.update(screen, frame_time)
         self.ui.update()
         if self.player.health < 0:

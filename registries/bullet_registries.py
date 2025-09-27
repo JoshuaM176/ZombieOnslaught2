@@ -23,8 +23,8 @@ class BulletRegistry:
 
 
 class TracerRegistry:
-    def __init__(self, size: int, screen: pg.surface):
-        self.screen = screen
+    def __init__(self, size: int, alpha_screen: pg.Surface):
+        self.screen = alpha_screen
         self.index = 0
         self.size = size
         self.tracers: list[Tracer] = [None] * size
@@ -37,8 +37,6 @@ class TracerRegistry:
                 self.index = 0
 
     def update(self, frame_time):
-        surface = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
         for tracer in self.tracers:
             if tracer:
-                tracer.update(frame_time, surface)
-        self.screen.blit(surface, (0, 0))
+                tracer.update(frame_time, self.screen)

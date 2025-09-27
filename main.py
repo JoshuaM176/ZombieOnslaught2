@@ -58,7 +58,7 @@ while running:
             curr_screen = settings.update()
         case _:
             pass
-
+    print(1/time_since_last_frame)
     pg.display.flip()
     clock.tick(180)
 

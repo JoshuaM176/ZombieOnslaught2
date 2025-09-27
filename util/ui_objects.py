@@ -119,7 +119,7 @@ class DamageNumber():
         self.time -= frame_time
         percent_time_left = self.time/self.start_time
         if self.damage > 0 and self.time > 0:
-            temp_surface = pg.Surface(surface.get_size(), pg.SRCALPHA)
-            text(temp_surface, str(round(self.damage)), 15, self.x, self.y, color=(255,0,0))
+            temp_surface = pg.Surface((25, 15), pg.SRCALPHA)
+            text(temp_surface, str(round(self.damage)), 15, 0, 0, color=(255,0,0))
             temp_surface.set_alpha(255*percent_time_left)
-            surface.blit(temp_surface, (0,0))
+            surface.blit(temp_surface, (self.x,self.y))
