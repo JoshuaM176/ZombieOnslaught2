@@ -10,6 +10,7 @@ class Bullet:
         shiftX,
         shiftY,
         damage,
+        armour_pierce,
         dropoff,
         speed,
         recoil,
@@ -23,6 +24,7 @@ class Bullet:
         self.start_y = self.y
         self.start_damge = damage
         self.damage = damage
+        self.armour_pierce = armour_pierce
         self.dropoff = dropoff
         self.penetration = penetration
         self.head_mult = head_mult

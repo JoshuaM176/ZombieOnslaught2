@@ -5,6 +5,9 @@
         "head_hitbox": [40, 14, 72, 34],
         "speed": 300,
         "health": 10,
+        "stamina": 10,
+        "stamina_regen": 5,
+        "stamina_regen_delay": 1.5,
         "equipped_weapons": [
             {
                 "name": "Chainsaw",

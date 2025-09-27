@@ -17,12 +17,13 @@ class MainMenu(ScreenPage, ButtonContainer):
         self.typed_input = ""
 
     def __screen_init__(self):
+        self.typed_input_size = round(min(75, self.screen.get_height()/15))
         self.buttons = []
         self.buttons.append(SelectSaveButton(
             self.screen.get_width()/2-300,
             self.screen.get_height() * 0.3,
             600,
-            340,
+            self.screen.get_height() * 0.3,
             self.screen,
             self.set_profile
         ))
@@ -73,7 +74,7 @@ class MainMenu(ScreenPage, ButtonContainer):
             button.update(deleting_profile = self.deleting_profile, selected_profile = self.profile)
         self.get_input()
         if self.creating_profile:
-            text(self.screen, f"|{self.typed_input}", 75, self.screen.get_width()/2, self.screen.get_height()*.65, align="CENTER")
+            text(self.screen, f"|{self.typed_input}", self.typed_input_size, self.screen.get_width()/2, self.screen.get_height()*.65, align="CENTER")
         return self.go2
     
     def get_input(self):
@@ -137,7 +138,7 @@ class SelectSaveButton(Button):
         pg.draw.rect(
             self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10
         )
-        for i in range(self.scroll_index, min(self.scroll_index+5, len(save_names))):
+        for i in range(self.scroll_index, min(self.scroll_index+round((self.height-50)/60), len(save_names))):
             if deleting_profile and i == selected_profile:
                 text(self.screen, save_names[i].upper(), 60, self.screen.get_width()/2, self.y+50+(i-self.scroll_index)*60, color = (100, 0, 0), align="CENTER")
             else:

@@ -44,9 +44,11 @@ def health_bar(screen, health, max_health, x, y, width, height):
     text(screen, f"{health:.0f}", height, x + width / 2, y + height / 2, align="CENTER")
 
 
-def progress_bar(screen, progress, x, y, width, height):
-    pg.draw.rect(screen, (0, 255, 0), (x, y, progress * width, height))
+def progress_bar(screen, progress, x, y, width, height, color=(0, 255, 0), text_display = None):
+    pg.draw.rect(screen, color, (x, y, progress * width, height))
     pg.draw.rect(screen, (0, 0, 0), (x, y, width, height), 1)
+    if text_display:
+        text(screen, text_display, height, x + width / 2, y + height / 2, align="CENTER")
 
 def get_font(name):
     return pg.font.match_font(name) or pg.font.get_default_font()

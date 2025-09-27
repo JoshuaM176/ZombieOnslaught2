@@ -37,6 +37,7 @@
         "bullet": {
             "damage": 10,
             "head_mult": 1.2,
+            "armour_pierce": 0,
             "dropoff": 10,
             "speed": 25,
             "penetration": 0,

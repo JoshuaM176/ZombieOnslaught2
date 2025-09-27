@@ -27,10 +27,10 @@ class Game(ScreenPage):
         self.weapon_registry = WeaponRegistry()
         self.zombie_bullet_registry = BulletRegistry(400, self.alpha_screen)
         self.zombie_registry = ZombieRegistry(
-            self.weapon_registry, self.zombie_bullet_registry, self.screen, self.alpha_screen
+            self.weapon_registry, self.zombie_bullet_registry, self.screen
         )
         self.player_bullet_registry = BulletRegistry(200, self.alpha_screen)
-        self.player = Player(200, 500, self.player_bullet_registry, self.weapon_registry)
+        self.player = Player(200, 500, self.player_bullet_registry, self.weapon_registry, screen)
         self.ui = UI(screen)
         self.player.set_equipped_weapon(weapon_categories[0])
         resource_loader = ResourceLoader("game", "attributes")
@@ -50,17 +50,17 @@ class Game(ScreenPage):
             for event_type, value in event.items():
                 self.event_map.get(event_type)(**value)
         if self.zombie_registry.is_empty():
-            self.new_round(self.screen)
+            self.new_round()
         self.screen.fill(color=(150, 150, 150))
         self.alpha_screen.fill((0,0,0,0))
         self.zombie_registry.hit_check(self.player_bullet_registry)
         for bullet in self.zombie_bullet_registry.bullets:
             self.player.hit_check(bullet)
         self.player_bullet_registry.update(frame_time)
-        self.zombie_registry.update(self.screen, frame_time)
+        self.zombie_registry.update(frame_time)
         self.zombie_bullet_registry.update(frame_time)
         self.screen.blit(self.alpha_screen, (0,0))
-        self.player.update(self.screen, frame_time)
+        self.player.update(frame_time)
         self.ui.update()
         if self.player.health < 0:
             self.end_game()
@@ -79,21 +79,21 @@ class Game(ScreenPage):
         self.game_info.money += money
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
-    def new_round(self, screen):
+    def new_round(self):
         self.save_game()
         if self.game_info.round == 0:
             self.player.reset()
         self.game_info.money += self.game_info.round
         self.game_info.round += 1
         self.game_info.update_spawn_rates()
-        self.generate_zombies(self.game_info.round, screen)
+        self.generate_zombies(self.game_info.round)
         event_bus.add_event("ui_bus", {"round": self.game_info.round})
 
-    def generate_zombies(self, round: int, screen):
+    def generate_zombies(self, round: int):
         for i in range(0, floor(sqrt(round))):
             self.create_zombie(
-                screen.get_width() + uniform(0, 100),
-                uniform(0, screen.get_height() - 375),
+                self.screen.get_width() + uniform(0, 100),
+                uniform(0, self.screen.get_height() - 375),
                 round + uniform(-5, 5),
                 choice(self.game_info.pool),
             )

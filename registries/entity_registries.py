@@ -63,14 +63,13 @@ class EntityRegistry:
 
 class ZombieRegistry(EntityRegistry):
     def __init__(
-        self, weapon_registry: WeaponRegistry, bullet_registry: BulletRegistry, screen: pg.Surface, alpha_screen: pg.Surface
+        self, weapon_registry: WeaponRegistry, bullet_registry: BulletRegistry, screen: pg.Surface
     ):
         super().__init__("zombies")
         self.bullet_registry = bullet_registry
         self.weapon_registry = weapon_registry
         self.orphaned_damage_numbers = []
         self.screen = screen
-        self.alpha_screen = screen
 
     def create_zombie(self, x, y, round: int, zombie_type: str):
         zombie = Zombie(
@@ -99,22 +98,22 @@ class ZombieRegistry(EntityRegistry):
         for entity in self.entities:
             self.deregister(entity)
 
-    def update(self, screen: pg.Surface, frame_time):
+    def update(self, frame_time):
         # debug
         # for entity in self.entities:
         # entity.head_hitbox.display(screen)
         # entity.hitbox.display(screen)
-        self.render_plain.update(frame_time, screen.get_width(), screen.get_height())
-        self.render_plain.draw(screen)
+        self.render_plain.update(frame_time, self.screen.get_width(), self.screen.get_height())
+        self.render_plain.draw(self.screen)
         expired_orphaned_damage_numbers = []
         for damage_number in self.orphaned_damage_numbers:
             if damage_number.time > 0:
-                damage_number.update(frame_time, self.alpha_screen)
+                damage_number.update(frame_time, self.screen)
             else:
                 expired_orphaned_damage_numbers.append(damage_number)
         self.orphaned_damage_numbers = [damage_number for damage_number in self.orphaned_damage_numbers if damage_number not in expired_orphaned_damage_numbers]
         for zombie in self.entities:
-            zombie.damage_number.update(frame_time, self.alpha_screen)
+            zombie.damage_number.update(frame_time, self.screen)
             if zombie.health <= 0:
                 event_bus.add_event(
                     "game_event_bus", {"add_money": {"money": zombie.reward}}
@@ -123,5 +122,5 @@ class ZombieRegistry(EntityRegistry):
             else:
                 x, y, _, _ = zombie.head_hitbox.get()
                 health_bar(
-                    screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20
+                    self.screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20
                 )

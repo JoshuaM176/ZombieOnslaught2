@@ -29,7 +29,6 @@ class Store(ScreenPage, ButtonContainer):
         self.weapon_buttons = []
         super().__init__(screen, "store")
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
-        self.set_weapon_buttons()
         self.reload_type = {0: "Full", 1: "Single"}
 
     def __screen_init__(self):
@@ -47,14 +46,14 @@ class Store(ScreenPage, ButtonContainer):
         )
         self.ui_buttons.append(
             FuncButton(
-                self.screen.get_width() - 100,
-                self.screen.get_height() - 100,
-                50,
-                50,
+                self.screen.get_width() - 550,
+                self.screen.get_height() - 150,
+                500,
+                100,
                 self.screen,
                 self.set_screen,
                 ["game"],
-                "X",
+                "Return to Game",
             )
         )
         self.ui_buttons.append(
@@ -81,7 +80,7 @@ class Store(ScreenPage, ButtonContainer):
                 "<",
             )
         )
-        self.buttons = self.ui_buttons + self.weapon_buttons
+        self.set_weapon_buttons()
 
     def next_page(self):
         if weapon_categories.index(self.category) < len(weapon_categories) - 1:
@@ -237,7 +236,7 @@ class Store(ScreenPage, ButtonContainer):
                 )
             )
             x += 150
-            if x > 1000:
+            if x > self.screen.get_width()-100:
                 x = 50
                 y += 150
         self.buttons = self.ui_buttons + self.weapon_buttons
