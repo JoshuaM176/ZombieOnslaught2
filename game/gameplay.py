@@ -43,7 +43,7 @@ class Game(ScreenPage):
         )
         self.game_over = GameOver(screen)
 
-    def update(self, screen, frame_time: float):
+    def update(self, frame_time: float):
         self.go2 = self.page_name
         game_event_bus = event_bus.get_events("game_event_bus")
         for event in game_event_bus:
@@ -51,16 +51,16 @@ class Game(ScreenPage):
                 self.event_map.get(event_type)(**value)
         if self.zombie_registry.is_empty():
             self.new_round(self.screen)
-        screen.fill(color=(150, 150, 150))
+        self.screen.fill(color=(150, 150, 150))
         self.alpha_screen.fill((0,0,0,0))
         self.zombie_registry.hit_check(self.player_bullet_registry)
         for bullet in self.zombie_bullet_registry.bullets:
             self.player.hit_check(bullet)
         self.player_bullet_registry.update(frame_time)
-        self.zombie_registry.update(screen, frame_time)
+        self.zombie_registry.update(self.screen, frame_time)
         self.zombie_bullet_registry.update(frame_time)
-        screen.blit(self.alpha_screen, (0,0))
-        self.player.update(screen, frame_time)
+        self.screen.blit(self.alpha_screen, (0,0))
+        self.player.update(self.screen, frame_time)
         self.ui.update()
         if self.player.health < 0:
             self.end_game()

@@ -12,7 +12,11 @@ class MainMenu(ScreenPage, ButtonContainer):
     def __init__(self, screen: pg.Surface):
         super().__init__(screen, "main_menu")
         self.profile = save_names.index("default")
-        self.scroll_index = 0
+        self.creating_profile = False
+        self.deleting_profile = False
+        self.typed_input = ""
+
+    def __screen_init__(self):
         self.buttons = []
         self.buttons.append(SelectSaveButton(
             self.screen.get_width()/2-300,
@@ -59,10 +63,6 @@ class MainMenu(ScreenPage, ButtonContainer):
                 {"size": 35}
             )
         )
-        self.creating_profile = False
-        self.deleting_profile = False
-        self.typed_input = ""
-
 
     def update(self):
         self.go2 = self.page_name

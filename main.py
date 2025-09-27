@@ -3,6 +3,7 @@ from time import time
 from util.event_bus import event_bus
 from game.settings import Settings
 import sys
+from game.screenpage import screen_pages
 
 pg.init()
 clock = pg.time.Clock()
@@ -43,13 +44,16 @@ while running:
             pg.MOUSEWHEEL,
         ):
             event_bus.add_event("input_bus", event)
+        if event.type == pg.VIDEORESIZE:
+            for name, screen_obj in screen_pages.items():
+                screen_obj.__screen_init__()
     match curr_screen:
         case "main_menu":
             curr_screen = main_menu.update()
             if curr_screen != "main_menu":
                 game = Game(screen)
         case "game":
-            curr_screen = game.update(screen, time_since_last_frame)
+            curr_screen = game.update(time_since_last_frame)
         case "store":
             curr_screen = game.store.update()
         case "game_over":
@@ -58,7 +62,6 @@ while running:
             curr_screen = settings.update()
         case _:
             pass
-    print(1/time_since_last_frame)
     pg.display.flip()
     clock.tick(180)
 

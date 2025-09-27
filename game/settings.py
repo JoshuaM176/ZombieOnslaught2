@@ -7,6 +7,8 @@ from util.event_bus import event_bus
 class Settings(ScreenPage, ButtonContainer):
     def __init__(self, screen: pg.Surface):
         super().__init__(screen, "settings")
+
+    def __screen_init__(self):
         self.buttons = []
         self.buttons.append(
             FuncButton(

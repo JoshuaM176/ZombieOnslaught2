@@ -20,17 +20,20 @@ class Store(ScreenPage, ButtonContainer):
         equipped_weapons: EquippedWeaponRegistry,
         game_info,
     ):
-        super().__init__(screen, "store")
         self.weapon_registry = weapon_registry
         self.game_info = game_info
         self.equipped_weapons = equipped_weapons
         self.category = "smg"
         self.weapon = None
         self.weapon_sprite = None
-        self.ui_buttons = []
         self.weapon_buttons = []
+        super().__init__(screen, "store")
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
         self.set_weapon_buttons()
+        self.reload_type = {0: "Full", 1: "Single"}
+
+    def __screen_init__(self):
+        self.ui_buttons = []
         self.ui_buttons.append(
             self.BuyOrEquip(
                 self.screen.get_width() / 2 - 100,
@@ -78,7 +81,6 @@ class Store(ScreenPage, ButtonContainer):
                 "<",
             )
         )
-        self.reload_type = {0: "Full", 1: "Single"}
         self.buttons = self.ui_buttons + self.weapon_buttons
 
     def next_page(self):
