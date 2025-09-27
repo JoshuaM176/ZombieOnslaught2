@@ -23,7 +23,6 @@ def spawn_zombie(self, spawn_zombie, count, **_):
             },
         )
 
-
 def initial_velocity(
     self, frame_time, id, x_vel, y_vel, decay, **_
 ):  # velocity formula is velocity*decay^seconds_passed
@@ -36,9 +35,13 @@ def initial_velocity(
         self.effects[id]['values']['x_vel']['value'] *= decay
         self.effects[id]['values']['y_vel']['value'] *= decay
 
+def set_attr(self, name, value, **_):
+    self.__setattr__(name, value) 
+
 
 effect_map = {
     "regen": regen,
     "spawn_zombie": spawn_zombie,
     "initial_velocity": initial_velocity,
+    "set_attr": set_attr
 }
