@@ -3,7 +3,7 @@ from objects.hitreg import HitBox
 from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
-from util.ui_objects import health_bar, DamageNumber
+from util.ui_objects import DamageNumber
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
@@ -208,17 +208,17 @@ class Player(Entity):
             "go2settings": False
         }
         self.key_map = {
-            pg.K_w: (self.input_dict, "up"),
-            pg.K_a: (self.input_dict, "left"),
-            pg.K_s: (self.input_dict, "down"),
-            pg.K_d: (self.input_dict, "right"),
-            pg.K_LSHIFT: (self.input_dict, "sprint"),
-            pg.K_SPACE: (self.input_dict, "shooting"),
-            "lmb": (self.input_dict, "shooting"),
-            "mwup": (self.input_dict, "next"),
-            "mwdown": (self.input_dict, "previous"),
-            pg.K_r: (self.input_dict, "reloading"),
-            pg.K_p: (self.input_dict, "go2settings"),
+            pg.K_w: "up",
+            pg.K_a: "left",
+            pg.K_s: "down",
+            pg.K_d: "right",
+            pg.K_LSHIFT: "sprint",
+            pg.K_SPACE: "shooting",
+            "lmb": "shooting",
+            "mwup": "next",
+            "mwdown": "previous",
+            pg.K_r: "reloading",
+            pg.K_p: "go2settings",
         }
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
@@ -261,17 +261,11 @@ class Player(Entity):
             event_bus.add_event("game_event_bus", {"set_screen": {"go2": "settings"}})
         self.input_dict["go2settings"] = False
 
-    def get_input(self):  # TODO fix this
+    def get_input(self):
         input_bus = event_bus.get_events("input_bus")
 
-        def apply_input(key_pressed: bool, input_map, inp, func=None):
-            return (
-                input_map.update({inp: key_pressed}),
-                func() if func else None,
-            )
-
         def parse_input(key_pressed, key):
-            return apply_input(key_pressed, *self.key_map.get(key, [{}, None]))
+            self.input_dict.update({self.key_map.get(key): key_pressed})
 
         for event in input_bus:
             if event.type == pg.KEYDOWN:
@@ -385,5 +379,3 @@ class Player(Entity):
         )
         self.weapons.update(frame_time)
         self.render_plain.draw(self.screen)
-        x, y, _, _ = self.head_hitbox.get()
-        health_bar(self.screen, self.health, self.max_health, x - 16, y - 24, 80, 20)
