@@ -43,7 +43,14 @@
         "store": {
             "price": 10000,
             "shiftX": 24,
-            "shiftY": -16
+            "shiftY": -16,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "AK-47",
+                    "cat": "rifle"
+                }
+            ]
         }
     }
 }

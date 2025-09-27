@@ -68,6 +68,7 @@ class ZombieRegistry(EntityRegistry):
         super().__init__("zombies")
         self.bullet_registry = bullet_registry
         self.weapon_registry = weapon_registry
+        self.orphaned_damage_numbers = []
 
     def create_zombie(self, x, y, round: int, zombie_type: str):
         zombie = Zombie(
@@ -86,6 +87,8 @@ class ZombieRegistry(EntityRegistry):
         self.render_plain.add(entity.weapon)
 
     def deregister(self, entity: Entity):
+        if entity.damage_number.time > 0:
+            self.orphaned_damage_numbers.append(entity.damage_number)
         self.entities.remove(entity)
         self.render_plain.remove(entity)
         self.render_plain.remove(entity.weapon)
@@ -101,7 +104,16 @@ class ZombieRegistry(EntityRegistry):
         # entity.hitbox.display(screen)
         self.render_plain.update(frame_time, screen.get_width(), screen.get_height())
         self.render_plain.draw(screen)
+        damage_number_surface = pg.Surface(screen.get_size(), pg.SRCALPHA)
+        expired_orphaned_damage_numbers = []
+        for damage_number in self.orphaned_damage_numbers:
+            if damage_number.time > 0:
+                damage_number.update(frame_time, damage_number_surface)
+            else:
+                expired_orphaned_damage_numbers.append(damage_number)
+        self.orphaned_damage_numbers = [damage_number for damage_number in self.orphaned_damage_numbers if damage_number not in expired_orphaned_damage_numbers]
         for zombie in self.entities:
+            zombie.damage_number.update(frame_time, damage_number_surface)
             if zombie.health <= 0:
                 event_bus.add_event(
                     "game_event_bus", {"add_money": {"money": zombie.reward}}
@@ -112,3 +124,4 @@ class ZombieRegistry(EntityRegistry):
                 health_bar(
                     screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20
                 )
+        screen.blit(damage_number_surface, (0,0))

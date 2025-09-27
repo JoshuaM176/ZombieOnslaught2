@@ -42,7 +42,9 @@
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,
-            "tracer": true
+            "tracer": {
+                "color": [200, 200, 0]
+            }
         },
         "store": {
             "price": 1000,

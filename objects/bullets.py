@@ -1,4 +1,5 @@
 from math import sqrt
+import pygame as pg
 
 
 class Bullet:
@@ -47,6 +48,7 @@ class Bullet:
                     self.x,
                     self.y,
                     255 * self.damage / self.start_damge,
+                    **self.tracer
                 )
                 if self.tracer
                 else None
@@ -70,6 +72,7 @@ class Tracer:
         end_y: float,
         alpha,
         color: tuple = (200, 200, 0),
+        size: int = 2
     ):
         self.start_x = start_x
         self.start_y = start_y
@@ -77,14 +80,10 @@ class Tracer:
         self.end_y = end_y
         self.alpha = alpha
         self.color = color
+        self.size = size
 
-    def update(self, frame_time):
+    def update(self, frame_time, screen):
         alpha = self.alpha
         self.alpha -= 9000 * frame_time
         if alpha > 0:
-            return (
-                (200, 200, 0, alpha),
-                (self.start_x, self.start_y),
-                (self.end_x, self.end_y),
-            )
-        return None
+            pg.draw.line(screen, self.color+[alpha], (self.start_x, self.start_y), (self.end_x, self.end_y), self.size)

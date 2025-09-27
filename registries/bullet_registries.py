@@ -40,7 +40,5 @@ class TracerRegistry:
         surface = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
         for tracer in self.tracers:
             if tracer:
-                line = tracer.update(frame_time)
-                if line:
-                    pg.draw.line(surface, *line, 2)
+                tracer.update(frame_time, surface)
         self.screen.blit(surface, (0, 0))

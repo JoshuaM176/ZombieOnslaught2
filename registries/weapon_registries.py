@@ -62,6 +62,7 @@ class WeaponRegistry:
 
     def get_weapon(self, cat: str, name: str) -> dict:
         return self.weapons.get(cat).get(name)
+    
 
     def get_default_weapons(self) -> dict[str, dict]:
         defaults = {}

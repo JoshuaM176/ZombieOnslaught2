@@ -3,7 +3,7 @@ from objects.hitreg import HitBox
 from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
-from util.ui_objects import health_bar
+from util.ui_objects import health_bar, DamageNumber
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
@@ -20,6 +20,9 @@ class Entity(pg.sprite.Sprite):
         sprite: pg.Surface,
         speed: int,
         health: int,
+        body_armour: float = 0,
+        head_armour: float = 0,
+        damage_numbers: bool = False,
         **_,
     ):
         super().__init__()
@@ -33,6 +36,11 @@ class Entity(pg.sprite.Sprite):
         self.max_health = health
         self.horizontal_movement = 0
         self.vertical_movement = 0
+        self.body_armour = body_armour
+        self.head_armour = head_armour
+        self.damage_numbers = damage_numbers
+        if self.damage_numbers:
+            self.damage_number = DamageNumber(2)
 
     def update(self):
         self.rect.topleft = (self.x, self.y)
@@ -41,14 +49,21 @@ class Entity(pg.sprite.Sprite):
         if bullet is not None and bullet.damage > 0:
             if self not in bullet.recent_hits:
                 if self.head_hitbox.check(bullet.x, bullet.y):
-                    self.hit(bullet.damage * bullet.head_mult)
+                    self.head_hit(bullet.damage * bullet.head_mult)
                     bullet.hit(self)
                 elif self.hitbox.check(bullet.x, bullet.y):
                     self.hit(bullet.damage)
                     bullet.hit(self)
 
+    def head_hit(self, damage):
+        if self.damage_numbers:
+            self.damage_number.add_damage(self.x, self.y, damage * (1-self.head_armour))
+        self.health -= damage * (1-self.head_armour)
+
     def hit(self, damage):
-        self.health -= damage
+        if self.damage_numbers:
+            self.damage_number.add_damage(self.x, self.y, damage * (1-self.body_armour))
+        self.health -= damage * (1-self.body_armour)
 
 
 class Zombie(Entity):
@@ -64,7 +79,7 @@ class Zombie(Entity):
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         scale = sqrt(round_scaling) * 0.1 + 1
-        super().__init__(x, y, **attrs)
+        super().__init__(x, y, damage_numbers = True, **attrs)
         self.reward = attrs["reward"] * scale
         self.speed *= scale
         self.health *= scale
@@ -73,7 +88,10 @@ class Zombie(Entity):
             attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
         )
         self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
+        if attrs["weapon_stats"].get("bullet"):
+            self.weapon.bullet.update(attrs["weapon_stats"]["bullet"])
         self.weapon.flip_sprites()
+
         self.effects = []
         for effect in attrs["effects"]:
             func = effect_map.get(effect["effect"])

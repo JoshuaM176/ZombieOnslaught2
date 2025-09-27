@@ -24,8 +24,8 @@
         },
         "bullet": {
             "damage": 10,
-            "dropoff": 10,
-            "speed": 10,
+            "dropoff": 100,
+            "speed": 100,
             "penetration": 0,
             "shiftX": 80,
             "shiftY": 60,

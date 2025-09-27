@@ -9,6 +9,8 @@
         "animation_length": 1,
         "health": 50,
         "speed": 100,
+        "body_armour": 0,
+        "head_armour": 0,
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
         "reward": 10,

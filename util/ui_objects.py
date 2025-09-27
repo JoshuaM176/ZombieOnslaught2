@@ -96,3 +96,30 @@ class FuncButton(Button):
             self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10
         )
         text(self.screen, **self.text_kwargs)
+
+class DamageNumber():
+    def __init__(self, time):
+        self.x = 0
+        self.y = 0
+        self.damage = 0
+        self.time = 0
+        self.start_time = time
+
+    def add_damage(self, x, y, damage):
+        if self.time > 0:
+            self.damage += damage
+        else:
+            self.damage = damage
+        if abs(x-self.x)>150:
+            self.x = x
+            self.y = y
+        self.time = self.start_time
+
+    def update(self, frame_time, surface: pg.Surface):
+        self.time -= frame_time
+        percent_time_left = self.time/self.start_time
+        if self.damage > 0 and self.time > 0:
+            temp_surface = pg.Surface(surface.get_size(), pg.SRCALPHA)
+            text(temp_surface, str(round(self.damage)), 15, self.x, self.y, color=(255,0,0))
+            temp_surface.set_alpha(255*percent_time_left)
+            surface.blit(temp_surface, (0,0))
