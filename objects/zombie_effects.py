@@ -9,16 +9,17 @@ def regen(self, frame_time, regen, **_):
         self.health += regen * frame_time
 
 
-def spawn_zombie(self, spawn_zombie, count, **_):
+def spawn_zombie(self, spawn_zombie, count, x = None, y = None, **_):
     for i in range(count):
         event_bus.add_event(
             "game_event_bus",
             {
                 "spawn_zombie": {
-                    "x": self.x,
-                    "y": self.y,
+                    "x": x or self.x,
+                    "y": y or self.y,
                     "round": 0,
                     "zombie": spawn_zombie,
+                    "parent": self
                 }
             },
         )
@@ -26,7 +27,7 @@ def spawn_zombie(self, spawn_zombie, count, **_):
 def initial_velocity(
     self, frame_time, id, x_vel, y_vel, decay, **_
 ):  # velocity formula is velocity*decay^seconds_passed
-    if x_vel > 1 or y_vel > 1:
+    if abs(x_vel) > 1 or abs(y_vel) > 1:
         decay = 1 - decay
         log_decay = log(decay)
         decay = pow(decay, frame_time)
@@ -34,14 +35,38 @@ def initial_velocity(
         self.y += y_vel * (decay / log_decay - 1 / log_decay)
         self.effects[id]['values']['x_vel']['value'] *= decay
         self.effects[id]['values']['y_vel']['value'] *= decay
+    else:
+        self.remove_effects.append(id)
+
+def invincibility_frames(
+        self, frame_time, id, seconds
+):
+    if seconds > 0:
+        self.invincible = True
+        self.effects[id]['values']['seconds']['value'] -= frame_time
+    else:
+        self.invincible = False
+        self.remove_effects.append(id)
+
+def freeze_frames(
+        self, frame_time, id, seconds
+):
+    if seconds > 0:
+        self.frozen = True
+        self.effects[id]['values']['seconds']['value'] -= frame_time
+    else:
+        self.frozen = False
+        self.remove_effects.append(id)
 
 def set_attr(self, name, value, **_):
-    self.__setattr__(name, value) 
+    setattr(self, name, value)
 
 
 effect_map = {
     "regen": regen,
     "spawn_zombie": spawn_zombie,
     "initial_velocity": initial_velocity,
-    "set_attr": set_attr
+    "set_attr": set_attr,
+    "invincibility_frames": invincibility_frames,
+    "freeze_frames": freeze_frames
 }

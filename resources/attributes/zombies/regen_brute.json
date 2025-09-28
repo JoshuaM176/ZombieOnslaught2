@@ -12,6 +12,7 @@
         "health": 100,
         "speed": 80,
         "body_armour": 0.1,
+        "reward": 13,
         "effects": [
             {
                 "effect": "regen",
@@ -20,7 +21,7 @@
                         "type": "format_eval",
                         "attribute": true,
                         "name": "regen",
-                        "value": "{self.health} * 0.07"
+                        "value": "{self.health} * 0.09"
                     }
                 ]
             }

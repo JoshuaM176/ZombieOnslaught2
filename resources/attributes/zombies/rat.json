@@ -13,6 +13,7 @@
         "head_hitbox": [40, 14, 72, 0],
         "health": 10,
         "speed": 200,
+        "reward": 2,
         "effects": [
             {
                 "effect": "initial_velocity",

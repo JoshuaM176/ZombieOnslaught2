@@ -47,8 +47,9 @@ class EntityRegistry:
 
     def hit_check(self, bullets: BulletRegistry):
         for entity in self.entities:
-            for bullet in bullets.bullets:
-                entity.hit_check(bullet)
+            if not entity.invincible:
+                for bullet in bullets.bullets:
+                    entity.hit_check(bullet)
 
 
 class ZombieRegistry(EntityRegistry):
@@ -61,7 +62,7 @@ class ZombieRegistry(EntityRegistry):
         self.orphaned_damage_numbers = []
         self.screen = screen
 
-    def create_zombie(self, x, y, round: int, zombie_type: str):
+    def create_zombie(self, x, y, round: int, zombie_type: str, parent):
         zombie = Zombie(
             x,
             y,
@@ -69,9 +70,13 @@ class ZombieRegistry(EntityRegistry):
             self.weapon_registry,
             self.bullet_registry,
             round,
+            parent,
+            self.entities,
             **self.resources[zombie_type],
         )
         self.register(zombie)
+        if parent:
+            parent.summoned_zombies.append(zombie)
 
     def register(self, entity: Entity):
         self.entities.append(entity)
@@ -84,6 +89,8 @@ class ZombieRegistry(EntityRegistry):
         self.entities.remove(entity)
         self.render_plain.remove(entity)
         self.render_plain.remove(entity.weapon)
+        if entity.parent:
+            entity.parent.summoned_zombies.remove(entity)
 
     def clear(self):
         for entity in self.entities:

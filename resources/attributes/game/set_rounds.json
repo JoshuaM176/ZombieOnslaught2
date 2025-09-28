@@ -1,0 +1,12 @@
+{
+    "set_rounds": {
+        "100": {
+            "zombies": [
+                {
+                    "zombie": "zombie_lord"
+                }
+            ]
+        }
+
+    }
+}

@@ -10,6 +10,7 @@
             "animation": ["brute-A1.png", "brute-A2.png", "brute-A1.png", "brute.png", "brute-A3.png", "brute-A4.png", "brute-A3.png", "brute.png"]
         },
         "health": 100,
-        "speed": 80
+        "speed": 80,
+        "reward": 12
     }
 }

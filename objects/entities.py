@@ -40,6 +40,8 @@ class Entity(pg.sprite.Sprite):
         self.body_armour = body_armour
         self.head_armour = head_armour
         self.damage_numbers = damage_numbers
+        self.invincible = False
+        self.frozen = False
         if self.damage_numbers:
             self.damage_number = DamageNumber(2)
 
@@ -82,9 +84,15 @@ class Zombie(Entity):
         weapon_registry,
         bullet_registry,
         round_scaling: int = 0,
+        parent = None,
+        zombies = None,
         **attrs,
     ):
+        self.parent = parent
+        self.zombies = zombies
+        self.summoned_zombies = []
         self.zombie_type = zombie_type
+        self.remove_effects = []
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         scale = sqrt(round_scaling) * 0.1 + 1
@@ -105,8 +113,9 @@ class Zombie(Entity):
         for effect in attrs["effects"]:
             func = effect_map.get(effect["effect"])
             values = {}
+            conditions = []
             for value_dict in effect["values"]:
-                match value_dict["type"]:
+                match value_dict.get("type") or "default":
                     case "format":
                         value = format(self=self)
                     case "eval":
@@ -118,18 +127,21 @@ class Zombie(Entity):
                     case "default":
                         value = value_dict["value"]
                 if value_dict.get("attribute"):
-                    self.__setattr__(value_dict["name"], value)
+                    setattr(self, value_dict["name"], value)
                     values[value_dict["name"]] = {"attribute": True}
                 else:
                     values[value_dict["name"]] = {"value": value}
-                    if value_dict["type"] == "repeat_format_eval":
+                    if value_dict.get("type") == "repeat_format_eval":
                         values[value_dict["name"]].update({"repeat_format_eval": True})
+            if effect.get("conditions"):
+                for condition in effect["conditions"]:
+                    conditions.append(condition)
             trigger = effect.get("trigger") or "default"
             if trigger == "timer":
                 values["time"] = {"value": 0}
-            self.effects.append({"func": func, "values": values, "trigger": trigger, "id": len(self.effects)})
+            self.effects.append({"func": func, "values": values, "conditions": conditions, "trigger": trigger, "id": len(self.effects)})
             if trigger == "init":
-                self.use_effect(self, None, self.effects[-1])
+                self.use_effect(None, self.effects[-1])
             
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
@@ -138,33 +150,46 @@ class Zombie(Entity):
         self.animation_step = 0
 
     def use_effect(self, frame_time, effect):
-        func = effect["func"]
-        kwargs = {"id": effect["id"]}
-        for arg, value in effect["values"].items():
-            if value.get("attribute"):
-                kwargs.update({arg: self.__getattribute__(arg)})
-            elif value.get("repeat_format_eval"):
-                kwargs.update({arg: eval(value["value"].format(self=self))})
-            else:
-                kwargs.update({arg: value["value"]})
-        func(self=self, frame_time=frame_time, **kwargs)
+        if self.check_effect_conditions(effect["conditions"]):
+            func = effect["func"]
+            kwargs = {"id": effect["id"]}
+            for arg, value in effect["values"].items():
+                if value.get("attribute"):
+                    kwargs.update({arg: getattr(self, arg)})
+                elif value.get("repeat_format_eval"):
+                    kwargs.update({arg: eval(value["value"].format(self=self))})
+                else:
+                    kwargs.update({arg: value["value"]})
+            func(self=self, frame_time=frame_time, **kwargs)
+            return True
+        return False
+
+    def check_effect_conditions(self, conditions: list[str]):
+        for condition in conditions:
+            if not eval(condition.format(self=self)):
+                return False
+        return True
 
     def update(self, frame_time, screen_width, screen_height):
-        self.x -= self.speed * frame_time
-        if self.y < 0:
-            self.y += self.speed * frame_time
-        if self.y > screen_height-350:
-            self.y -= self.speed * frame_time
-        self.animation_time += frame_time
-        if self.animation_time > self.animation_length:
-            self.animation_time = 0
+        for effect in self.remove_effects:
+            self.effects[effect] = None
+        self.remove_effects = []
+        if not self.frozen:
+            self.x -= self.speed * frame_time
+            if self.y < 0:
+                self.y += self.speed * frame_time
+            if self.y > screen_height-350:
+                self.y -= self.speed * frame_time
+            self.animation_time += frame_time
+            if self.animation_time > self.animation_length:
+                self.animation_time = 0
         self.image = self.animation_sprites[
             int(self.animation_time / self.animation_step_length)
         ]
         if self.x < -100:
             event_bus.add_event("game_event_bus", {"damage_village": {"damage": 1}})
             self.x = screen_width+100
-        for effect in self.effects:
+        for effect in [effect for effect in self.effects if effect is not None]:
             match effect["trigger"]:
                 case "default":
                     self.use_effect(frame_time, effect)
@@ -174,8 +199,8 @@ class Zombie(Entity):
                 case "timer":
                     effect["values"]["time"]["value"] += frame_time
                     if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"]:
-                        self.use_effect(frame_time, effect)
-                        effect["values"]["time"]["value"] = 0
+                        if self.use_effect(frame_time, effect):
+                            effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)

@@ -45,6 +45,7 @@ class Game(ScreenPage):
         self.player.set_equipped_weapon(weapon_categories[0])
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
         self.game_info.spawn_data = resource_loader.get("spawn_rates")
+        self.game_info.set_rounds = resource_loader.get("set_rounds")
         self.store = Store(
             screen, self.weapon_registry, self.player.weapons, self.game_info
         )
@@ -99,6 +100,7 @@ class Game(ScreenPage):
         if self.stats.zombies_killed[zombie] == 1:
             self.set_screen("zombiepedia")
             self.zombiepedia.set_zombie_buttons()
+            self.zombiepedia.selected_zombie = zombie
             self.player.reset_input()
 
     def add_money(self, money):
@@ -124,20 +126,26 @@ class Game(ScreenPage):
         self.game_info.money += self.game_info.round
         self.game_info.round += 1
         self.game_info.update_spawn_rates()
-        self.generate_zombies(self.game_info.round)
+        self.generate_zombies()
         event_bus.add_event("ui_bus", {"round": self.game_info.round})
 
-    def generate_zombies(self, round: int):
-        for i in range(0, floor(sqrt(round))):
+    def generate_zombies(self):
+        set_round = self.game_info.set_rounds.get(str(self.game_info.round))
+        if set_round:
+            for zombie in set_round["zombies"]:
+                self.create_zombie(**zombie)
+            if set_round.get("replace"):
+                return
+        for i in range(0, floor(sqrt(self.game_info.round))):
             self.create_zombie(
-                self.screen.get_width() + uniform(0, 100),
-                uniform(0, self.screen.get_height() - 375),
-                round + uniform(-5, 5),
-                choice(self.game_info.pool),
+                zombie = choice(self.game_info.pool),
             )
 
-    def create_zombie(self, x, y, round, zombie):
-        self.zombie_registry.create_zombie(x, y, round, zombie)
+    def create_zombie(self, x = None, y = None, round = None, zombie = "zombie", parent = None):
+        x = self.screen.get_width() + uniform(0, 100) if x is None else x
+        y = uniform(0, self.screen.get_height() - 375) if y is None else y
+        round = self.game_info.round + uniform(-5, 5) if round is None else round
+        self.zombie_registry.create_zombie(x, y, round, zombie, parent)
 
     def save_game(self):
         game_info = {"game_info": {"money": self.game_info.money}}
@@ -156,9 +164,6 @@ class Game(ScreenPage):
         player_info.update({"player": {"equipped_weapons": player_weapons}})
         save_data("player", "attributes", player_info)
 
-        
-
-
 @dataclass
 class GameInfo:
     round: int = 0
@@ -166,6 +171,7 @@ class GameInfo:
     pool_index: int = 0
     village_health: int = 10
     spawn_data: dict = field(default_factory=dict)
+    set_rounds: dict = field(default_factory=dict)
 
     def __post_init__(self):
         self.pool = ["zombie"] * 200

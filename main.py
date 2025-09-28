@@ -31,7 +31,7 @@ curr_screen = "main_menu"
 while running:
     event_bus.clear_events("trash")
     current_time = time()
-    time_since_last_frame = current_time - frame_start_time
+    time_since_last_frame = min(current_time - frame_start_time, 1/45)
     frame_start_time = current_time
     for event in pg.event.get():
         if event.type == pg.QUIT:

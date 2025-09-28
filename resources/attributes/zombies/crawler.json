@@ -12,6 +12,7 @@
         "hitbox": [18, 102, 86, 32],
         "head_hitbox": [22, 70, 86, 34],
         "health": 30,
-        "speed": 150
+        "speed": 150,
+        "reward": 12
     }
 }

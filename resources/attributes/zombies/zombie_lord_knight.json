@@ -1,0 +1,83 @@
+{
+    "zombie_lord_knight": {
+        "base_round": 100,
+        "zombiepedia": {
+            "order": 9
+        },
+        "health": 100,
+        "speed": 90,
+        "body_armour": 0.6,
+        "head_armour": 0.5,
+        "reward": 1,
+        "effects": [
+            {
+                "effect": "invincibility_frames",
+                "values": [
+                    {
+                        "name": "seconds",
+                        "value": 3
+                    }
+                ]
+            },
+            {
+                "effect": "freeze_frames",
+                "values": [
+                    {
+                        "name": "seconds",
+                        "value": 3
+                    }
+                ]
+            },
+            {
+                "effect": "initial_velocity",
+                    "values": [
+                        {
+                            "type": "format_eval",
+                            "name": "x_vel",
+                            "value": "-6400"
+                        },
+                        {
+                            "type": "eval",
+                            "name": "y_vel",
+                            "value": "0"
+                        },
+                        {
+                            "type": "default",
+                            "name": "decay",
+                            "value": 0.90
+                        }
+                ]
+            },
+            {
+                "effect": "set_attr",
+                "trigger": "init",
+                "values": [
+                    {
+                        "name": "name",
+                        "value": "x"
+                    },
+                    {
+                        "type": "format_eval",
+                        "name": "value",
+                        "value": "{self.x} + random.uniform(2000, 3000)"
+                    }
+                ]
+            },
+            {
+                "effect": "set_attr",
+                "trigger": "init",
+                "values": [
+                    {
+                        "name": "name",
+                        "value": "y"
+                    },
+                    {
+                        "type": "format_eval",
+                        "name": "value",
+                        "value": "{self.y} + random.uniform(-100, 100)"
+                    }
+                ]
+            }
+        ]
+    }
+}
