@@ -1,8 +1,6 @@
 import pygame as pg
 from game.screenpage import ScreenPage
 from util.ui_objects import text, ButtonContainer, FuncButton
-from util.event_bus import event_bus
-
 
 class GameOver(ScreenPage, ButtonContainer):
     def __init__(self, screen: pg.Surface):
@@ -32,13 +30,6 @@ class GameOver(ScreenPage, ButtonContainer):
                 "Play Again",
             )
         )
-
-    def get_input(self):
-        mouse_x, mouse_y = pg.mouse.get_pos()
-        input_bus = event_bus.get_events("input_bus")
-
-        for event in input_bus:
-            self.check_buttons(event, mouse_x, mouse_y)
 
     def update(self):
         self.go2 = self.page_name

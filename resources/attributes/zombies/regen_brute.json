@@ -1,11 +1,17 @@
 {
     "regen_brute": {
+        "zombiepedia": {
+            "displayName": "Regen Brute Hybrid",
+            "description": "The Regen Brute Hybrid is a more powerful cross-breed of the Regen and Brute zombies. It has learned to use its plant growths as armour.",
+            "order": 4
+        },
         "sprites": {
             "default": "regen_brute.png",
             "animation": ["regen_brute-A1.png", "regen_brute-A2.png", "regen_brute-A1.png", "regen_brute.png", "regen_brute-A3.png", "regen_brute-A4.png", "regen_brute-A3.png", "regen_brute.png"]
         },
         "health": 100,
         "speed": 80,
+        "body_armour": 0.1,
         "effects": [
             {
                 "effect": "regen",

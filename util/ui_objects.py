@@ -1,5 +1,5 @@
 import pygame as pg
-
+from util.event_bus import event_bus
 
 class ButtonContainer():
     def __init__(self):
@@ -24,6 +24,12 @@ class ButtonContainer():
                             case -1:
                                 button.scroll(False)
                 break
+
+    def get_input(self):
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        input_bus = event_bus.get_events("input_bus")
+        for event in input_bus:
+            self.check_buttons(event, mouse_x, mouse_y)
 
 def text(screen, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
     if font:

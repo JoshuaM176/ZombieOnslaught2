@@ -9,10 +9,10 @@ class EventBus:
         q = Queue()
         self.busses[name] = q
 
-    def add_event(self, bus: str, event: str):
+    def add_event(self, bus: str, event):
         self.busses[bus].put(event)
 
-    def put_events(self, name: str):
+    def put_events(self, name):
         q: Queue = self.busses[name]
         while True:
             event = yield

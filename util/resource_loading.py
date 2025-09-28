@@ -32,6 +32,14 @@ def load_sprite(name: str, category: str, colorkey=None, scale=8):
         image.set_colorkey(colorkey, pg.RLEACCEL)
     return image
 
+def convert_files_to_sprites(resource: dict, location: str):
+    for key, value in resource.items():
+        if isinstance(value, list):
+            for item in range(len(value)):
+                value[item] = load_sprite(value[item], location, -1)
+        else:
+            resource[key] = load_sprite(resource[key], location, -1)
+
 
 def save_data(resource, location, data):
     os.makedirs(Path(ROOT, "saves", save_profile, location, resource), exist_ok=True)

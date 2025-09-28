@@ -46,16 +46,37 @@ class Settings(ScreenPage, ButtonContainer):
                 "Main Menu",
             )
         )
+        self.buttons.append(
+            FuncButton(
+                50,
+                50,
+                500,
+                100,
+                self.screen,
+                self.quit,
+                [],
+                "Quit Game",
+            )
+        )
+        self.buttons.append(
+            FuncButton(
+                50,
+                self.screen.get_height() - 300,
+                500,
+                100,
+                self.screen,
+                self.set_screen,
+                ["zombiepedia"],
+                "View Zombiepedia",
+            )
+        )
+
+    def quit(self):
+        pg.event.post(pg.event.Event(pg.QUIT))
 
     def go_to_store(self):
         event_bus.add_event("game_event_bus", {"reset": {}})
         self.set_screen("store")
-
-    def get_input(self):
-        mouse_x, mouse_y = pg.mouse.get_pos()
-        input_bus = event_bus.get_events("input_bus")
-        for event in input_bus:
-            self.check_buttons(event, mouse_x, mouse_y)
 
     def update(self):
         self.go2 = self.page_name

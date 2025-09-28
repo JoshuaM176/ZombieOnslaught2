@@ -1,5 +1,10 @@
 {
     "regen_zombie": {
+        "zombiepedia": {
+            "displayName": "Regen Zombie",
+            "description": "Regen Zombie is a special variant that went after plants instead of humans and learned to use photosynthesis to heal over time.",
+            "order": 2
+        },
         "sprites": {
             "default": "regen_zombie.png",
             "animation": ["regen_zombie.png", "regen_zombie-A1.png", "regen_zombie-A2.png", "regen_zombie-A3.png", "regen_zombie-A4.png", "regen_zombie-A5.png", "regen_zombie-A6.png", "regen_zombie-A7.png"]

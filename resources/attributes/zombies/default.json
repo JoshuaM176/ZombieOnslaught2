@@ -1,6 +1,13 @@
 {
     "default": {
         "base_round": 0,
+        "zombiepedia": {
+            "displayName": "default",
+            "description": "placeholder\ntest",
+            "order": 0,
+            "shiftX": 28,
+            "shiftY": 20
+        },
         "sprite": "zombie.png",
         "sprites": {
             "default": "zombie.png",

@@ -1,5 +1,4 @@
 import pygame as pg
-from util.event_bus import event_bus
 from util.ui_objects import text, Button, FuncButton, ButtonContainer
 from game.screenpage import ScreenPage
 from registries.weapon_registries import (
@@ -8,6 +7,7 @@ from registries.weapon_registries import (
     weapon_categories,
 )
 from util.resource_loading import load_sprite
+from util.event_bus import event_bus
 
 player_sprite = load_sprite("player.png", "player", -1)
 
@@ -51,8 +51,8 @@ class Store(ScreenPage, ButtonContainer):
                 500,
                 100,
                 self.screen,
-                self.set_screen,
-                ["game"],
+                self.return_to_game,
+                [],
                 "Return to Game",
             )
         )
@@ -82,6 +82,10 @@ class Store(ScreenPage, ButtonContainer):
         )
         self.set_weapon_buttons()
 
+    def return_to_game(self):
+        self.set_screen("game")
+        event_bus.add_event("game_event_bus", {"save_game": {}})
+
     def next_page(self):
         if weapon_categories.index(self.category) < len(weapon_categories) - 1:
             self.category = weapon_categories[
@@ -107,13 +111,6 @@ class Store(ScreenPage, ButtonContainer):
                 self.weapon_registry.get_available_weapons(self.category)[0]["name"],
             )
         )
-
-    def get_input(self):
-        mouse_x, mouse_y = pg.mouse.get_pos()
-        input_bus = event_bus.get_events("input_bus")
-
-        for event in input_bus:
-            self.check_buttons(event, mouse_x, mouse_y)
 
     def update(self):
         self.go2 = self.page_name

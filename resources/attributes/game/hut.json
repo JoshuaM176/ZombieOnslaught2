@@ -1,0 +1,5 @@
+{
+    "hut": {
+        "sprites": ["hut.png", "hut-B1.png", "hut-B2.png", "hut-B3.png", "hut-B4.png"]
+    }
+}

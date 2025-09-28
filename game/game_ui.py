@@ -2,7 +2,6 @@ import pygame as pg
 from util.event_bus import event_bus
 from util.ui_objects import text, get_font, progress_bar
 
-
 class UI:
     def __init__(self, screen: pg.Surface):
         self.screen = screen
@@ -20,9 +19,12 @@ class UI:
             "health": 10,
             "max_health": 10,
             "stamina": 100,
-            "max_stamina": 100
+            "max_stamina": 100,
+            "village_health": 10,
+            "max_village_health": 10
         }
         self.consolas = get_font("consolas")
+        self.render_plain = pg.sprite.RenderPlain()
 
     def update(self):
         ui_bus = event_bus.get_events("ui_bus")
@@ -75,8 +77,12 @@ class UI:
                 self.screen, self.data["mag_progress"], 50, scr_height - 25, 100, 20
             )
         progress_bar(
-            self.screen, self.data["stamina"]/self.data["max_stamina"], self.screen.get_width()*0.25, self.screen.get_height()-250, self.screen.get_width()*0.5, 20, color=(0, 100, 255), text_display=str(round(self.data["stamina"]*10))
+            self.screen, self.data["stamina"]/self.data["max_stamina"], self.screen.get_width()*0.25, self.screen.get_height()-250, self.screen.get_width()*0.5, 20, color=(0, 100, 255), text_display=str(max(round(self.data["stamina"]*10), 0))
         )
         progress_bar(
             self.screen, self.data["health"]/self.data["max_health"], self.screen.get_width()*0.25, self.screen.get_height()-230, self.screen.get_width()*0.5, 20, color=(0, 200, 0), text_display=str(round(self.data["health"],1))
         )
+        progress_bar(
+            self.screen, self.data["village_health"]/self.data["max_village_health"], self.screen.get_width()*0.25, self.screen.get_height()-210, self.screen.get_width()*0.5, 20, color=(200, 200, 0), text_display=str(round(self.data["village_health"],1))
+        )
+        

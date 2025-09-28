@@ -1,5 +1,10 @@
 {
     "crawler": {
+        "zombiepedia": {
+            "displayName": "Crawler",
+            "description": "The crawler is weak, but it moves fast.",
+            "order": 5
+        },
         "sprites": {
             "default": "crawler.png",
             "animation": ["crawler.png", "crawler-A1.png", "crawler-A2.png", "crawler-A3.png", "crawler-A4.png", "crawler-A5.png"]

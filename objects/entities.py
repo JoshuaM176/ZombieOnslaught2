@@ -78,11 +78,13 @@ class Zombie(Entity):
         self,
         x: int,
         y: int,
+        zombie_type: str,
         weapon_registry,
         bullet_registry,
         round_scaling: int = 0,
         **attrs,
     ):
+        self.zombie_type = zombie_type
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         scale = sqrt(round_scaling) * 0.1 + 1
@@ -151,7 +153,7 @@ class Zombie(Entity):
         self.x -= self.speed * frame_time
         if self.y < 0:
             self.y += self.speed * frame_time
-        if self.y > screen_height-300:
+        if self.y > screen_height-350:
             self.y -= self.speed * frame_time
         self.animation_time += frame_time
         if self.animation_time > self.animation_length:
@@ -160,6 +162,7 @@ class Zombie(Entity):
             int(self.animation_time / self.animation_step_length)
         ]
         if self.x < -100:
+            event_bus.add_event("game_event_bus", {"damage_village": {"damage": 1}})
             self.x = screen_width+100
         for effect in self.effects:
             match effect["trigger"]:
@@ -287,6 +290,21 @@ class Player(Entity):
     def reset(self):
         self.x = 100
         self.health = self.max_health
+        self.reset_input()
+        self.weapons.reset()
+        self.ui_bus.send(
+            {
+                "weapon": self.equipped_weapon.name,
+                "bullets": self.equipped_weapon.ammo.get(),
+                "max_bullets": self.equipped_weapon.ammo.max_bullets,
+                "mags": self.equipped_weapon.ammo.mags,
+                "max_mags": self.equipped_weapon.ammo.max_mags,
+                "next_weapon": self.weapons.get_next_name(),
+                "prev_weapon": self.weapons.get_prev_name(),
+            }
+        )
+
+    def reset_input(self):
         self.movement.update({"horizontal": 0, "vertical": 0})
         self.shooting = False
         self.reloading = False
@@ -299,18 +317,6 @@ class Player(Entity):
                 "sprint": False,
                 "shooting": False,
                 "reloading": False,
-            }
-        )
-        self.weapons.reset()
-        self.ui_bus.send(
-            {
-                "weapon": self.equipped_weapon.name,
-                "bullets": self.equipped_weapon.ammo.get(),
-                "max_bullets": self.equipped_weapon.ammo.max_bullets,
-                "mags": self.equipped_weapon.ammo.mags,
-                "max_mags": self.equipped_weapon.ammo.max_mags,
-                "next_weapon": self.weapons.get_next_name(),
-                "prev_weapon": self.weapons.get_prev_name(),
             }
         )
 
@@ -330,9 +336,10 @@ class Player(Entity):
                 self.time_resting = min(self.time_resting + frame_time, 1)
         else:
             self.time_resting = -self.stamina_regen_delay
-            self.stamina -= frame_time/2
-            if sprint > 1:
-                self.stamina -= frame_time
+            if self.stamina > 0:
+                self.stamina -= frame_time/2
+                if sprint > 1:
+                    self.stamina -= frame_time
         speed *= sprint
         self.horizontal_movement = hor * speed
         self.vertical_movement = ver * speed

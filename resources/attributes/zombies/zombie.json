@@ -1,4 +1,9 @@
 {
     "zombie": {
+        "zombiepedia": {
+            "displayName": "Zombie",
+            "description": "A classic zombie",
+            "order": 1
+        }
     }
 }

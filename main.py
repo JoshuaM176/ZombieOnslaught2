@@ -14,7 +14,6 @@ else:
 from game.gameplay import Game  # noqa: E402
 from game.main_menu import MainMenu  # noqa E402
 
-
 running = True
 
 # Set so that first frame runs as if at 60fps
@@ -22,6 +21,7 @@ frame_start_time = time() - 0.017
 event_bus.create_bus("input_bus")
 event_bus.create_bus("ui_bus")
 event_bus.create_bus("game_event_bus")
+event_bus.create_bus("game_end_of_round_bus")
 event_bus.create_bus("trash")
 game = Game(screen)
 main_menu = MainMenu(screen)
@@ -54,14 +54,8 @@ while running:
                 game = Game(screen)
         case "game":
             curr_screen = game.update(time_since_last_frame)
-        case "store":
-            curr_screen = game.store.update()
-        case "game_over":
-            curr_screen = game.game_over.update()
-        case "settings":
-            curr_screen = settings.update()
         case _:
-            pass
+            curr_screen = screen_pages[curr_screen].update()
     pg.display.flip()
     clock.tick(180)
 
