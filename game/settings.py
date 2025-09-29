@@ -36,7 +36,7 @@ class Settings(ScreenPage, ButtonContainer):
         )
         self.buttons.append(
             FuncButton(
-                self.screen.get_width()/2-250,
+                self.screen.get_width() / 2 - 250,
                 self.screen.get_height() - 150,
                 500,
                 100,

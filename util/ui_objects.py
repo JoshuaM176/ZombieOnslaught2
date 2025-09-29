@@ -1,7 +1,8 @@
 import pygame as pg
 from util.event_bus import event_bus
 
-class ButtonContainer():
+
+class ButtonContainer:
     def __init__(self):
         self.buttons = []
 
@@ -31,6 +32,7 @@ class ButtonContainer():
         for event in input_bus:
             self.check_buttons(event, mouse_x, mouse_y)
 
+
 def text(screen, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
     if font:
         font = pg.font.Font(font, size)
@@ -50,11 +52,16 @@ def health_bar(screen, health, max_health, x, y, width, height):
     text(screen, f"{health:.0f}", height, x + width / 2, y + height / 2, align="CENTER")
 
 
-def progress_bar(screen, progress, x, y, width, height, color=(0, 255, 0), text_display = None):
+def progress_bar(
+    screen, progress, x, y, width, height, color=(0, 255, 0), text_display=None
+):
     pg.draw.rect(screen, color, (x, y, progress * width, height))
     pg.draw.rect(screen, (0, 0, 0), (x, y, width, height), 1)
     if text_display:
-        text(screen, text_display, height, x + width / 2, y + height / 2, align="CENTER")
+        text(
+            screen, text_display, height, x + width / 2, y + height / 2, align="CENTER"
+        )
+
 
 def get_font(name):
     return pg.font.match_font(name) or pg.font.get_default_font()
@@ -76,7 +83,6 @@ class Button:
 
     def update(**kwargs):
         pass
-
 
 
 class FuncButton(Button):
@@ -105,7 +111,8 @@ class FuncButton(Button):
         )
         text(self.screen, **self.text_kwargs)
 
-class DamageNumber():
+
+class DamageNumber:
     def __init__(self, time):
         self.x = 0
         self.y = 0
@@ -118,16 +125,16 @@ class DamageNumber():
             self.damage += damage
         else:
             self.damage = damage
-        if abs(x-self.x)>150:
+        if abs(x - self.x) > 150:
             self.x = x
             self.y = y
         self.time = self.start_time
 
     def update(self, frame_time, surface: pg.Surface):
         self.time -= frame_time
-        percent_time_left = self.time/self.start_time
+        percent_time_left = self.time / self.start_time
         if self.damage > 0 and self.time > 0:
             temp_surface = pg.Surface((25, 15), pg.SRCALPHA)
-            text(temp_surface, str(round(self.damage)), 15, 0, 0, color=(255,0,0))
-            temp_surface.set_alpha(255*percent_time_left)
-            surface.blit(temp_surface, (self.x,self.y))
+            text(temp_surface, str(round(self.damage)), 15, 0, 0, color=(255, 0, 0))
+            temp_surface.set_alpha(255 * percent_time_left)
+            surface.blit(temp_surface, (self.x, self.y))

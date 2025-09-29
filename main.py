@@ -10,7 +10,9 @@ clock = pg.time.Clock()
 if len(sys.argv) > 2:
     screen = pg.display.set_mode((int(sys.argv[1]), int(sys.argv[2])), pg.RESIZABLE)
 else:
-    screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h-100), pg.RESIZABLE)
+    screen = pg.display.set_mode(
+        (pg.display.Info().current_w, pg.display.Info().current_h - 100), pg.RESIZABLE
+    )
 from game.gameplay import Game  # noqa: E402
 from game.main_menu import MainMenu  # noqa E402
 
@@ -31,7 +33,7 @@ curr_screen = "main_menu"
 while running:
     event_bus.clear_events("trash")
     current_time = time()
-    time_since_last_frame = min(current_time - frame_start_time, 1/45)
+    time_since_last_frame = min(current_time - frame_start_time, 1 / 45)
     frame_start_time = current_time
     for event in pg.event.get():
         if event.type == pg.QUIT:

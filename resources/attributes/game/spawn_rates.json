@@ -87,6 +87,17 @@
                 },
                 "mult": 0.1
             }
+        },
+        {
+            "zombie": "zombie_knight",
+            "start_round": 100,
+            "end_round": 120,
+            "rate": {
+                "function": {
+                    "name": "slope_up"
+                },
+                "mult": 1
+            }
         }
     ]
 }

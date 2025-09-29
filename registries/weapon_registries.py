@@ -4,6 +4,7 @@ import pygame as pg
 
 weapon_categories = ["melee", "pistol", "smg", "rifle", "shotgun", "sniper"]
 
+
 def convert_files_to_sprites(resource: dict):
     for key, value in resource.items():
         if isinstance(value, list):
@@ -62,7 +63,6 @@ class WeaponRegistry:
 
     def get_weapon(self, cat: str, name: str) -> dict:
         return self.weapons.get(cat).get(name)
-    
 
     def get_default_weapons(self) -> dict[str, dict]:
         defaults = {}

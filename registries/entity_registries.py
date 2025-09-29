@@ -54,7 +54,10 @@ class EntityRegistry:
 
 class ZombieRegistry(EntityRegistry):
     def __init__(
-        self, weapon_registry: WeaponRegistry, bullet_registry: BulletRegistry, screen: pg.Surface
+        self,
+        weapon_registry: WeaponRegistry,
+        bullet_registry: BulletRegistry,
+        screen: pg.Surface,
     ):
         super().__init__("zombies")
         self.bullet_registry = bullet_registry
@@ -101,7 +104,9 @@ class ZombieRegistry(EntityRegistry):
         # for entity in self.entities:
         # entity.head_hitbox.display(screen)
         # entity.hitbox.display(screen)
-        self.render_plain.update(frame_time, self.screen.get_width(), self.screen.get_height())
+        self.render_plain.update(
+            frame_time, self.screen.get_width(), self.screen.get_height()
+        )
         self.render_plain.draw(self.screen)
         expired_orphaned_damage_numbers = []
         for damage_number in self.orphaned_damage_numbers:
@@ -109,16 +114,32 @@ class ZombieRegistry(EntityRegistry):
                 damage_number.update(frame_time, self.screen)
             else:
                 expired_orphaned_damage_numbers.append(damage_number)
-        self.orphaned_damage_numbers = [damage_number for damage_number in self.orphaned_damage_numbers if damage_number not in expired_orphaned_damage_numbers]
+        self.orphaned_damage_numbers = [
+            damage_number
+            for damage_number in self.orphaned_damage_numbers
+            if damage_number not in expired_orphaned_damage_numbers
+        ]
         for zombie in self.entities:
             zombie.damage_number.update(frame_time, self.screen)
             if zombie.health <= 0:
                 event_bus.add_event(
-                    "game_end_of_round_bus", {"killed_zombie": {"money": zombie.reward, "zombie": zombie.zombie_type}},
+                    "game_end_of_round_bus",
+                    {
+                        "killed_zombie": {
+                            "money": zombie.reward,
+                            "zombie": zombie.zombie_type,
+                        }
+                    },
                 )
                 self.deregister(zombie)
             else:
                 x, y, _, _ = zombie.head_hitbox.get()
                 health_bar(
-                    self.screen, zombie.health, zombie.max_health, x - 16, y - 24, 80, 20
+                    self.screen,
+                    zombie.health,
+                    zombie.max_health,
+                    x - 16,
+                    y - 24,
+                    80,
+                    20,
                 )

@@ -13,7 +13,7 @@
                 "fire_sprite": "none.png"
             },
             "type": "melee",
-            "firerate": 60,
+            "firerate": 120,
             "recoil_per_shot": 1,
             "recoil_control": 1,
             "max_recoil": 10
@@ -23,8 +23,8 @@
             "reload_time": 0.01
         },
         "bullet": {
-            "damage": 10,
-            "dropoff": 100,
+            "damage": 5,
+            "dropoff": 50,
             "speed": 100,
             "penetration": 0,
             "shiftX": 80,

@@ -30,17 +30,23 @@ class Game(ScreenPage):
             "reset": self.reset,
             "damage_village": self.damage_village,
             "killed_zombie": self.killed_zombie,
-            "save_game": self.save_game
+            "save_game": self.save_game,
         }
         self.weapon_registry = WeaponRegistry()
         self.zombie_bullet_registry = BulletRegistry(400, self.alpha_screen)
         self.zombie_registry = ZombieRegistry(
             self.weapon_registry, self.zombie_bullet_registry, self.screen
         )
-        self.stats = Stats(self.zombie_registry.resources, resource_loader.get("zombies_killed"))
-        self.zombiepedia = Zombiepedia(self.screen, self.zombie_registry, self.stats.zombies_killed)
+        self.stats = Stats(
+            self.zombie_registry.resources, resource_loader.get("zombies_killed")
+        )
+        self.zombiepedia = Zombiepedia(
+            self.screen, self.zombie_registry, self.stats.zombies_killed
+        )
         self.player_bullet_registry = BulletRegistry(200, self.alpha_screen)
-        self.player = Player(200, 500, self.player_bullet_registry, self.weapon_registry, screen)
+        self.player = Player(
+            200, 500, self.player_bullet_registry, self.weapon_registry, screen
+        )
         self.ui = UI(screen)
         self.player.set_equipped_weapon(weapon_categories[0])
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
@@ -54,8 +60,12 @@ class Game(ScreenPage):
     def __screen_init__(self):
         self.hut_render_plain = pg.sprite.RenderPlain(())
         self.huts = []
-        for i in range(round(self.screen.get_width()/500)):
-            hut = Hut(500*i + uniform(0, 100), self.screen.get_height()-250-uniform(0, 50), self.game_info.village_health/self.game_info.max_village_health)
+        for i in range(round(self.screen.get_width() / 500)):
+            hut = Hut(
+                500 * i + uniform(0, 100),
+                self.screen.get_height() - 250 - uniform(0, 50),
+                self.game_info.village_health / self.game_info.max_village_health,
+            )
             self.huts.append(hut)
             self.hut_render_plain.add(hut)
 
@@ -68,7 +78,7 @@ class Game(ScreenPage):
         if self.zombie_registry.is_empty():
             self.new_round()
         self.screen.fill(color=(150, 150, 150))
-        self.alpha_screen.fill((0,0,0,0))
+        self.alpha_screen.fill((0, 0, 0, 0))
         self.hut_render_plain.draw(self.screen)
         self.zombie_registry.hit_check(self.player_bullet_registry)
         for bullet in self.zombie_bullet_registry.bullets:
@@ -76,7 +86,7 @@ class Game(ScreenPage):
         self.player_bullet_registry.update(frame_time)
         self.zombie_registry.update(frame_time)
         self.zombie_bullet_registry.update(frame_time)
-        self.screen.blit(self.alpha_screen, (0,0))
+        self.screen.blit(self.alpha_screen, (0, 0))
         self.player.update(frame_time)
         self.ui.update()
         if self.player.health < 0:
@@ -96,7 +106,7 @@ class Game(ScreenPage):
 
     def killed_zombie(self, money, zombie):
         self.add_money(money)
-        self.stats.zombies_killed[zombie]+=1
+        self.stats.zombies_killed[zombie] += 1
         if self.stats.zombies_killed[zombie] == 1:
             self.set_screen("zombiepedia")
             self.zombiepedia.set_zombie_buttons()
@@ -111,7 +121,9 @@ class Game(ScreenPage):
         self.game_info.village_health -= damage
         event_bus.add_event("ui_bus", {"village_health": self.game_info.village_health})
         for hut in self.huts:
-            hut.damage(self.game_info.village_health/self.game_info.max_village_health)
+            hut.damage(
+                self.game_info.village_health / self.game_info.max_village_health
+            )
         if self.game_info.village_health <= 0:
             self.end_game()
 
@@ -138,10 +150,10 @@ class Game(ScreenPage):
                 return
         for i in range(0, floor(sqrt(self.game_info.round))):
             self.create_zombie(
-                zombie = choice(self.game_info.pool),
+                zombie=choice(self.game_info.pool),
             )
 
-    def create_zombie(self, x = None, y = None, round = None, zombie = "zombie", parent = None):
+    def create_zombie(self, x=None, y=None, round=None, zombie="zombie", parent=None):
         x = self.screen.get_width() + uniform(0, 100) if x is None else x
         y = uniform(0, self.screen.get_height() - 375) if y is None else y
         round = self.game_info.round + uniform(-5, 5) if round is None else round
@@ -154,15 +166,20 @@ class Game(ScreenPage):
         weapon_info = {}
         for cat in weapon_categories:
             for weapon in self.weapon_registry.get_available_weapons(cat):
-                weapon_info.update({weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}})
+                weapon_info.update(
+                    {weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}}
+                )
         save_data("weapons", "attributes", weapon_info)
         player_info = {}
         player_weapons = []
         for cat in self.player.weapons.equipped_list:
             if self.player.weapons.get(cat):
-                player_weapons.append({"name": self.player.weapons.get(cat).name, "cat": cat})
+                player_weapons.append(
+                    {"name": self.player.weapons.get(cat).name, "cat": cat}
+                )
         player_info.update({"player": {"equipped_weapons": player_weapons}})
         save_data("player", "attributes", player_info)
+
 
 @dataclass
 class GameInfo:
@@ -176,7 +193,13 @@ class GameInfo:
     def __post_init__(self):
         self.pool = ["zombie"] * 200
         self.max_village_health = self.village_health
-        event_bus.add_event("ui_bus", {"village_health": self.village_health, "max_village_health": self.max_village_health})
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "village_health": self.village_health,
+                "max_village_health": self.max_village_health,
+            },
+        )
 
     def update_spawn_rates(self):
         for data in self.spawn_data:
@@ -215,12 +238,13 @@ class GameInfo:
         self.pool = ["zombie"] * 200
         self.village_health = self.max_village_health
 
+
 @dataclass
 class Stats:
     resources: dict
     zombies_killed: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
-       for key in self.resources.keys():
-           if key not in self.zombies_killed.keys():
-               self.zombies_killed[key] = 0
+        for key in self.resources.keys():
+            if key not in self.zombies_killed.keys():
+                self.zombies_killed[key] = 0

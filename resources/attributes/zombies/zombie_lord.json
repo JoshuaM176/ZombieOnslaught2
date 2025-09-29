@@ -4,6 +4,10 @@
         "zombiepedia": {
             "order": 8
         },
+        "sprites": {
+            "default": "zombie_lord.png",
+            "animation": ["zombie_lord-A1.png", "zombie_lord-A2.png", "zombie_lord-A1.png", "zombie_lord.png", "zombie_lord-A3.png", "zombie_lord-A4.png", "zombie_lord-A3.png", "zombie_lord.png"]
+        },
         "health": 1000,
         "speed": 60,
         "body_armour": 0.3,

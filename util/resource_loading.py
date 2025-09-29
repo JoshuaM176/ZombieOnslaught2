@@ -13,6 +13,7 @@ def set_save_profile(profile):
     global save_profile
     save_profile = profile
 
+
 def delete_save_profile(profile):
     path = Path(ROOT, "saves", profile)
     if path.exists():
@@ -31,6 +32,7 @@ def load_sprite(name: str, category: str, colorkey=None, scale=8):
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, pg.RLEACCEL)
     return image
+
 
 def convert_files_to_sprites(resource: dict, location: str):
     for key, value in resource.items():

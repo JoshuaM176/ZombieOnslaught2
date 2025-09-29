@@ -76,7 +76,7 @@ class Weapon(pg.sprite.Sprite):
                 x,
                 y,
                 **self.bullet,
-                recoil=uniform(self.recoil*-self.downwards_recoil, self.recoil),
+                recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
             )
             self.bullet_registry.add(bullet)
             self.recoil += self.recoil_per_shot

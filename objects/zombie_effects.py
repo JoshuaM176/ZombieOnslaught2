@@ -9,7 +9,7 @@ def regen(self, frame_time, regen, **_):
         self.health += regen * frame_time
 
 
-def spawn_zombie(self, spawn_zombie, count, x = None, y = None, **_):
+def spawn_zombie(self, spawn_zombie, count, x=None, y=None, **_):
     for i in range(count):
         event_bus.add_event(
             "game_event_bus",
@@ -19,10 +19,11 @@ def spawn_zombie(self, spawn_zombie, count, x = None, y = None, **_):
                     "y": y or self.y,
                     "round": 0,
                     "zombie": spawn_zombie,
-                    "parent": self
+                    "parent": self,
                 }
             },
         )
+
 
 def initial_velocity(
     self, frame_time, id, x_vel, y_vel, decay, **_
@@ -33,30 +34,29 @@ def initial_velocity(
         decay = pow(decay, frame_time)
         self.x += x_vel * (decay / log_decay - 1 / log_decay)
         self.y += y_vel * (decay / log_decay - 1 / log_decay)
-        self.effects[id]['values']['x_vel']['value'] *= decay
-        self.effects[id]['values']['y_vel']['value'] *= decay
+        self.effects[id]["values"]["x_vel"]["value"] *= decay
+        self.effects[id]["values"]["y_vel"]["value"] *= decay
     else:
         self.remove_effects.append(id)
 
-def invincibility_frames(
-        self, frame_time, id, seconds
-):
+
+def invincibility_frames(self, frame_time, id, seconds):
     if seconds > 0:
         self.invincible = True
-        self.effects[id]['values']['seconds']['value'] -= frame_time
+        self.effects[id]["values"]["seconds"]["value"] -= frame_time
     else:
         self.invincible = False
         self.remove_effects.append(id)
 
-def freeze_frames(
-        self, frame_time, id, seconds
-):
+
+def freeze_frames(self, frame_time, id, seconds):
     if seconds > 0:
         self.frozen = True
-        self.effects[id]['values']['seconds']['value'] -= frame_time
+        self.effects[id]["values"]["seconds"]["value"] -= frame_time
     else:
         self.frozen = False
         self.remove_effects.append(id)
+
 
 def set_attr(self, name, value, **_):
     setattr(self, name, value)
@@ -68,5 +68,5 @@ effect_map = {
     "initial_velocity": initial_velocity,
     "set_attr": set_attr,
     "invincibility_frames": invincibility_frames,
-    "freeze_frames": freeze_frames
+    "freeze_frames": freeze_frames,
 }

@@ -60,16 +60,18 @@ class Entity(pg.sprite.Sprite):
 
     def head_hit(self, damage):
         if self.damage_numbers:
-            self.damage_number.add_damage(self.x, self.y, damage * (1-self.head_armour))
-        self.health -= damage * (1-self.head_armour)
+            self.damage_number.add_damage(
+                self.x, self.y, damage * (1 - self.head_armour)
+            )
+        self.health -= damage * (1 - self.head_armour)
 
     def hit(self, bullet: Bullet, head: bool):
         damage = bullet.damage
         if head:
             damage *= bullet.head_mult
-            damage *= (1-max(self.head_armour-bullet.armour_pierce, 0))
+            damage *= 1 - max(self.head_armour - bullet.armour_pierce, 0)
         else:
-            damage *= (1-max(self.body_armour-bullet.armour_pierce, 0))
+            damage *= 1 - max(self.body_armour - bullet.armour_pierce, 0)
         if self.damage_numbers:
             self.damage_number.add_damage(self.x, self.y, damage)
         self.health -= damage
@@ -84,8 +86,8 @@ class Zombie(Entity):
         weapon_registry,
         bullet_registry,
         round_scaling: int = 0,
-        parent = None,
-        zombies = None,
+        parent=None,
+        zombies=None,
         **attrs,
     ):
         self.parent = parent
@@ -96,7 +98,7 @@ class Zombie(Entity):
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         scale = sqrt(round_scaling) * 0.1 + 1
-        super().__init__(x, y, damage_numbers = True, **attrs)
+        super().__init__(x, y, damage_numbers=True, **attrs)
         self.reward = attrs["reward"] * scale
         self.speed *= scale
         self.health *= scale
@@ -139,10 +141,18 @@ class Zombie(Entity):
             trigger = effect.get("trigger") or "default"
             if trigger == "timer":
                 values["time"] = {"value": 0}
-            self.effects.append({"func": func, "values": values, "conditions": conditions, "trigger": trigger, "id": len(self.effects)})
+            self.effects.append(
+                {
+                    "func": func,
+                    "values": values,
+                    "conditions": conditions,
+                    "trigger": trigger,
+                    "id": len(self.effects),
+                }
+            )
             if trigger == "init":
                 self.use_effect(None, self.effects[-1])
-            
+
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
         self.animation_step_length = self.animation_length / len(self.animation_sprites)
@@ -178,7 +188,7 @@ class Zombie(Entity):
             self.x -= self.speed * frame_time
             if self.y < 0:
                 self.y += self.speed * frame_time
-            if self.y > screen_height-350:
+            if self.y > screen_height - 350:
                 self.y -= self.speed * frame_time
             self.animation_time += frame_time
             if self.animation_time > self.animation_length:
@@ -188,7 +198,7 @@ class Zombie(Entity):
         ]
         if self.x < -100:
             event_bus.add_event("game_event_bus", {"damage_village": {"damage": 1}})
-            self.x = screen_width+100
+            self.x = screen_width + 100
         for effect in [effect for effect in self.effects if effect is not None]:
             match effect["trigger"]:
                 case "default":
@@ -198,7 +208,10 @@ class Zombie(Entity):
                         self.use_effect(frame_time, effect)
                 case "timer":
                     effect["values"]["time"]["value"] += frame_time
-                    if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"]:
+                    if (
+                        effect["values"]["time"]["value"]
+                        >= effect["values"]["frequency"]["value"]
+                    ):
                         if self.use_effect(frame_time, effect):
                             effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
@@ -233,7 +246,7 @@ class Player(Entity):
             "sprint": False,
             "shooting": False,
             "reloading": False,
-            "go2settings": False
+            "go2settings": False,
         }
         self.key_map = {
             pg.K_w: "up",
@@ -356,13 +369,17 @@ class Player(Entity):
         if not hor and not ver:
             if self.time_resting > 0:
                 if self.stamina < self.max_stamina:
-                    self.stamina = min(self.stamina + self.time_resting * frame_time * self.stamina_regen, self.max_stamina)
+                    self.stamina = min(
+                        self.stamina
+                        + self.time_resting * frame_time * self.stamina_regen,
+                        self.max_stamina,
+                    )
             if self.time_resting < 1:
                 self.time_resting = min(self.time_resting + frame_time, 1)
         else:
             self.time_resting = -self.stamina_regen_delay
             if self.stamina > 0:
-                self.stamina -= frame_time/2
+                self.stamina -= frame_time / 2
                 if sprint > 1:
                     self.stamina -= frame_time
         speed *= sprint
@@ -377,8 +394,8 @@ class Player(Entity):
             self.x = -50
         if self.x > self.screen.get_width():
             self.x = self.screen.get_width()
-        if self.y > self.screen.get_height()-250:
-            self.y = self.screen.get_height()-250
+        if self.y > self.screen.get_height() - 250:
+            self.y = self.screen.get_height() - 250
         if self.y < -100:
             self.y = -100
 
@@ -392,7 +409,7 @@ class Player(Entity):
                 "health": self.health,
                 "max_health": self.max_health,
                 "stamina": self.stamina,
-                "max_stamina": self.max_stamina
+                "max_stamina": self.max_stamina,
             }
         )
 

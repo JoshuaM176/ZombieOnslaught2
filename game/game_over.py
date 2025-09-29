@@ -2,6 +2,7 @@ import pygame as pg
 from game.screenpage import ScreenPage
 from util.ui_objects import text, ButtonContainer, FuncButton
 
+
 class GameOver(ScreenPage, ButtonContainer):
     def __init__(self, screen: pg.Surface):
         super().__init__(screen, "game_over")

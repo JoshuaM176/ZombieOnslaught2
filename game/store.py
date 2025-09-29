@@ -174,8 +174,8 @@ class Store(ScreenPage, ButtonContainer):
         text(self.screen, "Stats", 30, self.screen.get_width() / 2, 240, align="CENTER")
         self.stats(
             [
-                f"Damage: {self.weapon['bullet']['damage']*self.weapon['weapon']['bullets']}",
-                f"Dropoff: {self.weapon['bullet']['dropoff']*self.weapon['weapon']['bullets']}",
+                f"Damage: {self.weapon['bullet']['damage'] * self.weapon['weapon']['bullets']}",
+                f"Dropoff: {self.weapon['bullet']['dropoff'] * self.weapon['weapon']['bullets']}",
                 f"Firerate: {self.weapon['weapon']['firerate']}",
                 f"Headshot Damage: {self.weapon['bullet']['head_mult']}",
                 f"Reload Time: {self.weapon['ammo']['reload_time']}(+{self.weapon['ammo']['reload_on_empty']})",
@@ -233,7 +233,7 @@ class Store(ScreenPage, ButtonContainer):
                 )
             )
             x += 150
-            if x > self.screen.get_width()-100:
+            if x > self.screen.get_width() - 100:
                 x = 50
                 y += 150
         self.buttons = self.ui_buttons + self.weapon_buttons
@@ -250,6 +250,7 @@ class Store(ScreenPage, ButtonContainer):
             self.category, self.weapon["name"]
         ):
             self.game_info.money -= self.weapon["store"]["price"]
+            event_bus.add_event("ui_bus", {"money": self.game_info.money})
             self.weapon["player"]["owned"] = True
             self.set_weapon_buttons()
 

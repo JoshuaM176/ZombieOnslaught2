@@ -18,16 +18,38 @@ df = pd.DataFrame(columns=weapon_names)
 if True:
     for weapon, data in weapons.items():
         for i in range(2000):
-            df.loc[i, weapon] = (data['bullet']['damage']-data['bullet']['dropoff']*i/data['bullet']['speed'])*data['weapon']['bullets']*data['weapon']['firerate']/60
+            df.loc[i, weapon] = (
+                (
+                    data["bullet"]["damage"]
+                    - data["bullet"]["dropoff"] * i / data["bullet"]["speed"]
+                )
+                * data["weapon"]["bullets"]
+                * data["weapon"]["firerate"]
+                / 60
+            )
 
 if False:
     for weapon, data in weapons.items():
-        if data['ammo']['reload_type'] == 0:
-            total_time = data['ammo']['bullets']/data['weapon']['firerate']*60 + data['ammo']['reload_time']
-        elif data['ammo']['reload_type'] == 1:
-            total_time = data['ammo']['bullets']/data['weapon']['firerate']*60 + data['ammo']['reload_time']*data['ammo']['bullets']
+        if data["ammo"]["reload_type"] == 0:
+            total_time = (
+                data["ammo"]["bullets"] / data["weapon"]["firerate"] * 60
+                + data["ammo"]["reload_time"]
+            )
+        elif data["ammo"]["reload_type"] == 1:
+            total_time = (
+                data["ammo"]["bullets"] / data["weapon"]["firerate"] * 60
+                + data["ammo"]["reload_time"] * data["ammo"]["bullets"]
+            )
         for i in range(2000):
-            df.loc[i, weapon] = (data['bullet']['damage']-data['bullet']['dropoff']*i/data['bullet']['speed'])*data['weapon']['bullets']*data['ammo']['bullets']/total_time
+            df.loc[i, weapon] = (
+                (
+                    data["bullet"]["damage"]
+                    - data["bullet"]["dropoff"] * i / data["bullet"]["speed"]
+                )
+                * data["weapon"]["bullets"]
+                * data["ammo"]["bullets"]
+                / total_time
+            )
 
 for weapon in weapon_names:
     plt.plot(df[:][weapon], label=weapon)
