@@ -1,6 +1,6 @@
 import pygame as pg
-from registries.bullet_registries import BulletRegistry
-from objects.bullets import Bullet
+from registries.bullet_registries import ProjectileRegistry
+from objects.bullets import Bullet, Arrow
 from random import uniform
 from math import floor
 from util.event_bus import event_bus
@@ -15,7 +15,7 @@ class Weapon(pg.sprite.Sprite):
         weapon: dict,
         ammo: dict,
         bullet: dict,
-        bullet_registry: BulletRegistry,
+        bullet_registry: ProjectileRegistry,
         bus: str,
         **_,
     ):
@@ -78,6 +78,12 @@ class Weapon(pg.sprite.Sprite):
                 **self.bullet,
                 recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
             )
+            #arrow = Arrow(
+                #x,
+                #y,
+                #**self.bullet,
+                #recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
+            #)
             self.bullet_registry.add(bullet)
             self.recoil += self.recoil_per_shot
             if self.recoil > self.max_recoil:
@@ -189,11 +195,9 @@ class Ammo:
         time = (
             self.reload_time if self.get() else self.reload_time + self.reload_on_empty
         )
-        self.reload_progress += frame_time
         rtn = self.reload_progress / self.reload_time
+        self.reload_progress += frame_time
         if self.reload_progress >= time:
-            if self.get():
-                rtn = 0.99
             self.mags -= 1
             self.reload_progress = 0
             if self.reload_type == 0:

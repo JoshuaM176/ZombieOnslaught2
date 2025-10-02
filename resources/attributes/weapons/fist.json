@@ -27,7 +27,7 @@
             "dropoff": 50,
             "speed": 100,
             "penetration": 0,
-            "shiftX": 80,
+            "shiftX": 20,
             "shiftY": 60,
             "tracer": false
         }

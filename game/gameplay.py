@@ -1,7 +1,7 @@
 from game.screenpage import ScreenPage
 from registries.entity_registries import ZombieRegistry
 from registries.weapon_registries import WeaponRegistry, weapon_categories
-from registries.bullet_registries import BulletRegistry
+from registries.bullet_registries import ProjectileRegistry
 from objects.entities import Player
 from game.game_ui import UI
 from game.game_over import GameOver
@@ -33,9 +33,9 @@ class Game(ScreenPage):
             "save_game": self.save_game,
         }
         self.weapon_registry = WeaponRegistry()
-        self.zombie_bullet_registry = BulletRegistry(400, self.alpha_screen)
+        self.zombie_projectile_registry = ProjectileRegistry(400, self.screen, self.alpha_screen)
         self.zombie_registry = ZombieRegistry(
-            self.weapon_registry, self.zombie_bullet_registry, self.screen
+            self.weapon_registry, self.zombie_projectile_registry, self.screen
         )
         self.stats = Stats(
             self.zombie_registry.resources, resource_loader.get("zombies_killed")
@@ -43,9 +43,9 @@ class Game(ScreenPage):
         self.zombiepedia = Zombiepedia(
             self.screen, self.zombie_registry, self.stats.zombies_killed
         )
-        self.player_bullet_registry = BulletRegistry(200, self.alpha_screen)
+        self.player_projectile_registry = ProjectileRegistry(200, self.screen, self.alpha_screen)
         self.player = Player(
-            200, 500, self.player_bullet_registry, self.weapon_registry, screen
+            200, 500, self.player_projectile_registry, self.weapon_registry, screen
         )
         self.ui = UI(screen)
         self.player.set_equipped_weapon(weapon_categories[0])
@@ -80,12 +80,12 @@ class Game(ScreenPage):
         self.screen.fill(color=(150, 150, 150))
         self.alpha_screen.fill((0, 0, 0, 0))
         self.hut_render_plain.draw(self.screen)
-        self.zombie_registry.hit_check(self.player_bullet_registry)
-        for bullet in self.zombie_bullet_registry.bullets:
-            self.player.hit_check(bullet)
-        self.player_bullet_registry.update(frame_time)
+        self.zombie_registry.hit_check(self.player_projectile_registry)
+        for projectile in self.zombie_projectile_registry.projectiles:
+            self.player.hit_check(projectile)
+        self.player_projectile_registry.update(frame_time)
         self.zombie_registry.update(frame_time)
-        self.zombie_bullet_registry.update(frame_time)
+        self.zombie_projectile_registry.update(frame_time)
         self.screen.blit(self.alpha_screen, (0, 0))
         self.player.update(frame_time)
         self.ui.update()

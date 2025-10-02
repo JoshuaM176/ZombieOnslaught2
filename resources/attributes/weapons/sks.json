@@ -1,0 +1,53 @@
+{
+    "SKS": {
+        "player": {
+            "movement": 5.2,
+            "available": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "ak-47.png",
+                "reloading": ["ak-47-R1.png", "ak-47-R2.png", "ak-47-R3.png", "ak-47-R2.png", "ak-47-R1.png"],
+                "extra_reload_sprite": "ak-47-F.png",
+                "fire_sprite": "ak-47-F.png"
+            },
+            "type": "sniper",
+            "firerate": 300,
+            "fire_animation_length": 0.04,
+            "shiftX": 40,
+            "shiftY": 20,
+            "recoil_per_shot": 0.01,
+            "recoil_control": 0.05,
+            "max_recoil": 0.04
+        },
+        "ammo": {
+            "bullets": 10,
+            "bullet_in_chamber": false,
+            "mags": 5,
+            "mag_time": 25,
+            "reload_time": 2,
+            "reload_on_empty": 0
+        },
+        "bullet": {
+            "damage": 30,
+            "head_mult": 1.8,
+            "dropoff": 5,
+            "speed": 3500,
+            "penetration": 0.8,
+            "shiftX": 96,
+            "shiftY": 80
+        },
+        "store": {
+            "price": 15000,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "AK-47",
+                    "cat": "rifle"
+                }
+            ],
+            "shiftX": 16,
+            "shiftY": -16
+        }
+    }
+}

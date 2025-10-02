@@ -1,7 +1,7 @@
 import pygame as pg
 from util.resource_loading import ResourceLoader, convert_files_to_sprites, load_sprite
 from objects.entities import Entity, Zombie
-from registries.bullet_registries import BulletRegistry
+from registries.bullet_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
 from util.ui_objects import health_bar
@@ -45,10 +45,10 @@ class EntityRegistry:
             return False
         return True
 
-    def hit_check(self, bullets: BulletRegistry):
+    def hit_check(self, projectiles: ProjectileRegistry):
         for entity in self.entities:
             if not entity.invincible:
-                for bullet in bullets.bullets:
+                for bullet in projectiles.projectiles:
                     entity.hit_check(bullet)
 
 
@@ -56,7 +56,7 @@ class ZombieRegistry(EntityRegistry):
     def __init__(
         self,
         weapon_registry: WeaponRegistry,
-        bullet_registry: BulletRegistry,
+        bullet_registry: ProjectileRegistry,
         screen: pg.Surface,
     ):
         super().__init__("zombies")

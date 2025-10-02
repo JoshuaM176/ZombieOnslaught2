@@ -1,22 +1,23 @@
-from objects.bullets import Bullet, Tracer
+from objects.bullets import Projectile, Tracer
 import pygame as pg
 
 
-class BulletRegistry:
-    def __init__(self, size: int, screen):
-        self.tracers = TracerRegistry(size * 4, screen)
+class ProjectileRegistry:
+    def __init__(self, size: int, screen, alpha_screen):
+        self.screen = screen
+        self.tracers = TracerRegistry(size * 4, alpha_screen)
         self.index = 0
         self.size = size
-        self.bullets: list[Bullet] = [None] * size
+        self.projectiles: list[Projectile] = [None] * size
 
     def update(self, frame_time):
         self.tracers.update(frame_time)
-        for bullet in self.bullets:
-            if bullet:
-                self.tracers.add(bullet.update(frame_time))
+        for projectile in self.projectiles:
+            if projectile:
+                self.tracers.add(projectile.update(frame_time, self.screen))
 
-    def add(self, bullet: Bullet):
-        self.bullets[self.index] = bullet
+    def add(self, projectile: Projectile):
+        self.projectiles[self.index] = projectile
         self.index += 1
         if self.index >= self.size:
             self.index = 0
