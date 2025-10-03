@@ -1,7 +1,7 @@
 {
     "P90": {
         "player": {
-            "movement": 5.7,
+            "movement": 300,
             "available": true
         },
         "weapon": {

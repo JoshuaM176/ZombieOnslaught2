@@ -1,7 +1,7 @@
 {
     "MP7": {
         "player": {
-            "movement": 6,
+            "movement": 330,
             "owned": true,
             "available": true,
             "default": true

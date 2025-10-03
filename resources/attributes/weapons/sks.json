@@ -1,19 +1,19 @@
 {
     "SKS": {
         "player": {
-            "movement": 5.2,
+            "movement": 250,
             "available": true
         },
         "weapon": {
             "sprites": {
-                "default": "ak-47.png",
-                "reloading": ["ak-47-R1.png", "ak-47-R2.png", "ak-47-R3.png", "ak-47-R2.png", "ak-47-R1.png"],
-                "extra_reload_sprite": "ak-47-F.png",
-                "fire_sprite": "ak-47-F.png"
+                "default": "sks.png",
+                "reloading": ["sks-R1.png", "sks-R2.png", "sks-R3.png", "sks-R4.png", "sks-R5.png"],
+                "extra_reload_sprite": "sks-F.png",
+                "fire_sprite": "sks-F.png"
             },
             "type": "sniper",
-            "firerate": 300,
-            "fire_animation_length": 0.04,
+            "firerate": 125,
+            "fire_animation_length": 0.01,
             "shiftX": 40,
             "shiftY": 20,
             "recoil_per_shot": 0.01,
@@ -29,7 +29,7 @@
             "reload_on_empty": 0
         },
         "bullet": {
-            "damage": 30,
+            "damage": 60,
             "head_mult": 1.8,
             "dropoff": 5,
             "speed": 3500,

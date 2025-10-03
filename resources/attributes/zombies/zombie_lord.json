@@ -13,6 +13,7 @@
         "body_armour": 0.3,
         "head_armour": 0.3,
         "reward": 1000,
+        "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {
                 "effect": "spawn_zombie",

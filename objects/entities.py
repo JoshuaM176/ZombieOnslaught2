@@ -97,12 +97,13 @@ class Zombie(Entity):
         self.remove_effects = []
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
-        scale = sqrt(round_scaling) * 0.1 + 1
+        small_scale = sqrt(round_scaling) * 0.1 + 1
+        large_scale = round_scaling/50 + 1
         super().__init__(x, y, damage_numbers=True, **attrs)
-        self.reward = attrs["reward"] * scale
-        self.speed *= scale
-        self.health *= scale
-        self.max_health *= scale
+        self.reward = attrs["reward"] * small_scale
+        self.speed *= small_scale
+        self.health *= large_scale
+        self.max_health *= large_scale
         weapon = weapon_registry.get_weapon(
             attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
         )
@@ -279,6 +280,7 @@ class Player(Entity):
                 self.render_plain.remove(self.equipped_weapon)
             self.equipped_weapon = self.weapons.get(cat)
             self.render_plain.add(self.equipped_weapon)
+            self.speed = self.equipped_weapon.player["movement"]
             self.ui_bus.send(
                 {
                     "weapon": self.equipped_weapon.name,

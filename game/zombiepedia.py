@@ -131,8 +131,8 @@ class Zombiepedia(ScreenPage, ButtonContainer):
             self.print_stats(
                 [
                     f"Health: {zombie['health']}",
-                    f"Body Armour: {round(zombie['body_armour'] * 10)}",
-                    f"Head Armour: {round(zombie['head_armour'] * 10)}",
+                    f"Body Armour: {round(zombie['body_armour'] * 100)}",
+                    f"Head Armour: {round(zombie['head_armour'] * 100)}",
                     f"Speed: {zombie['speed']}",
                     f"Number Killed: {self.stats[self.selected_zombie]}",
                 ]

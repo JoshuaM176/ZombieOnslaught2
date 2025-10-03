@@ -1,7 +1,7 @@
 {
     "SUPER 90": {
         "player": {
-            "movement": 5.4,
+            "movement": 260,
             "available": true
         },
         "weapon": {

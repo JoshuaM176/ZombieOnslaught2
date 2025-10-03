@@ -11,6 +11,7 @@
         },
         "health": 100,
         "speed": 80,
-        "reward": 12
+        "reward": 12,
+        "head_hitbox": [40, 8, 72, 40]
     }
 }

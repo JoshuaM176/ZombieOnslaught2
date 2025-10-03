@@ -1,7 +1,7 @@
 {
     "AK-47": {
         "player": {
-            "movement": 5.5,
+            "movement": 270,
             "available": true
         },
         "weapon": {

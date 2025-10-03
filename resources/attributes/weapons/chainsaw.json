@@ -1,7 +1,7 @@
 {
     "Chainsaw": {
         "player": {
-            "movement": 8,
+            "movement": 280,
             "owned": true,
             "available": true,
             "default": true

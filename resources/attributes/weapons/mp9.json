@@ -1,7 +1,7 @@
 {
     "MP9": {
         "player": {
-            "movement": 6.3,
+            "movement": 360,
             "available": true
         },
         "weapon": {

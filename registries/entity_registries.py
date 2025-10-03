@@ -101,8 +101,8 @@ class ZombieRegistry(EntityRegistry):
 
     def update(self, frame_time):
         # debug
-        # for entity in self.entities:
-        # entity.head_hitbox.display(screen)
+        #for entity in self.entities:
+            #entity.head_hitbox.display(self.screen)
         # entity.hitbox.display(screen)
         self.render_plain.update(
             frame_time, self.screen.get_width(), self.screen.get_height()

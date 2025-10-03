@@ -13,6 +13,7 @@
         "speed": 80,
         "body_armour": 0.1,
         "reward": 13,
+        "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {
                 "effect": "regen",
