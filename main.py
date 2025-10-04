@@ -59,6 +59,6 @@ while running:
         case _:
             curr_screen = screen_pages[curr_screen].update()
     pg.display.flip()
-    clock.tick(180)
+    clock.tick(120)
 
 pg.quit()

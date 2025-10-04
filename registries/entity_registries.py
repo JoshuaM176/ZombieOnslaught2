@@ -4,8 +4,6 @@ from objects.entities import Entity, Zombie
 from registries.bullet_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
-from util.ui_objects import health_bar
-
 
 class EntityRegistry:
     def __init__(self, entity_type: str):
@@ -105,7 +103,7 @@ class ZombieRegistry(EntityRegistry):
             #entity.head_hitbox.display(self.screen)
         # entity.hitbox.display(screen)
         self.render_plain.update(
-            frame_time, self.screen.get_width(), self.screen.get_height()
+            frame_time, self.screen
         )
         self.render_plain.draw(self.screen)
         expired_orphaned_damage_numbers = []
@@ -132,14 +130,3 @@ class ZombieRegistry(EntityRegistry):
                     },
                 )
                 self.deregister(zombie)
-            else:
-                x, y, _, _ = zombie.head_hitbox.get()
-                health_bar(
-                    self.screen,
-                    zombie.health,
-                    zombie.max_health,
-                    x - 16,
-                    y - 24,
-                    80,
-                    20,
-                )

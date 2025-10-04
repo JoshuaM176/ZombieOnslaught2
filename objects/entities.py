@@ -3,7 +3,7 @@ from objects.hitreg import HitBox
 from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
-from util.ui_objects import DamageNumber
+from util.ui_objects import DamageNumber, ProgressBar
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
@@ -111,6 +111,7 @@ class Zombie(Entity):
         if attrs["weapon_stats"].get("bullet"):
             self.weapon.bullet.update(attrs["weapon_stats"]["bullet"])
         self.weapon.flip_sprites()
+        self.progress_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text = str(round(self.health)))
 
         self.effects = []
         for effect in attrs["effects"]:
@@ -180,8 +181,13 @@ class Zombie(Entity):
             if not eval(condition.format(self=self)):
                 return False
         return True
+    
+    def hit(self, bullet: Bullet, head: bool):
+        super().hit(bullet, head)
+        self.progress_bar.update_progress(self.health/self.max_health)
+        self.progress_bar.update_text(str(round(self.health)))
 
-    def update(self, frame_time, screen_width, screen_height):
+    def update(self, frame_time, screen: pg.Surface):
         for effect in self.remove_effects:
             self.effects[effect] = None
         self.remove_effects = []
@@ -189,7 +195,7 @@ class Zombie(Entity):
             self.x -= self.speed * frame_time
             if self.y < 0:
                 self.y += self.speed * frame_time
-            if self.y > screen_height - 350:
+            if self.y > screen.get_height() - 350:
                 self.y -= self.speed * frame_time
             self.animation_time += frame_time
             if self.animation_time > self.animation_length:
@@ -199,7 +205,7 @@ class Zombie(Entity):
         ]
         if self.x < -100:
             event_bus.add_event("game_event_bus", {"damage_village": {"damage": 1}})
-            self.x = screen_width + 100
+            self.x = screen.get_width() + 100
         for effect in [effect for effect in self.effects if effect is not None]:
             match effect["trigger"]:
                 case "default":
@@ -219,6 +225,9 @@ class Zombie(Entity):
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
         self.weapon.draw(self.x, self.y, frame_time, True, False)
+        x, y, _, _ = self.head_hitbox.get()
+        self.progress_bar.update_pos(x - 16, y - 24)
+        self.progress_bar.update(screen)
 
 
 class Player(Entity):
@@ -396,8 +405,8 @@ class Player(Entity):
             self.x = -50
         if self.x > self.screen.get_width():
             self.x = self.screen.get_width()
-        if self.y > self.screen.get_height() - 250:
-            self.y = self.screen.get_height() - 250
+        if self.y > self.screen.get_height() - 350:
+            self.y = self.screen.get_height() - 350
         if self.y < -100:
             self.y = -100
 

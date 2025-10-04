@@ -1,6 +1,79 @@
 import pygame as pg
 from util.event_bus import event_bus
 
+class Text():
+    def __init__(
+            self,
+            text,
+            size,
+            x,
+            y,
+            color=(0, 0, 0),
+            align="LEFT",
+            font=None
+    ):
+        self.align = align
+        self.x = x
+        self.y = y
+        self.color = color
+        if font:
+            self.font = pg.font.Font(font, size)
+        else:
+            self.font = pg.font.Font(pg.font.get_default_font(), size)
+        self.text = self.font.render(text, True, color)
+
+    def update_text(self, text):
+        self.text = self.font.render(text, True, self.color)
+
+    def update_pos(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update(self, screen: pg.Surface):
+        match self.align:
+            case "LEFT":
+                screen.blit(self.text, self.text.get_rect(topleft=(self.x, self.y)))
+            case "CENTER":
+                screen.blit(self.text, self.text.get_rect(center=(self.x, self.y)))
+
+
+class ProgressBar():
+    def __init__(
+            self,
+            progress,
+            x,
+            y,
+            width,
+            height,
+            color = (0, 255, 0),
+            text = None
+                 ):
+        self.progress = progress
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.text = Text(text, height, x + width/2, y + height/2, align="CENTER") if text is not None else None
+
+
+    def update_pos(self, x, y):
+        self.x = x
+        self.y = y
+        self.text.update_pos(x + self.width/2, y + self.height/2)
+
+    def update_text(self, text: str):
+        self.text.update_text(text)
+
+    def update_progress(self, progress: float):
+        self.progress = progress
+
+    def update(self, screen: pg.Surface):
+        pg.draw.rect(screen, self.color, (self.x, self.y, self.progress * self.width, self.height))
+        pg.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 1)
+        if self.text:
+            self.text.update(screen)
+
 
 class ButtonContainer:
     def __init__(self):
@@ -41,26 +114,9 @@ def text(screen, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
     text = font.render(text, True, color)
     match align:
         case "LEFT":
-            screen.blit(text, (x, y))
+            screen.blit(text, text.get_rect(topleft = (x, y)))
         case "CENTER":
-            screen.blit(text, text.get_rect(center=(x, y)))
-
-
-def health_bar(screen, health, max_health, x, y, width, height):
-    pg.draw.rect(screen, (0, 255, 0), (x, y, health / max_health * width, height))
-    pg.draw.rect(screen, (0, 0, 0), (x, y, width, height), 1)
-    text(screen, f"{health:.0f}", height, x + width / 2, y + height / 2, align="CENTER")
-
-
-def progress_bar(
-    screen, progress, x, y, width, height, color=(0, 255, 0), text_display=None
-):
-    pg.draw.rect(screen, color, (x, y, progress * width, height))
-    pg.draw.rect(screen, (0, 0, 0), (x, y, width, height), 1)
-    if text_display:
-        text(
-            screen, text_display, height, x + width / 2, y + height / 2, align="CENTER"
-        )
+            screen.blit(text, text.get_rect(center = (x, y)))
 
 
 def get_font(name):
