@@ -5,7 +5,8 @@ import pygame as pg
 
 
 class Zombiepedia(ScreenPage, ButtonContainer):
-    def __init__(self, screen, zombie_registry: ZombieRegistry, stats: dict):
+    def __init__(self, screen, zombie_registry: ZombieRegistry, stats: dict, zombie_list: list[str]):
+        self.zombie_list = zombie_list
         self.zombies = zombie_registry.resources
         self.num_zombies = 0
         self.stats = stats
@@ -68,12 +69,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
     def set_zombie_buttons(self):
         start_index = self.page * self.zombies_per_page
         self.zombie_buttons.clear()
-        zombies = [
-            data | {"name": zombie}
-            for zombie, data in self.zombies.items()
-            if data["zombiepedia"]["order"]
-        ]
-        zombies.sort(key=lambda zombie: zombie["zombiepedia"]["order"])
+        zombies = [self.zombies[zombie] | {"name": zombie} for zombie in self.zombie_list]
         self.num_zombies = len(zombies)
         x = 50
         y = 250

@@ -1,9 +1,8 @@
 {
     "infested_zombie": {
         "zombiepedia": {
-            "displayName": "Infested Zombie",
-            "description": "Infested Zombies have zombified rats infesting their bodies, they pop off when the zombie is killed.",
-            "order": 6
+            "display_name": "Infested Zombie",
+            "description": "Infested Zombies have zombified rats infesting their bodies, they pop off when the zombie is killed."
         },
         "sprites": {
             "default": "infested_zombie.png",

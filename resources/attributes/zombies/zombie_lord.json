@@ -2,7 +2,7 @@
     "zombie_lord": {
         "base_round": 100,
         "zombiepedia": {
-            "order": 8
+            "display_name": "Zombie Lord"
         },
         "sprites": {
             "default": "zombie_lord.png",
@@ -10,8 +10,8 @@
         },
         "health": 1000,
         "speed": 60,
-        "body_armour": 0.3,
-        "head_armour": 0.3,
+        "body_armour": 0.4,
+        "head_armour": 0.4,
         "reward": 1000,
         "head_hitbox": [40, 8, 72, 40],
         "effects": [

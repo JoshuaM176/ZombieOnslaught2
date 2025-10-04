@@ -1,1 +1,1 @@
-{"game_info": {"money": 4221.262278925198}, "zombies_killed": {"brute": 5, "crawler": 0, "default": 0, "infested_zombie": 0, "rat": 0, "regen_brute": 0, "regen_zombie": 14, "zombie": 243, "zombie_lord": 4, "zombie_knight": 0, "zombie_lord_knight": 25}}
+{"game_info": {"money": 1399.8395433745127}, "stats": {"zombies_killed": {"brute": 21, "crawler": 0, "default": 0, "infested_zombie": 0, "rat": 0, "regen_brute": 6, "regen_zombie": 54, "zombie": 422, "zombie_lord": 4, "zombie_knight": 0, "zombie_lord_knight": 25, "toxic_variant": 23}}}

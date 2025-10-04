@@ -175,6 +175,7 @@ class DamageNumber:
         self.damage = 0
         self.time = 0
         self.start_time = time
+        self.text = Text(str(round(self.damage)), 15, 0, 0, color=(255, 0, 0))
 
     def add_damage(self, x, y, damage):
         if self.time > 0:
@@ -184,6 +185,7 @@ class DamageNumber:
         if abs(x - self.x) > 150:
             self.x = x
             self.y = y
+        self.text.update_text(str(round(self.damage)))
         self.time = self.start_time
 
     def update(self, frame_time, surface: pg.Surface):
@@ -191,6 +193,6 @@ class DamageNumber:
         percent_time_left = self.time / self.start_time
         if self.damage > 0 and self.time > 0:
             temp_surface = pg.Surface((25, 15), pg.SRCALPHA)
-            text(temp_surface, str(round(self.damage)), 15, 0, 0, color=(255, 0, 0))
+            self.text.update(temp_surface)
             temp_surface.set_alpha(255 * percent_time_left)
             surface.blit(temp_surface, (self.x, self.y))

@@ -2,13 +2,13 @@
     "zombie_knight": {
         "base_round": 100,
         "zombiepedia": {
-            "order": 10
+            "display_name": "Zombie Knight"
         },
         "sprites": {
             "default": "zombie_knight.png",
             "animation": ["zombie_knight-A1.png", "zombie_knight-A2.png", "zombie_knight-A1.png", "zombie_knight.png", "zombie_knight-A3.png", "zombie_knight-A4.png", "zombie_knight-A3.png", "zombie_knight.png"]
         },
-        "health": 100,
+        "health": 200,
         "speed": 90,
         "body_armour": 0.5,
         "head_armour": 0.4,

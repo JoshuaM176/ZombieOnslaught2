@@ -1,6 +1,6 @@
 import pygame as pg
-from registries.bullet_registries import ProjectileRegistry
-from objects.bullets import Bullet, Arrow
+from registries.projectile_registries import ProjectileRegistry
+from objects.projectiles.bullet import Bullet
 from random import uniform
 from math import floor
 from util.event_bus import event_bus

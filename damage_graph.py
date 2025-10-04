@@ -15,7 +15,7 @@ weapon_names = weapons.keys()
 
 df = pd.DataFrame(columns=weapon_names)
 
-if True:
+if False:
     for weapon, data in weapons.items():
         for i in range(2000):
             df.loc[i, weapon] = (
@@ -28,7 +28,7 @@ if True:
                 / 60
             )
 
-if False:
+if True:
     for weapon, data in weapons.items():
         if data["ammo"]["reload_type"] == 0:
             total_time = (

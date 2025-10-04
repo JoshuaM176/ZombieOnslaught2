@@ -2,9 +2,8 @@
     "default": {
         "base_round": 0,
         "zombiepedia": {
-            "displayName": "default",
+            "display_name": "default",
             "description": "placeholder\ntest",
-            "order": 0,
             "shiftX": 28,
             "shiftY": 20
         },

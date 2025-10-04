@@ -1,0 +1,17 @@
+{
+    "zombiepedia": {
+        "zombie_list": [
+            "zombie",
+            "toxic_variant",
+            "regen_zombie",
+            "brute",
+            "regen_brute",
+            "crawler",
+            "infested_zombie",
+            "rat",
+            "zombie_knight",
+            "zombie_lord",
+            "zombie_lord_knight"
+        ]
+    }
+}

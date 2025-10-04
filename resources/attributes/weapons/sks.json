@@ -29,7 +29,7 @@
             "reload_on_empty": 0
         },
         "bullet": {
-            "damage": 60,
+            "damage": 80,
             "head_mult": 1.8,
             "dropoff": 5,
             "speed": 3500,

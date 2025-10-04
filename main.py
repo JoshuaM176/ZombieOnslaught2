@@ -25,7 +25,6 @@ event_bus.create_bus("ui_bus")
 event_bus.create_bus("game_event_bus")
 event_bus.create_bus("game_end_of_round_bus")
 event_bus.create_bus("trash")
-game = Game(screen)
 main_menu = MainMenu(screen)
 settings = Settings(screen)
 curr_screen = "main_menu"

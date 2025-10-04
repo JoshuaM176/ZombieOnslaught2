@@ -1,7 +1,7 @@
 from game.screenpage import ScreenPage
 from registries.entity_registries import ZombieRegistry
 from registries.weapon_registries import WeaponRegistry, weapon_categories
-from registries.bullet_registries import ProjectileRegistry
+from registries.projectile_registries import ProjectileRegistry
 from objects.entities import Player
 from game.game_ui import UI
 from game.game_over import GameOver
@@ -38,10 +38,10 @@ class Game(ScreenPage):
             self.weapon_registry, self.zombie_projectile_registry, self.screen
         )
         self.stats = Stats(
-            self.zombie_registry.resources, resource_loader.get("zombies_killed")
+            self.zombie_registry.resources, **resource_loader.get("stats")
         )
         self.zombiepedia = Zombiepedia(
-            self.screen, self.zombie_registry, self.stats.zombies_killed
+            self.screen, self.zombie_registry, self.stats.zombies_killed, **resource_loader.get("zombiepedia")
         )
         self.player_projectile_registry = ProjectileRegistry(200, self.screen, self.alpha_screen)
         self.player = Player(
@@ -68,6 +68,7 @@ class Game(ScreenPage):
             )
             self.huts.append(hut)
             self.hut_render_plain.add(hut)
+        self.rect = pg.Rect(0, 0, self.screen.get_width(), self.screen.get_height()-250)
 
     def update(self, frame_time: float):
         self.go2 = self.page_name
@@ -77,8 +78,8 @@ class Game(ScreenPage):
                 self.event_map.get(event_type)(**value)
         if self.zombie_registry.is_empty():
             self.new_round()
-        self.screen.fill(color=(150, 150, 150))
-        self.alpha_screen.fill((0, 0, 0, 0))
+        self.screen.fill(color=(150, 150, 150), rect=self.rect)
+        self.alpha_screen.fill((0, 0, 0, 0), rect=self.rect)
         self.hut_render_plain.draw(self.screen)
         self.zombie_registry.hit_check(self.player_projectile_registry)
         for projectile in self.zombie_projectile_registry.projectiles:
@@ -161,7 +162,7 @@ class Game(ScreenPage):
 
     def save_game(self):
         game_info = {"game_info": {"money": self.game_info.money}}
-        game_info.update({"zombies_killed": self.stats.zombies_killed})
+        game_info.update({"stats": {"zombies_killed": self.stats.zombies_killed}})
         save_data("game", "attributes", game_info)
         weapon_info = {}
         for cat in weapon_categories:

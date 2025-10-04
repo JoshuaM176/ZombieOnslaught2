@@ -1,3 +1,5 @@
 {
-    "zombies_killed": {}
+    "stats": {
+        "zombies_killed": {}
+    }
 }

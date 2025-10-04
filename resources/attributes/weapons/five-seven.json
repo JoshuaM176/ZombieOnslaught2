@@ -1,0 +1,54 @@
+{
+    "Five-seveN": {
+        "player": {
+            "movement": 365,
+            "owned": false,
+            "available": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "five-seven.png",
+                "reloading": ["five-seven-R1.png", "five-seven-R2.png", "five-seven.png", "five-seven-R2.png", "five-seven-R1.png"],
+                "extra_reload_sprite": "five-seven.png",
+                "fire_sprite": "five-seven-F.png"
+            },
+            "type": "pistol",
+            "firerate": 600,
+            "fire_animation_length": 0.001,
+            "burst": 1,
+            "shiftX": 62,
+            "shiftY": 10,
+            "recoil_per_shot": 0.01,
+            "recoil_control": 0.0075,
+            "max_recoil": 0.04
+        },
+        "ammo": {
+            "bullets": 20,
+            "mags": 10,
+            "mag_time": 10,
+            "reload_time": 0.8,
+            "reload_on_empty": 0.25
+        },
+        "bullet": {
+            "damage": 14,
+            "head_mult": 1.4,
+            "dropoff": 9,
+            "speed": 2500,
+            "penetration": 0.1,
+            "shiftX": 80,
+            "shiftY": 74
+        },
+        "store": {
+            "price": 2500,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "cat": "pistol",
+                    "name": "P250"
+                }
+            ],
+            "shiftX": 24,
+            "shiftY": -16
+        }
+    }
+}

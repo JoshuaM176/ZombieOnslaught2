@@ -7,7 +7,7 @@ from util.ui_objects import DamageNumber, ProgressBar
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
-from objects.bullets import Bullet
+from objects.projectiles.bullet import Bullet
 import random
 
 
@@ -84,7 +84,7 @@ class Zombie(Entity):
         y: int,
         zombie_type: str,
         weapon_registry,
-        bullet_registry,
+        projectile_registry,
         round_scaling: int = 0,
         parent=None,
         zombies=None,
@@ -98,7 +98,7 @@ class Zombie(Entity):
         if round_scaling:
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         small_scale = sqrt(round_scaling) * 0.1 + 1
-        large_scale = round_scaling/50 + 1
+        large_scale = round_scaling/25 + 1
         super().__init__(x, y, damage_numbers=True, **attrs)
         self.reward = attrs["reward"] * small_scale
         self.speed *= small_scale
@@ -107,7 +107,8 @@ class Zombie(Entity):
         weapon = weapon_registry.get_weapon(
             attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
         )
-        self.weapon = Weapon(**weapon, bullet_registry=bullet_registry, bus="trash")
+        self.projectile_registry=projectile_registry
+        self.weapon = Weapon(**weapon, bullet_registry=projectile_registry, bus="trash")
         if attrs["weapon_stats"].get("bullet"):
             self.weapon.bullet.update(attrs["weapon_stats"]["bullet"])
         self.weapon.flip_sprites()
@@ -182,10 +183,13 @@ class Zombie(Entity):
                 return False
         return True
     
+    def update_health_bar(self):
+        self.progress_bar.update_progress(self.health/self.max_health)
+        self.progress_bar.update_text(str(max(round(self.health),0)))
+    
     def hit(self, bullet: Bullet, head: bool):
         super().hit(bullet, head)
-        self.progress_bar.update_progress(self.health/self.max_health)
-        self.progress_bar.update_text(str(round(self.health)))
+        self.update_health_bar()
 
     def update(self, frame_time, screen: pg.Surface):
         for effect in self.remove_effects:
@@ -268,6 +272,8 @@ class Player(Entity):
             "lmb": "shooting",
             "mwup": "next",
             "mwdown": "previous",
+            pg.K_e: "next",
+            pg.K_q: "previous",
             pg.K_r: "reloading",
             pg.K_p: "go2settings",
         }

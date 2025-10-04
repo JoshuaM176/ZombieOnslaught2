@@ -1,12 +1,15 @@
 from util.event_bus import event_bus
 from math import log
+from objects.projectiles.toxin import Toxin
 
-# all abilities should take self representing the zombie calling it, frame_time, id, even if unused, followed by an other arguments
+# the arguments self, frame_time and id are passed in to all effects
+# self represents the zombie calling it, and id representing the position of the effect in the zombie's effects property
 
 
 def regen(self, frame_time, regen, **_):
     if self.health < self.max_health:
         self.health += regen * frame_time
+        self.update_health_bar()
 
 
 def spawn_zombie(self, spawn_zombie, count, x=None, y=None, **_):
@@ -40,7 +43,7 @@ def initial_velocity(
         self.remove_effects.append(id)
 
 
-def invincibility_frames(self, frame_time, id, seconds):
+def invincibility_frames(self, frame_time, id, seconds, **_):
     if seconds > 0:
         self.invincible = True
         self.effects[id]["values"]["seconds"]["value"] -= frame_time
@@ -49,13 +52,17 @@ def invincibility_frames(self, frame_time, id, seconds):
         self.remove_effects.append(id)
 
 
-def freeze_frames(self, frame_time, id, seconds):
+def freeze_frames(self, frame_time, id, seconds, **_):
     if seconds > 0:
         self.frozen = True
         self.effects[id]["values"]["seconds"]["value"] -= frame_time
     else:
         self.frozen = False
         self.remove_effects.append(id)
+
+def spawn_toxin(self, **_):
+    x, y, w, h = self.hitbox.get()
+    self.projectile_registry.add(Toxin(x + w/2, y + h/2, 1, 1))
 
 
 def set_attr(self, name, value, **_):
@@ -69,4 +76,5 @@ effect_map = {
     "set_attr": set_attr,
     "invincibility_frames": invincibility_frames,
     "freeze_frames": freeze_frames,
+    "spawn_toxin": spawn_toxin
 }

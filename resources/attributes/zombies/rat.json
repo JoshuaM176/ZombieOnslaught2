@@ -1,9 +1,8 @@
 {
     "rat": {
         "zombiepedia": {
-            "displayName": "Rat",
-            "description": "Zombiefied Rats are fast and hard to aim for.",
-            "order": 7
+            "display_name": "Rat",
+            "description": "Zombiefied Rats are fast and hard to aim for."
         },
         "sprites": {
             "default": "rat.png",

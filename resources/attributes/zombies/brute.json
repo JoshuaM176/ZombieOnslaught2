@@ -1,9 +1,8 @@
 {
     "brute": {
         "zombiepedia": {
-            "displayName": "Brute",
-            "description": "Brutes are extra tough zombies that move a little slower",
-            "order": 3
+            "display_name": "Brute",
+            "description": "Brutes are extra tough zombies that move a little slower"
         },
         "sprites": {
             "default": "brute.png",

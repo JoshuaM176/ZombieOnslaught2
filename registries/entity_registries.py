@@ -1,7 +1,7 @@
 import pygame as pg
 from util.resource_loading import ResourceLoader, convert_files_to_sprites, load_sprite
 from objects.entities import Entity, Zombie
-from registries.bullet_registries import ProjectileRegistry
+from registries.projectile_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
 
