@@ -1,12 +1,13 @@
 {
-    "set_rounds": {
-        "100": {
-            "zombies": [
-                {
-                    "zombie": "zombie_lord"
-                }
-            ]
+    "game_info":{
+        "set_rounds": {
+            "100": {
+                "zombies": [
+                    {
+                        "zombie": "zombie_lord"
+                    }
+                ]
+            }
         }
-
     }
 }

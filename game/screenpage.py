@@ -4,12 +4,13 @@ screen_pages = {}
 
 
 class ScreenPage:
-    def __init__(self, screen: pg.Surface, page_name: str):
+    def __init__(self, screen: pg.Surface, page_name: str, screen_init: bool = True):
         screen_pages[page_name] = self
         self.screen = screen
         self.page_name = page_name
         self.go2 = page_name
-        self.__screen_init__()
+        if screen_init:
+            self.__screen_init__()
 
     def __screen_init__(self):
         """Called whenever screen size changes"""

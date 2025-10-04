@@ -65,6 +65,7 @@ class ZombieRegistry(EntityRegistry):
 
     def create_zombie(self, x, y, round: int, zombie_type: str, parent):
         zombie = Zombie(
+            self.screen,
             x,
             y,
             zombie_type,

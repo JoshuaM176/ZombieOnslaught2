@@ -6,12 +6,14 @@ from objects.entities import Player
 from game.game_ui import UI
 from game.game_over import GameOver
 from game.store import Store
+from game.settings.settings import Settings
 from game.zombiepedia import Zombiepedia
 from dataclasses import dataclass, field
 from random import choice, uniform
 from math import sqrt, floor
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, save_data
+from util.ui_objects import FloatingNumber
 from game.hut import Hut
 import pygame as pg
 
@@ -20,9 +22,22 @@ class Game(ScreenPage):
     def __init__(self, screen: pg.Surface):
         resource_loader = ResourceLoader("game", "attributes")
         resource_loader.load_all()
-        self.game_info = GameInfo(**resource_loader.get("game_info"))
-        super().__init__(screen, "game")
+        super().__init__(screen, "game", screen_init=False)
         self.alpha_screen = pg.Surface(screen.get_size(), pg.SRCALPHA)
+        self.money_number = FloatingNumber(2, size=25, color=(0, 200, 0))
+        self._create_registries()
+        self._game_prop_init(resource_loader)
+        self._create_player()
+        self._create_screens(resource_loader)
+        self.__screen_init__()
+
+    def _create_registries(self):
+        self.weapon_registry = WeaponRegistry()
+        self.zombie_projectile_registry = ProjectileRegistry(400, self.screen, self.alpha_screen)
+        self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_projectile_registry, self.screen)
+        self.player_projectile_registry = ProjectileRegistry(200, self.screen, self.alpha_screen)
+
+    def _game_prop_init(self, rsrc_ldr: ResourceLoader):
         self.event_map = {
             "add_money": self.add_money,
             "spawn_zombie": self.create_zombie,
@@ -32,30 +47,21 @@ class Game(ScreenPage):
             "killed_zombie": self.killed_zombie,
             "save_game": self.save_game,
         }
-        self.weapon_registry = WeaponRegistry()
-        self.zombie_projectile_registry = ProjectileRegistry(400, self.screen, self.alpha_screen)
-        self.zombie_registry = ZombieRegistry(
-            self.weapon_registry, self.zombie_projectile_registry, self.screen
-        )
-        self.stats = Stats(
-            self.zombie_registry.resources, **resource_loader.get("stats")
-        )
-        self.zombiepedia = Zombiepedia(
-            self.screen, self.zombie_registry, self.stats.zombies_killed, **resource_loader.get("zombiepedia")
-        )
-        self.player_projectile_registry = ProjectileRegistry(200, self.screen, self.alpha_screen)
-        self.player = Player(
-            200, 500, self.player_projectile_registry, self.weapon_registry, screen
-        )
-        self.ui = UI(screen)
-        self.player.set_equipped_weapon(weapon_categories[0])
+        self.game_info = GameInfo(**rsrc_ldr.get("game_info"))
+        self.stats = Stats(self.zombie_registry.resources, **rsrc_ldr.get("stats"))
+        self.settings = Settings(self.screen, rsrc_ldr.get("settings")).settings_data
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
-        self.game_info.spawn_data = resource_loader.get("spawn_rates")
-        self.game_info.set_rounds = resource_loader.get("set_rounds")
-        self.store = Store(
-            screen, self.weapon_registry, self.player.weapons, self.game_info
-        )
-        self.game_over = GameOver(screen)
+
+    def _create_player(self):
+        player_key_map = self.settings.player_key_map
+        self.player = Player(200, 500, self.player_projectile_registry, self.weapon_registry, player_key_map, self.screen)
+        self.player.set_equipped_weapon(weapon_categories[0])
+
+    def _create_screens(self, rsrc_ldr: ResourceLoader):
+        self.ui = UI(self.screen)
+        self.game_over = GameOver(self.screen)
+        self.store = Store(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
+        self.zombiepedia = Zombiepedia(self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia"))
 
     def __screen_init__(self):
         self.hut_render_plain = pg.sprite.RenderPlain(())
@@ -68,7 +74,7 @@ class Game(ScreenPage):
             )
             self.huts.append(hut)
             self.hut_render_plain.add(hut)
-        self.rect = pg.Rect(0, 0, self.screen.get_width(), self.screen.get_height()-250)
+        self.rect = pg.Rect(0, 0, self.screen.get_width(), self.screen.get_height() - 250)
 
     def update(self, frame_time: float):
         self.go2 = self.page_name
@@ -90,6 +96,7 @@ class Game(ScreenPage):
         self.screen.blit(self.alpha_screen, (0, 0))
         self.player.update(frame_time)
         self.ui.update()
+        self.money_number.update(frame_time, self.screen)
         if self.player.health < 0:
             self.end_game()
         return self.go2
@@ -99,7 +106,6 @@ class Game(ScreenPage):
         self.set_screen("game_over")
 
     def reset(self):
-        self.game_info.round = 0
         self.zombie_registry.clear()
         self.game_info.reset()
         for hut in self.huts:
@@ -116,15 +122,14 @@ class Game(ScreenPage):
 
     def add_money(self, money):
         self.game_info.money += money
+        self.money_number.add(140, self.screen.get_height() - 250, money)
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
     def damage_village(self, damage):
         self.game_info.village_health -= damage
         event_bus.add_event("ui_bus", {"village_health": self.game_info.village_health})
         for hut in self.huts:
-            hut.damage(
-                self.game_info.village_health / self.game_info.max_village_health
-            )
+            hut.damage(self.game_info.village_health / self.game_info.max_village_health)
         if self.game_info.village_health <= 0:
             self.end_game()
 
@@ -167,19 +172,18 @@ class Game(ScreenPage):
         weapon_info = {}
         for cat in weapon_categories:
             for weapon in self.weapon_registry.get_available_weapons(cat):
-                weapon_info.update(
-                    {weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}}
-                )
+                weapon_info.update({weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}})
         save_data("weapons", "attributes", weapon_info)
         player_info = {}
         player_weapons = []
         for cat in self.player.weapons.equipped_list:
             if self.player.weapons.get(cat):
-                player_weapons.append(
-                    {"name": self.player.weapons.get(cat).name, "cat": cat}
-                )
+                player_weapons.append({"name": self.player.weapons.get(cat).name, "cat": cat})
         player_info.update({"player": {"equipped_weapons": player_weapons}})
         save_data("player", "attributes", player_info)
+        settings_info = {}
+        settings_info.update({"settings": {"key_map": self.settings.key_map}})
+        save_data("game", "attributes", settings_info)
 
 
 @dataclass
@@ -204,9 +208,7 @@ class GameInfo:
 
     def update_spawn_rates(self):
         for data in self.spawn_data:
-            if self.round >= data.get("start_round") and self.round <= data.get(
-                "end_round"
-            ):
+            if self.round >= data.get("start_round") and self.round <= data.get("end_round"):
                 func = data["rate"]["function"]
                 mult = data["rate"]["mult"]
                 match func["name"]:
@@ -235,6 +237,7 @@ class GameInfo:
             self.pool_index = 0
 
     def reset(self):
+        self.round = 0
         self.pool_index = 0
         self.pool = ["zombie"] * 200
         self.village_health = self.max_village_health

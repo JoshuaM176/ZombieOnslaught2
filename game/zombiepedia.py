@@ -1,5 +1,5 @@
 from game.screenpage import ScreenPage
-from util.ui_objects import FuncButton, ButtonContainer, Button, text
+from util.ui_objects import FuncButton, ButtonContainer, Button, Text
 from registries.entity_registries import ZombieRegistry
 import pygame as pg
 
@@ -18,42 +18,12 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         self.zombies_per_page = round((self.screen.get_width() - 50) / 300)
         self.ui_buttons = []
         self.zombie_buttons = []
-        self.ui_buttons.append(
-            FuncButton(
-                50,
-                50,
-                500,
-                100,
-                self.screen,
-                self.set_screen,
-                ["game"],
-                "Back to Game",
-            )
-        )
-        self.ui_buttons.append(
-            FuncButton(
-                self.screen.get_width() / 2 - 600,
-                500,
-                300,
-                100,
-                self.screen,
-                self.prev_page,
-                [],
-                "<---",
-            )
-        )
-        self.ui_buttons.append(
-            FuncButton(
-                self.screen.get_width() / 2 + 100,
-                500,
-                300,
-                100,
-                self.screen,
-                self.next_page,
-                [],
-                "--->",
-            )
-        )
+        self.description_text = []
+        self.stats_text = []
+        scr_w = self.screen.get_width()
+        self.ui_buttons.append(FuncButton(50, 50, 500, 100, self.screen, self.set_screen, ["game"], "Back to Game"))
+        self.ui_buttons.append(FuncButton(scr_w / 2 - 600, 500, 300, 100, self.screen, self.prev_page, [], "<---"))
+        self.ui_buttons.append(FuncButton(scr_w / 2 + 100, 500, 300, 100, self.screen, self.next_page, [], "--->"))
         self.set_zombie_buttons()
 
     def next_page(self):
@@ -73,21 +43,8 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         self.num_zombies = len(zombies)
         x = 50
         y = 250
-        for i in range(
-            start_index, min(start_index + self.zombies_per_page, len(zombies))
-        ):
-            self.zombie_buttons.append(
-                self.ZombieButton(
-                    x,
-                    y,
-                    200,
-                    200,
-                    self.screen,
-                    zombies[i],
-                    self.select_zombie,
-                    self.stats[zombies[i]["name"]],
-                )
-            )
+        for i in range(start_index, min(start_index + self.zombies_per_page, len(zombies))):
+            self.zombie_buttons.append(self.ZombieButton(x, y, 200, 200, self.screen, zombies[i], self.select_zombie, self.stats[zombies[i]["name"]]))
             x += 300
             if x > self.screen.get_width() - 100:
                 x = 50
@@ -96,12 +53,21 @@ class Zombiepedia(ScreenPage, ButtonContainer):
 
     def select_zombie(self, zombie):
         self.selected_zombie = zombie
-
-    def print_stats(self, stats: list):
+        zombie_dict = self.zombies[self.selected_zombie]
+        self.description_text = []
+        self.stats_text = []
+        for i, desc in enumerate(zombie_dict["zombiepedia"]["description"].split("\n")):
+            self.description_text.append(Text(desc, 25, 750, self.screen.get_height()-300+30*i))
         x = 300
-        y = self.screen.get_height() - 300
-        for stat in stats:
-            text(self.screen, stat, 40, x, y)
+        y = self.screen.get_height()-300
+        for stat in [
+            f"Health: {zombie_dict['health']}",
+            f"Body Armour: {round(zombie_dict['body_armour'] * 100)}",
+            f"Head Armour: {round(zombie_dict['head_armour'] * 100)}",
+            f"Speed: {zombie_dict['speed']}",
+            f"Number Killed: {self.stats[self.selected_zombie]}",
+        ]:
+            self.stats_text.append(Text(stat, 40, x, y))
             y += 50
             if y > self.screen.get_height():
                 y = self.screen.get_height() - 350
@@ -124,29 +90,11 @@ class Zombiepedia(ScreenPage, ButtonContainer):
                     100,
                 ),
             )
-            self.print_stats(
-                [
-                    f"Health: {zombie['health']}",
-                    f"Body Armour: {round(zombie['body_armour'] * 100)}",
-                    f"Head Armour: {round(zombie['head_armour'] * 100)}",
-                    f"Speed: {zombie['speed']}",
-                    f"Number Killed: {self.stats[self.selected_zombie]}",
-                ]
-            )
-            description = zombie["zombiepedia"]["description"].split("\n")
-            for i in range(len(description)):
-                text(
-                    self.screen,
-                    description[i],
-                    25,
-                    750,
-                    self.screen.get_height() - 300 + 30 * i,
-                )
-        pg.draw.rect(
-            self.screen,
-            (100, 100, 100),
-            (0, self.screen.get_height() - 400, self.screen.get_width(), 50),
-        )
+        for text in self.stats_text:
+            text.update(self.screen)
+        for text in self.description_text:
+            text.update(self.screen)
+        pg.draw.rect(self.screen, (100, 100, 100), (0, self.screen.get_height() - 400, self.screen.get_width(), 50))
         return self.go2
 
     class ZombieButton(Button):
@@ -156,10 +104,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
             self.zombie = pg.sprite.Sprite()
             self.zombie.sprite = zombie["sprites"]["default"]
             self.zombie.rect = zombie["sprites"]["default"].get_rect()
-            self.zombie.rect.topleft = (
-                x + zombie["zombiepedia"]["shiftX"],
-                y + zombie["zombiepedia"]["shiftY"],
-            )
+            self.zombie.rect.topleft = (x + zombie["zombiepedia"]["shiftX"], y + zombie["zombiepedia"]["shiftY"])
             self.seen = seen
             super().__init__(x, y, width, height, screen)
 
@@ -169,14 +114,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
 
         def update(self):
             if self.seen:
-                pg.draw.rect(
-                    self.screen,
-                    (0, 0, 0),
-                    (self.x, self.y, self.width, self.height),
-                    10,
-                )
+                pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
                 self.screen.blit(self.zombie.sprite, self.zombie.rect)
             else:
-                pg.draw.rect(
-                    self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 0
-                )
+                pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 0)

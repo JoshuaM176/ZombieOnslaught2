@@ -1,0 +1,127 @@
+{
+    "game_info":{
+        "spawn_data": [
+            {
+                "zombie": "zombie",
+                "start_round": 1,
+                "end_round": 75,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 1
+                }
+            },
+            {
+                "zombie": "toxic_variant",
+                "start_round": 10,
+                "end_round": 40,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 3
+                }
+            },
+            {
+                "zombie": "toxic_variant",
+                "start_round": 80,
+                "end_round": 90,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 3
+                }
+            },
+            {
+                "zombie": "regen_zombie",
+                "start_round": 5,
+                "end_round": 5,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 40
+                }
+            },
+            {
+                "zombie": "regen_zombie",
+                "start_round": 10,
+                "end_round": 100,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                "mult": 1
+                }
+            },
+            {
+                "zombie": "brute",
+                "start_round": 20,
+                "end_round": 40,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 5
+                }
+            },
+            {
+                "zombie": "brute",
+                "start_round": 40,
+                "end_round": 50,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 5
+                }
+            },     
+            {
+                "zombie": "regen_brute",
+                "start_round": 30,
+                "end_round": 50,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 5
+                }
+            },
+            {
+                "zombie": "crawler",
+                "start_round": 40,
+                "end_round": 70,
+                "rate": {
+                    "function": {
+                        "name": "flat"
+                    },
+                    "mult": 3
+                }
+            },
+            {
+                "zombie": "infested_zombie",
+                "start_round": 50,
+                "end_round": 100,
+                "rate": {
+                    "function": {
+                        "name": "slope_up"
+                    },
+                    "mult": 0.1
+                }
+            },
+            {
+                "zombie": "zombie_knight",
+                "start_round": 100,
+                "end_round": 120,
+                "rate": {
+                    "function": {
+                        "name": "slope_up"
+                    },
+                    "mult": 1
+                }
+            }
+        ]
+    }
+}

@@ -3,7 +3,7 @@
         "sprite": "player.png",
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
-        "speed": 300,
+        "speed": 1,
         "health": 10,
         "stamina": 10,
         "stamina_regen": 5,

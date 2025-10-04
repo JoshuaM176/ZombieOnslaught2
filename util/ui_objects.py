@@ -88,9 +88,8 @@ class ButtonContainer:
                 and y < button.y + button.height
             ):
                 match event.type:
-                    case pg.MOUSEBUTTONUP:
-                        if event.button == 1:
-                            button.click(x, y)
+                    case pg.MOUSEBUTTONDOWN:
+                        button.click(x, y, event.button)
                     case pg.MOUSEWHEEL:
                         match event.y:
                             case 1:
@@ -106,19 +105,6 @@ class ButtonContainer:
             self.check_buttons(event, mouse_x, mouse_y)
 
 
-def text(screen, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
-    if font:
-        font = pg.font.Font(font, size)
-    else:
-        font = pg.font.Font(pg.font.get_default_font(), size)
-    text = font.render(text, True, color)
-    match align:
-        case "LEFT":
-            screen.blit(text, text.get_rect(topleft = (x, y)))
-        case "CENTER":
-            screen.blit(text, text.get_rect(center = (x, y)))
-
-
 def get_font(name):
     return pg.font.match_font(name) or pg.font.get_default_font()
 
@@ -131,13 +117,13 @@ class Button:
         self.height = height
         self.screen = screen
 
-    def click():
+    def click(self, x, y, button):
         pass
 
-    def scroll(scroll: bool):
+    def scroll(self, scroll: bool):
         pass
 
-    def update(**kwargs):
+    def update(self, **kwargs):
         pass
 
 
@@ -148,39 +134,43 @@ class FuncButton(Button):
         super().__init__(x, y, width, height, screen)
         self.func = func
         self.args = args
-        self.text = text
-        self.text_kwargs = {
+        kwargs = {
             "text": text,
             "x": self.x + self.width / 2,
             "y": self.y + self.height / 2,
             "size": 50,
             "align": "CENTER",
         }
-        self.text_kwargs.update(text_kwargs)
+        kwargs.update(text_kwargs)
+        self.text = Text(**kwargs)
 
-    def click(self, x, y):
-        self.func(*self.args)
+    def click(self, x, y, button):
+        if button == 1:
+            self.func(*self.args)
 
     def update(self, **kwargs):
         pg.draw.rect(
             self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10
         )
-        text(self.screen, **self.text_kwargs)
+        self.text.update(self.screen)
 
 
-class DamageNumber:
-    def __init__(self, time):
+class FloatingNumber:
+    def __init__(self, time, size = 15, color = (255, 0, 0)):
         self.x = 0
         self.y = 0
         self.damage = 0
         self.time = 0
         self.start_time = time
-        self.text = Text(str(round(self.damage)), 15, 0, 0, color=(255, 0, 0))
+        self.size = size
+        self.text = Text(str(round(self.damage)), size, 0, 0, color=color)
 
-    def add_damage(self, x, y, damage):
+    def add(self, x, y, damage):
         if self.time > 0:
             self.damage += damage
         else:
+            self.x = x
+            self.y = y
             self.damage = damage
         if abs(x - self.x) > 150:
             self.x = x
@@ -192,7 +182,7 @@ class DamageNumber:
         self.time -= frame_time
         percent_time_left = self.time / self.start_time
         if self.damage > 0 and self.time > 0:
-            temp_surface = pg.Surface((25, 15), pg.SRCALPHA)
+            temp_surface = pg.Surface((self.size * 2, self.size), pg.SRCALPHA)
             self.text.update(temp_surface)
             temp_surface.set_alpha(255 * percent_time_left)
             surface.blit(temp_surface, (self.x, self.y))

@@ -1,7 +1,6 @@
 import pygame as pg
 from time import time
 from util.event_bus import event_bus
-from game.settings import Settings
 import sys
 from game.screenpage import screen_pages
 
@@ -26,7 +25,6 @@ event_bus.create_bus("game_event_bus")
 event_bus.create_bus("game_end_of_round_bus")
 event_bus.create_bus("trash")
 main_menu = MainMenu(screen)
-settings = Settings(screen)
 curr_screen = "main_menu"
 
 while running:
@@ -42,9 +40,10 @@ while running:
             pg.KEYUP,
             pg.MOUSEBUTTONDOWN,
             pg.MOUSEBUTTONUP,
-            pg.MOUSEWHEEL,
+            pg.MOUSEWHEEL
         ):
-            event_bus.add_event("input_bus", event)
+            if not (event.type == pg.MOUSEBUTTONUP and event.button in (4, 5)):
+                event_bus.add_event("input_bus", event)
         if event.type == pg.VIDEORESIZE:
             for name, screen_obj in screen_pages.items():
                 screen_obj.__screen_init__()

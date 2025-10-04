@@ -1,0 +1,16 @@
+{
+    "settings": {
+        "key_map": {
+            "up": [119],
+            "left": [97],
+            "down": [115],
+            "right": [100],
+            "sprint": [1073742049],
+            "shooting": [1, 32],
+            "next": [4, 101],
+            "previous": [5, 113],
+            "reloading": [114],
+            "go2settings": [112]
+        }
+    }
+}

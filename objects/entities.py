@@ -3,7 +3,7 @@ from objects.hitreg import HitBox
 from objects.weapons import Weapon
 from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
-from util.ui_objects import DamageNumber, ProgressBar
+from util.ui_objects import FloatingNumber, ProgressBar
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
@@ -14,6 +14,7 @@ import random
 class Entity(pg.sprite.Sprite):
     def __init__(
         self,
+        screen: pg.Surface,
         x: int,
         y: int,
         hitbox: list[int],
@@ -27,26 +28,39 @@ class Entity(pg.sprite.Sprite):
         **_,
     ):
         super().__init__()
+        self.screen = screen
         self.x = x
         self.y = y
         self.hitbox = HitBox(x, y, *hitbox)
         self.head_hitbox = HitBox(x, y, *head_hitbox)
         self.image, self.rect = sprite, sprite.get_rect()
         self.speed = speed
+        self.current_speed = speed
         self.health = health
         self.max_health = health
-        self.horizontal_movement = 0
-        self.vertical_movement = 0
         self.body_armour = body_armour
         self.head_armour = head_armour
         self.damage_numbers = damage_numbers
         self.invincible = False
         self.frozen = False
+        self.movement = {"horizontal": 0, "vertical": 0}
         if self.damage_numbers:
-            self.damage_number = DamageNumber(2)
+            self.damage_number = FloatingNumber(2)
 
     def update(self):
         self.rect.topleft = (self.x, self.y)
+
+    def update_movement(self, frame_time):
+        self.x += self.movement["horizontal"] * self.current_speed * frame_time
+        self.y += self.movement["vertical"] * self.current_speed * frame_time
+        if self.x < -150:
+            self.x = -50
+        if self.x > self.screen.get_width():
+            self.x = self.screen.get_width()
+        if self.y > self.screen.get_height() - 350:
+            self.y = self.screen.get_height() - 350
+        if self.y < -100:
+            self.y = -100
 
     def hit_check(self, bullet: Bullet):
         if bullet is not None and bullet.damage > 0:
@@ -60,7 +74,7 @@ class Entity(pg.sprite.Sprite):
 
     def head_hit(self, damage):
         if self.damage_numbers:
-            self.damage_number.add_damage(
+            self.damage_number.add(
                 self.x, self.y, damage * (1 - self.head_armour)
             )
         self.health -= damage * (1 - self.head_armour)
@@ -73,13 +87,14 @@ class Entity(pg.sprite.Sprite):
         else:
             damage *= 1 - max(self.body_armour - bullet.armour_pierce, 0)
         if self.damage_numbers:
-            self.damage_number.add_damage(self.x, self.y, damage)
+            self.damage_number.add(self.x, self.y, damage)
         self.health -= damage
 
 
 class Zombie(Entity):
     def __init__(
         self,
+        screen: pg.Surface,
         x: int,
         y: int,
         zombie_type: str,
@@ -99,9 +114,9 @@ class Zombie(Entity):
             round_scaling = max(round_scaling - attrs["base_round"], 0)
         small_scale = sqrt(round_scaling) * 0.1 + 1
         large_scale = round_scaling/25 + 1
-        super().__init__(x, y, damage_numbers=True, **attrs)
+        super().__init__(screen, x, y, damage_numbers=True, **attrs)
         self.reward = attrs["reward"] * small_scale
-        self.speed *= small_scale
+        self.current_speed *= small_scale
         self.health *= large_scale
         self.max_health *= large_scale
         weapon = weapon_registry.get_weapon(
@@ -113,6 +128,7 @@ class Zombie(Entity):
             self.weapon.bullet.update(attrs["weapon_stats"]["bullet"])
         self.weapon.flip_sprites()
         self.progress_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text = str(round(self.health)))
+        self.movement["horizontal"] = -1
 
         self.effects = []
         for effect in attrs["effects"]:
@@ -196,11 +212,7 @@ class Zombie(Entity):
             self.effects[effect] = None
         self.remove_effects = []
         if not self.frozen:
-            self.x -= self.speed * frame_time
-            if self.y < 0:
-                self.y += self.speed * frame_time
-            if self.y > screen.get_height() - 350:
-                self.y -= self.speed * frame_time
+            self.update_movement(frame_time)
             self.animation_time += frame_time
             if self.animation_time > self.animation_length:
                 self.animation_time = 0
@@ -235,15 +247,14 @@ class Zombie(Entity):
 
 
 class Player(Entity):
-    def __init__(self, x, y, bullet_registry, weapon_registry: WeaponRegistry, screen):
+    def __init__(self, x, y, bullet_registry, weapon_registry: WeaponRegistry, key_map, screen):
         self.bullet_registry = bullet_registry
         resource_loader = ResourceLoader("player", "attributes")
         resource_loader.load_all()
         resources = resource_loader.get("player")
         resources["sprite"] = load_sprite("player.png", "player", -1)
-        super().__init__(x, y, **resources)
+        super().__init__(screen, x, y, **resources)
         self.render_plain = pg.sprite.RenderPlain((self))
-        self.movement = {"horizontal": 0, "vertical": 0}
         self.stamina = resources["stamina"]
         self.max_stamina = self.stamina
         self.stamina_regen_delay = resources["stamina_regen_delay"]
@@ -262,21 +273,7 @@ class Player(Entity):
             "reloading": False,
             "go2settings": False,
         }
-        self.key_map = {
-            pg.K_w: "up",
-            pg.K_a: "left",
-            pg.K_s: "down",
-            pg.K_d: "right",
-            pg.K_LSHIFT: "sprint",
-            pg.K_SPACE: "shooting",
-            "lmb": "shooting",
-            "mwup": "next",
-            "mwdown": "previous",
-            pg.K_e: "next",
-            pg.K_q: "previous",
-            pg.K_r: "reloading",
-            pg.K_p: "go2settings",
-        }
+        self.key_map = key_map
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
         self.equipped_weapon = None
         for weapon in resources["equipped_weapons"]:
@@ -284,8 +281,6 @@ class Player(Entity):
             self.set_weapon(weapon_dict, weapon["cat"])
         self.ui_bus = event_bus.put_events("ui_bus")
         self.ui_bus.send(None)
-        self.screen = screen
-
     def set_weapon(self, weapon: dict, cat: str):
         self.weapons.equip(weapon, cat)
 
@@ -295,7 +290,6 @@ class Player(Entity):
                 self.render_plain.remove(self.equipped_weapon)
             self.equipped_weapon = self.weapons.get(cat)
             self.render_plain.add(self.equipped_weapon)
-            self.speed = self.equipped_weapon.player["movement"]
             self.ui_bus.send(
                 {
                     "weapon": self.equipped_weapon.name,
@@ -330,17 +324,10 @@ class Player(Entity):
                 parse_input(True, event.key)
             if event.type == pg.KEYUP:
                 parse_input(False, event.key)
-            if event.type == pg.MOUSEWHEEL:
-                if event.y == 1:
-                    parse_input(True, "mwup")
-                else:
-                    parse_input(True, "mwdown")
             if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    parse_input(True, "lmb")
+                parse_input(True, event.button)
             if event.type == pg.MOUSEBUTTONUP:
-                if event.button == 1:
-                    parse_input(False, "lmb")
+                parse_input(False, event.button)
 
     def reset(self):
         self.x = 100
@@ -360,7 +347,6 @@ class Player(Entity):
         )
 
     def reset_input(self):
-        self.movement.update({"horizontal": 0, "vertical": 0})
         self.shooting = False
         self.reloading = False
         self.input_dict.update(
@@ -376,14 +362,14 @@ class Player(Entity):
         )
 
     def update_movement(self, frame_time):
-        hor = self.input_dict["right"] - self.input_dict["left"]
-        ver = self.input_dict["down"] - self.input_dict["up"]
+        self.current_speed = self.speed * self.equipped_weapon.player["movement"]
+        self.movement["horizontal"] = self.input_dict["right"] - self.input_dict["left"]
+        self.movement["vertical"] = self.input_dict["down"] - self.input_dict["up"]
         sprint = self.input_dict["sprint"] + 1
-        speed = self.speed
         if self.stamina < 0:
             sprint = 1
-            speed *= 0.5
-        if not hor and not ver:
+            self.current_speed *= 0.5
+        if not self.movement["horizontal"] and not self.movement["vertical"]:
             if self.time_resting > 0:
                 if self.stamina < self.max_stamina:
                     self.stamina = min(
@@ -391,34 +377,23 @@ class Player(Entity):
                         + self.time_resting * frame_time * self.stamina_regen,
                         self.max_stamina,
                     )
-            if self.time_resting < 1:
-                self.time_resting = min(self.time_resting + frame_time, 1)
+                if self.time_resting < 1:
+                    self.time_resting = min(self.time_resting + frame_time, 1)
         else:
             self.time_resting = -self.stamina_regen_delay
             if self.stamina > 0:
                 self.stamina -= frame_time / 2
                 if sprint > 1:
                     self.stamina -= frame_time
-        speed *= sprint
-        self.horizontal_movement = hor * speed
-        self.vertical_movement = ver * speed
-        if hor and ver:
-            self.horizontal_movement *= 0.7071
-            self.vertical_movement *= 0.7071
-        self.x += self.horizontal_movement * frame_time
-        self.y += self.vertical_movement * frame_time
-        if self.x < -50:
-            self.x = -50
-        if self.x > self.screen.get_width():
-            self.x = self.screen.get_width()
-        if self.y > self.screen.get_height() - 350:
-            self.y = self.screen.get_height() - 350
-        if self.y < -100:
-            self.y = -100
+            self.current_speed *= sprint
+            if self.movement["horizontal"] and self.movement["vertical"]:
+                self.current_speed *= 0.7071 # For consistent movement speed diagonally
+        super().update_movement(frame_time)
 
     def update_shooting(self, shooting: bool = None, reloading: bool = None):
         self.shooting = shooting or self.input_dict["shooting"]
         self.reloading = reloading or self.input_dict["reloading"]
+        self.input_dict["reloading"] = False
 
     def send_data_to_ui(self):
         self.ui_bus.send(
