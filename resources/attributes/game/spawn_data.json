@@ -121,6 +121,17 @@
                     },
                     "mult": 1
                 }
+            },
+            {
+                "zombie": "zombie_archer",
+                "start_round": 110,
+                "end_round": 120,
+                "rate": {
+                    "function": {
+                        "name": "slope_up"
+                    },
+                    "mult": 1
+                }
             }
         ]
     }

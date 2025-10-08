@@ -116,7 +116,7 @@ class Game(ScreenPage):
     def killed_zombie(self, money: float, zombie):
         self.add_money(money)
         self.stats.zombies_killed[zombie] += 1
-        if self.stats.zombies_killed[zombie] == 1:
+        if self.stats.zombies_killed[zombie] == 1 and zombie in self.zombiepedia.zombie_list:
             self.set_screen("zombiepedia")
             self.zombiepedia.set_zombie_buttons()
             self.zombiepedia.select_zombie(zombie)

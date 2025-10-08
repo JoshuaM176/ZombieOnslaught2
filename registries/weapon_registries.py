@@ -69,8 +69,8 @@ class WeaponRegistry:
 
 
 class EquippedWeaponRegistry:
-    def __init__(self, bullet_registry):
-        self.bullet_registry = bullet_registry
+    def __init__(self, projectile_registry):
+        self.projectile_registry = projectile_registry
         self.weapons = {}
         for cat in weapon_categories:
             self.weapons.update({cat: None})
@@ -80,7 +80,7 @@ class EquippedWeaponRegistry:
 
     def equip(self, weapon: dict, cat: str):
         self.weapons[cat] = Weapon(
-            **weapon, bullet_registry=self.bullet_registry, bus="ui_bus"
+            **weapon, projectile_registry=self.projectile_registry, bus="ui_bus"
         )
 
     def get(self, cat: str):

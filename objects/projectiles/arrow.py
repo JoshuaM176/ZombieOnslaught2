@@ -21,7 +21,9 @@ class Arrow(Projectile):
         speed,
         recoil,
         penetration,
-        head_mult
+        head_mult,
+        flip_sprite: bool = False,
+        **_
     ):
         self.x = x + shiftX
         self.y = y + shiftY
@@ -38,6 +40,8 @@ class Arrow(Projectile):
         self.gravity = 0
         self.recent_hits = {}
         self.image, self.rect = (arrow["sprite"], arrow["sprite"].get_rect())
+        if flip_sprite:
+            self.image = pg.transform.flip(self.image, True, False)
 
     def update(self, frame_time, screen: pg.Surface, _):
         if self.damage > 0:

@@ -17,7 +17,7 @@
             "firerate": 60,
             "fire_animation_length": 0.01,
             "burst": 0,
-            "bullets": 1,
+            "projectiles": 1,
             "shiftX": 0,
             "shiftY": 0,
 	        "downwards_recoil": false,
@@ -34,7 +34,8 @@
             "reload_type": 0,
             "reload_on_empty": 0
         },
-        "bullet": {
+        "projectile": {
+            "type": "bullet",
             "damage": 10,
             "head_mult": 1.2,
             "armour_pierce": 0,

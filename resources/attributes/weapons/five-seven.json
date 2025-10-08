@@ -29,7 +29,7 @@
             "reload_time": 0.8,
             "reload_on_empty": 0.25
         },
-        "bullet": {
+        "projectile": {
             "damage": 14,
             "head_mult": 1.4,
             "dropoff": 9,

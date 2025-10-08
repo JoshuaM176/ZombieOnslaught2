@@ -12,6 +12,7 @@ class Projectile:
         recoil,
         penetration,
         head_mult,
+        **_
     ):
         self.x = x
         self.y = y
@@ -34,5 +35,5 @@ class Projectile:
         self.horizontal_movement *= speed_mult
         self.vertical_movement *= speed_mult
 
-    def update(sel, screen):
+    def update(self, screen):
         pass

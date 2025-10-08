@@ -133,15 +133,15 @@ class Store(ScreenPage, ButtonContainer):
         x = -300
         y = 255
         for stat in [
-            f"Damage: {self.weapon['bullet']['damage'] * self.weapon['weapon']['bullets']}",
-            f"Dropoff: {self.weapon['bullet']['dropoff'] * self.weapon['weapon']['bullets']}",
+            f"Damage: {self.weapon['projectile']['damage'] * self.weapon['weapon']['projectiles']}",
+            f"Dropoff: {self.weapon['projectile']['dropoff'] * self.weapon['weapon']['projectiles']}",
             f"Firerate: {self.weapon['weapon']['firerate']}",
-            f"Headshot Damage: {self.weapon['bullet']['head_mult']}",
+            f"Headshot Damage: {self.weapon['projectile']['head_mult']}",
             f"Reload Time: {self.weapon['ammo']['reload_time']}(+{self.weapon['ammo']['reload_on_empty']})",
             f"Ammo Capacity: {self.weapon['ammo']['bullets']}",
             f"Bullet in Chamber: {self.weapon['ammo']['bullet_in_chamber']}",
-            f"Bullet Speed: {self.weapon['bullet']['speed']}",
-            f"Bullet Penetration: {self.weapon['bullet']['penetration'] * 100}%",
+            f"Projectile Speed: {self.weapon['projectile']['speed']}",
+            f"Bullet Penetration: {self.weapon['projectile']['penetration'] * 100}%",
             f"Movement Speed: {self.weapon['player']['movement']}",
             f"Recoil {self.weapon['weapon']['recoil_per_shot'] * 100}",
             f"Recoil Control {self.weapon['weapon']['recoil_control'] * 100}",

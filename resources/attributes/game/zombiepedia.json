@@ -11,7 +11,8 @@
             "rat",
             "zombie_knight",
             "zombie_lord",
-            "zombie_lord_knight"
+            "zombie_lord_knight",
+            "zombie_archer"
         ]
     }
 }

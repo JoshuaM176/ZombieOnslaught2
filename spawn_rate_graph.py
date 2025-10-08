@@ -9,7 +9,7 @@ from game.gameplay import GameInfo  # noqa
 
 resource_loader = ResourceLoader("game", "attributes")
 resource_loader.load_all()
-spawn_data = resource_loader.get("spawn_rates")
+spawn_data = resource_loader.get("game_info")["spawn_data"]
 
 pool = ["zombie"] * 200
 pool_index = 0
@@ -51,7 +51,7 @@ for spawn in spawn_data:
     zombies.add(spawn["zombie"])
 
 df = pd.DataFrame(columns=list(zombies))
-for i in range(100):
+for i in range(200):
     curr_round += 1
     update_spawn_rates()
     for zombie in zombies:

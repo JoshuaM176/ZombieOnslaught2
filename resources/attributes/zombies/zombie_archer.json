@@ -1,0 +1,24 @@
+{
+    "zombie_archer": {
+        "base_round": 100,
+        "zombiepedia": {
+            "display_name": "Zombie Archer"
+        },
+        "sprites": {
+            "default": "zombie_archer.png",
+            "animation": ["zombie_archer-A1.png", "zombie_archer-A2.png", "zombie_archer-A1.png", "zombie_archer.png", "zombie_archer-A3.png", "zombie_archer-A4.png", "zombie_archer-A3.png", "zombie_archer.png"]
+        },
+        "properties": {
+            "health": 125,
+            "speed": 110,
+            "reward": 10
+        },
+        "weapon_stats": {
+            "name": "Bow",
+            "category": "sniper",
+            "projectile": {
+                "flip_sprite": true
+            }
+        }
+    }
+}

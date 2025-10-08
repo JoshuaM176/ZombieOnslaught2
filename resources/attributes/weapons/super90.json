@@ -13,7 +13,7 @@
             },
             "type": "shotgun",
             "firerate": 75,
-            "bullets": 8,
+            "projectiles": 8,
             "fire_animation_length": 0.5,
             "shiftX": 40,
             "shiftY": 20,
@@ -31,7 +31,7 @@
             "reload_on_empty": 0.35,
             "reload_type": 1
         },
-        "bullet": {
+        "projectile": {
             "damage": 28,
             "head_mult": 1,
             "dropoff": 45,

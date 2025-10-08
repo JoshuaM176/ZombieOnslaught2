@@ -14,13 +14,14 @@ import random
 from dataclasses import dataclass
 from typing import Type
 
-@dataclass
+@dataclass(kw_only=True)
 class EntityProperties:
     speed: int
     health: int
     body_armour: int
     head_armour: int
     name: str
+    blood: bool = True
 
     def __post_init__(self):
         self.current_speed = self.speed
@@ -95,7 +96,8 @@ class Entity(pg.sprite.Sprite):
         if self.damage_numbers:
             self.damage_number.add(self.x, self.y, damage)
         self.properties.health -= damage
-        self.generic_registry.add(Blood(bullet.x, bullet.y, damage))
+        if self.properties.blood:
+            self.generic_registry.add(Blood(bullet.x, bullet.y, damage))
         
 
 
@@ -123,9 +125,9 @@ class Zombie(Entity):
             attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
         )
         self.projectile_registry=projectile_registry
-        self.weapon = Weapon(**weapon, bullet_registry=projectile_registry, bus="trash")
-        if attrs["weapon_stats"].get("bullet"):
-            self.weapon.bullet.update(attrs["weapon_stats"]["bullet"])
+        self.weapon = Weapon(**weapon, projectile_registry=projectile_registry, bus="trash")
+        if attrs["weapon_stats"].get("projectile"):
+            self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()
         self.progress_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text = str(round(self.properties.health)))
         self.movement["horizontal"] = -1

@@ -1,6 +1,7 @@
 import pygame as pg
 from registries.projectile_registries import ProjectileRegistry
 from objects.projectiles.bullet import Bullet
+from objects.projectiles.arrow import Arrow
 from random import uniform
 from math import floor
 from util.event_bus import event_bus
@@ -14,8 +15,8 @@ class Weapon(pg.sprite.Sprite):
         player: dict,
         weapon: dict,
         ammo: dict,
-        bullet: dict,
-        bullet_registry: ProjectileRegistry,
+        projectile: dict,
+        projectile_registry: ProjectileRegistry,
         bus: str,
         **_,
     ):
@@ -31,10 +32,11 @@ class Weapon(pg.sprite.Sprite):
                 setattr(self, key, value)
         self.time_per_bullet = 60 / self.firerate
         self.time_since_last_bullet = 0
-        self.bullet = bullet.copy()
+        self.projectile = projectile.copy()
+        self.projectile_type = self.projectile.pop("type")
         self.player = player
         self.shooting = False
-        self.bullet_registry = bullet_registry
+        self.projectile_registry = projectile_registry
         self.recoil = 0
         self.reloading = False
         self.sprite_time = 0
@@ -56,35 +58,38 @@ class Weapon(pg.sprite.Sprite):
                 new_sprites[key] = pg.transform.flip(sprite, True, False)
         self.sprites = new_sprites
         self.shiftX *= -1
-        self.bullet["speed"] *= -1
+        self.projectile["speed"] *= -1
 
     def shoot(self, x, y):
         if self.ammo.get():
             if not self.burst or self.burst_fired < self.burst:
                 self.burst_fired += 1
-                self.fire_bullet(x, y)
+                self.fire(x, y)
                 ammo = self.ammo.get()
                 self.ui_bus.send({"bullets": ammo})
                 if ammo == 0:
                     self.reloading = True
 
-    def fire_bullet(self, x, y):
+    def fire(self, x, y):
         self.ammo.shoot()
         self.set_sprite(self.sprites["fire_sprite"], self.fire_animation_length)
-        for i in range(self.bullets):
-            bullet = Bullet(
-                x,
-                y,
-                **self.bullet,
-                recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
-            )
-            #arrow = Arrow(
-                #x,
-                #y,
-                #**self.bullet,
-                #recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
-            #)
-            self.bullet_registry.add(bullet)
+        for i in range(self.projectiles):
+            match self.projectile_type:
+                case "bullet":
+                    projectile = Bullet(
+                    x,
+                    y,
+                    **self.projectile,
+                    recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
+                    )
+                case "arrow":
+                    projectile = Arrow(
+                        x,
+                        y,
+                        **self.projectile,
+                        recoil=uniform(self.recoil * -self.downwards_recoil, self.recoil),
+                    )
+            self.projectile_registry.add(projectile)
             self.recoil += self.recoil_per_shot
             if self.recoil > self.max_recoil:
                 self.recoil = self.max_recoil

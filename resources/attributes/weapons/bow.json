@@ -1,0 +1,38 @@
+{
+    "Bow": {
+        "weapon": {
+            "sprites": {
+                "default": "bow.png",
+                "reloading": ["bow.png"],
+                "extra_reload_sprite": "bow.png",
+                "fire_sprite": "bow.png"
+            },
+            "type": "sniper",
+            "firerate": 30,
+            "fire_animation_length": 0.01,
+            "shiftX": 30,
+            "shiftY": 10,
+            "recoil_per_shot": 0.01,
+            "recoil_control": 0.05,
+            "max_recoil": 0.04
+        },
+        "ammo": {
+            "bullets": 10,
+            "bullet_in_chamber": false,
+            "mags": 5,
+            "mag_time": 25,
+            "reload_time": 2,
+            "reload_on_empty": 0
+        },
+        "projectile": {
+            "type": "arrow",
+            "damage": 5,
+            "head_mult": 1,
+            "dropoff": 3,
+            "speed": 2000,
+            "penetration": 0,
+            "shiftX": 20,
+            "shiftY": 64
+        }
+    }
+}

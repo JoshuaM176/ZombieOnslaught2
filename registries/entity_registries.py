@@ -60,12 +60,12 @@ class ZombieRegistry(EntityRegistry):
     def __init__(
         self,
         weapon_registry: WeaponRegistry,
-        bullet_registry: ProjectileRegistry,
+        projectile_registry: ProjectileRegistry,
         generic_registry: GenericRegistry,
         screen: pg.Surface,
     ):
         super().__init__("zombies")
-        self.bullet_registry = bullet_registry
+        self.projectile_registry = projectile_registry
         self.weapon_registry = weapon_registry
         self.generic_registry = generic_registry
         self.orphaned_damage_numbers = []
@@ -77,7 +77,7 @@ class ZombieRegistry(EntityRegistry):
             x,
             y,
             self.weapon_registry,
-            self.bullet_registry,
+            self.projectile_registry,
             self.generic_registry,
             round_scaling = round,
             parent = parent,

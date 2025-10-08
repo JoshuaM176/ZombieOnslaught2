@@ -22,7 +22,7 @@
             "bullets": 1000,
             "reload_time": 0.01
         },
-        "bullet": {
+        "projectile": {
             "damage": 1,
             "dropoff": 10,
             "speed": 100,
