@@ -8,7 +8,9 @@
             "default": "regen_zombie.png",
             "animation": ["regen_zombie.png", "regen_zombie-A1.png", "regen_zombie-A2.png", "regen_zombie-A3.png", "regen_zombie-A4.png", "regen_zombie-A5.png", "regen_zombie-A6.png", "regen_zombie-A7.png"]
         },
-        "reward": 11,
+        "properties": {
+            "reward": 11
+        },
         "effects": [
             {
                 "effect": "regen",
@@ -17,7 +19,7 @@
                         "type": "format_eval",
                         "attribute": true,
                         "name": "regen",
-                        "value": "{self.health} * 0.1"
+                        "value": "{self.properties.health} * 0.1"
                     }
                 ]
             }

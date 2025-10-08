@@ -23,8 +23,8 @@
             "reload_time": 0.01
         },
         "bullet": {
-            "damage": 5,
-            "dropoff": 50,
+            "damage": 1,
+            "dropoff": 10,
             "speed": 100,
             "penetration": 0,
             "shiftX": 20,

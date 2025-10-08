@@ -8,9 +8,11 @@
             "default": "toxic_variant.png",
             "animation": ["toxic_variant-A1.png", "toxic_variant-A2.png", "toxic_variant-A1.png", "toxic_variant.png", "toxic_variant-A3.png", "toxic_variant-A4.png", "toxic_variant-A3.png", "toxic_variant.png"]
         },
-        "reward": 11,
-        "health": 60,
-        "speed": 110,
+        "properties": {
+            "reward": 11,
+            "health": 60,
+            "speed": 110
+        },
         "effects": [
             {
                 "effect": "spawn_toxin",

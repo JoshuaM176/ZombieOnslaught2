@@ -54,7 +54,6 @@ class UI:
             "stamina_info": self.StaminaBar(screen),
             "village_info": self.VillageHealthBar(screen)
         }
-        self.render_plain = pg.sprite.RenderPlain()
 
     def update(self):
         ui_bus = event_bus.get_events("ui_bus")

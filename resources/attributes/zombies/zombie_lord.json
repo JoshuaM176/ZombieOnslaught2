@@ -1,6 +1,5 @@
 {
     "zombie_lord": {
-        "base_round": 100,
         "zombiepedia": {
             "display_name": "Zombie Lord"
         },
@@ -8,11 +7,14 @@
             "default": "zombie_lord.png",
             "animation": ["zombie_lord-A1.png", "zombie_lord-A2.png", "zombie_lord-A1.png", "zombie_lord.png", "zombie_lord-A3.png", "zombie_lord-A4.png", "zombie_lord-A3.png", "zombie_lord.png"]
         },
-        "health": 1000,
-        "speed": 60,
-        "body_armour": 0.4,
-        "head_armour": 0.4,
-        "reward": 1000,
+        "properties": {
+            "base_round": 100,
+            "health": 1000,
+            "speed": 60,
+            "body_armour": 0.4,
+            "head_armour": 0.4,
+            "reward": 1000
+        },
         "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {

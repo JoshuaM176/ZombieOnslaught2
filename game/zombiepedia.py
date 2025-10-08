@@ -13,6 +13,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         self.selected_zombie = "zombie"
         self.page = 0
         super().__init__(screen, "zombiepedia")
+        self.select_zombie("zombie")
 
     def __screen_init__(self):
         self.zombies_per_page = round((self.screen.get_width() - 50) / 300)
@@ -61,10 +62,10 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         x = 300
         y = self.screen.get_height()-300
         for stat in [
-            f"Health: {zombie_dict['health']}",
-            f"Body Armour: {round(zombie_dict['body_armour'] * 100)}",
-            f"Head Armour: {round(zombie_dict['head_armour'] * 100)}",
-            f"Speed: {zombie_dict['speed']}",
+            f"Health: {zombie_dict["properties"]["health"]}",
+            f"Body Armour: {round(zombie_dict["properties"]["body_armour"] * 100)}",
+            f"Head Armour: {round(zombie_dict["properties"]["head_armour"] * 100)}",
+            f"Speed: {zombie_dict["properties"]["speed"]}",
             f"Number Killed: {self.stats[self.selected_zombie]}",
         ]:
             self.stats_text.append(Text(stat, 40, x, y))
@@ -108,7 +109,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
             self.seen = seen
             super().__init__(x, y, width, height, screen)
 
-        def click(self, x, y):
+        def click(self, x, y, button):
             if self.seen:
                 self.func(self.zombie_dict["name"])
 

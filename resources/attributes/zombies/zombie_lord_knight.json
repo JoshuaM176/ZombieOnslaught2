@@ -8,11 +8,13 @@
             "default": "zombie_knight.png",
             "animation": ["zombie_knight-A1.png", "zombie_knight-A2.png", "zombie_knight-A1.png", "zombie_knight.png", "zombie_knight-A3.png", "zombie_knight-A4.png", "zombie_knight-A3.png", "zombie_knight.png"]
         },
-        "health": 250,
-        "speed": 90,
-        "body_armour": 0.6,
-        "head_armour": 0.5,
-        "reward": 1,
+        "properties": {
+            "health": 250,
+            "speed": 90,
+            "body_armour": 0.6,
+            "head_armour": 0.5,
+            "reward": 1
+        },
         "effects": [
             {
                 "effect": "invincibility_frames",

@@ -3,11 +3,16 @@
         "sprite": "player.png",
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
-        "speed": 1,
-        "health": 10,
-        "stamina": 10,
-        "stamina_regen": 5,
-        "stamina_regen_delay": 1.5,
+        "properties": {
+            "speed": 1,
+            "health": 10,
+            "stamina": 10,
+            "stamina_regen": 5,
+            "stamina_regen_delay": 1.5,
+            "body_armour": 0,
+            "head_armour": 0,
+            "name": "player"
+        },
         "equipped_weapons": [
             {
                 "name": "Chainsaw",

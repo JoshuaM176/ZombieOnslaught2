@@ -2,6 +2,7 @@ from game.screenpage import ScreenPage
 from registries.entity_registries import ZombieRegistry
 from registries.weapon_registries import WeaponRegistry, weapon_categories
 from registries.projectile_registries import ProjectileRegistry
+from registries.generic_registries import GenericRegistry
 from objects.entities import Player
 from game.game_ui import UI
 from game.game_over import GameOver
@@ -17,7 +18,6 @@ from util.ui_objects import FloatingNumber
 from game.hut import Hut
 import pygame as pg
 
-
 class Game(ScreenPage):
     def __init__(self, screen: pg.Surface):
         resource_loader = ResourceLoader("game", "attributes")
@@ -32,9 +32,10 @@ class Game(ScreenPage):
         self.__screen_init__()
 
     def _create_registries(self):
+        self.generic_registry = GenericRegistry(self.screen, self.alpha_screen)
         self.weapon_registry = WeaponRegistry()
         self.zombie_projectile_registry = ProjectileRegistry(400, self.screen, self.alpha_screen)
-        self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_projectile_registry, self.screen)
+        self.zombie_registry = ZombieRegistry(self.weapon_registry, self.zombie_projectile_registry, self.generic_registry, self.screen)
         self.player_projectile_registry = ProjectileRegistry(200, self.screen, self.alpha_screen)
 
     def _game_prop_init(self, rsrc_ldr: ResourceLoader):
@@ -54,16 +55,16 @@ class Game(ScreenPage):
 
     def _create_player(self):
         player_key_map = self.settings.player_key_map
-        self.player = Player(200, 500, self.player_projectile_registry, self.weapon_registry, player_key_map, self.screen)
+        self.player = Player(200, 500, self.player_projectile_registry, self.weapon_registry, self.generic_registry, player_key_map, self.screen)
         self.player.set_equipped_weapon(weapon_categories[0])
 
     def _create_screens(self, rsrc_ldr: ResourceLoader):
-        self.ui = UI(self.screen)
         self.game_over = GameOver(self.screen)
         self.store = Store(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
         self.zombiepedia = Zombiepedia(self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia"))
 
     def __screen_init__(self):
+        self.ui = UI(self.screen)
         self.hut_render_plain = pg.sprite.RenderPlain(())
         self.huts = []
         for i in range(round(self.screen.get_width() / 500)):
@@ -87,6 +88,7 @@ class Game(ScreenPage):
         self.screen.fill(color=(150, 150, 150), rect=self.rect)
         self.alpha_screen.fill((0, 0, 0, 0), rect=self.rect)
         self.hut_render_plain.draw(self.screen)
+        self.generic_registry.update(frame_time)
         self.zombie_registry.hit_check(self.player_projectile_registry)
         for projectile in self.zombie_projectile_registry.projectiles:
             self.player.hit_check(projectile)
@@ -111,21 +113,21 @@ class Game(ScreenPage):
         for hut in self.huts:
             hut.reset()
 
-    def killed_zombie(self, money, zombie):
+    def killed_zombie(self, money: float, zombie):
         self.add_money(money)
         self.stats.zombies_killed[zombie] += 1
         if self.stats.zombies_killed[zombie] == 1:
             self.set_screen("zombiepedia")
             self.zombiepedia.set_zombie_buttons()
-            self.zombiepedia.selected_zombie = zombie
+            self.zombiepedia.select_zombie(zombie)
             self.player.reset_input()
 
-    def add_money(self, money):
+    def add_money(self, money: float):
         self.game_info.money += money
         self.money_number.add(140, self.screen.get_height() - 250, money)
         event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
-    def damage_village(self, damage):
+    def damage_village(self, damage: float):
         self.game_info.village_health -= damage
         event_bus.add_event("ui_bus", {"village_health": self.game_info.village_health})
         for hut in self.huts:
@@ -168,6 +170,7 @@ class Game(ScreenPage):
     def save_game(self):
         game_info = {"game_info": {"money": self.game_info.money}}
         game_info.update({"stats": {"zombies_killed": self.stats.zombies_killed}})
+        game_info.update({"settings": {"key_map": self.settings.key_map}})
         save_data("game", "attributes", game_info)
         weapon_info = {}
         for cat in weapon_categories:
@@ -181,9 +184,6 @@ class Game(ScreenPage):
                 player_weapons.append({"name": self.player.weapons.get(cat).name, "cat": cat})
         player_info.update({"player": {"equipped_weapons": player_weapons}})
         save_data("player", "attributes", player_info)
-        settings_info = {}
-        settings_info.update({"settings": {"key_map": self.settings.key_map}})
-        save_data("game", "attributes", settings_info)
 
 
 @dataclass

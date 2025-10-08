@@ -3,6 +3,7 @@ from util.resource_loading import ResourceLoader, convert_files_to_sprites, load
 from objects.entities import Entity, Zombie
 from registries.projectile_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
+from registries.generic_registries import GenericRegistry
 from util.event_bus import event_bus
 
 class EntityRegistry:
@@ -12,7 +13,8 @@ class EntityRegistry:
         resource_loader.load_all()
         resource_loader.set_defaults()
         self.resources = resource_loader.get_all()
-        for key in self.resources.keys():
+        for key, item in self.resources.items():
+            item["properties"]["name"] = key
             self.resources[key]["sprite"] = load_sprite(
                 self.resources[key]["sprite"], entity_type, -1
             )
@@ -42,10 +44,14 @@ class EntityRegistry:
         if len(self.entities) > 0:
             return False
         return True
+    
+    def clear(self):
+        for entity in self.entities:
+            self.deregister(entity)
 
     def hit_check(self, projectiles: ProjectileRegistry):
         for entity in self.entities:
-            if not entity.invincible:
+            if not entity.properties.invincible:
                 for bullet in projectiles.projectiles:
                     entity.hit_check(bullet)
 
@@ -55,57 +61,53 @@ class ZombieRegistry(EntityRegistry):
         self,
         weapon_registry: WeaponRegistry,
         bullet_registry: ProjectileRegistry,
+        generic_registry: GenericRegistry,
         screen: pg.Surface,
     ):
         super().__init__("zombies")
         self.bullet_registry = bullet_registry
         self.weapon_registry = weapon_registry
+        self.generic_registry = generic_registry
         self.orphaned_damage_numbers = []
         self.screen = screen
 
-    def create_zombie(self, x, y, round: int, zombie_type: str, parent):
+    def create_zombie(self, x, y, round: int, zombie_type: str, parent: Zombie = None):
         zombie = Zombie(
             self.screen,
             x,
             y,
-            zombie_type,
             self.weapon_registry,
             self.bullet_registry,
-            round,
-            parent,
-            self.entities,
+            self.generic_registry,
+            round_scaling = round,
+            parent = parent,
+            zombies = self.entities,
             **self.resources[zombie_type],
         )
         self.register(zombie)
         if parent:
             parent.summoned_zombies.append(zombie)
 
-    def register(self, entity: Entity):
-        self.entities.append(entity)
-        self.render_plain.add(entity)
-        self.render_plain.add(entity.weapon)
+    def register(self, zombie: Zombie):
+        self.entities.append(zombie)
+        self.render_plain.add(zombie)
+        self.render_plain.add(zombie.weapon)
 
-    def deregister(self, entity: Entity):
-        if entity.damage_number.time > 0:
-            self.orphaned_damage_numbers.append(entity.damage_number)
-        self.entities.remove(entity)
-        self.render_plain.remove(entity)
-        self.render_plain.remove(entity.weapon)
-        if entity.parent:
-            entity.parent.summoned_zombies.remove(entity)
-
-    def clear(self):
-        for entity in self.entities:
-            self.deregister(entity)
+    def deregister(self, zombie: Zombie):
+        if zombie.damage_number.time > 0:
+            self.orphaned_damage_numbers.append(zombie.damage_number)
+        self.entities.remove(zombie)
+        self.render_plain.remove(zombie)
+        self.render_plain.remove(zombie.weapon)
+        if zombie.parent:
+            zombie.parent.summoned_zombies.remove(zombie)
 
     def update(self, frame_time):
         # debug
         #for entity in self.entities:
             #entity.head_hitbox.display(self.screen)
         # entity.hitbox.display(screen)
-        self.render_plain.update(
-            frame_time, self.screen
-        )
+        self.render_plain.update(frame_time, self.screen)
         self.render_plain.draw(self.screen)
         expired_orphaned_damage_numbers = []
         for damage_number in self.orphaned_damage_numbers:
@@ -120,13 +122,13 @@ class ZombieRegistry(EntityRegistry):
         ]
         for zombie in self.entities:
             zombie.damage_number.update(frame_time, self.screen)
-            if zombie.health <= 0:
+            if zombie.properties.health <= 0:
                 event_bus.add_event(
                     "game_end_of_round_bus",
                     {
                         "killed_zombie": {
-                            "money": zombie.reward,
-                            "zombie": zombie.zombie_type,
+                            "money": zombie.properties.reward,
+                            "zombie": zombie.properties.name,
                         }
                     },
                 )

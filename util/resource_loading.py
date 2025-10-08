@@ -5,7 +5,7 @@ import os
 import shutil
 from copy import deepcopy
 
-ROOT = os.path.abspath(os.curdir)
+ROOT = Path(os.path.abspath(__file__)).parent.parent
 save_profile = "default"
 
 

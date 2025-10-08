@@ -8,10 +8,12 @@
             "default": "regen_brute.png",
             "animation": ["regen_brute-A1.png", "regen_brute-A2.png", "regen_brute-A1.png", "regen_brute.png", "regen_brute-A3.png", "regen_brute-A4.png", "regen_brute-A3.png", "regen_brute.png"]
         },
-        "health": 120,
-        "speed": 80,
-        "body_armour": 0.15,
-        "reward": 13,
+        "properties": {
+            "health": 120,
+            "speed": 80,
+            "body_armour": 0.15,
+            "reward": 13
+        },
         "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {
@@ -21,7 +23,7 @@
                         "type": "format_eval",
                         "attribute": true,
                         "name": "regen",
-                        "value": "{self.health} * 0.15"
+                        "value": "{self.properties.health} * 0.15"
                     }
                 ]
             }

@@ -8,10 +8,12 @@
             "default": "crawler.png",
             "animation": ["crawler.png", "crawler-A1.png", "crawler-A2.png", "crawler-A3.png", "crawler-A4.png", "crawler-A5.png"]
         },
+        "properties": {
+            "health": 30,
+            "speed": 150,
+            "reward": 12
+        },
         "hitbox": [18, 102, 86, 32],
-        "head_hitbox": [22, 70, 86, 34],
-        "health": 30,
-        "speed": 150,
-        "reward": 12
+        "head_hitbox": [22, 70, 86, 34]
     }
 }

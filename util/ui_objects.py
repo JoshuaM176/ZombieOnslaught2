@@ -164,6 +164,7 @@ class FloatingNumber:
         self.start_time = time
         self.size = size
         self.text = Text(str(round(self.damage)), size, 0, 0, color=color)
+        self.temp_surface = pg.Surface((self.size * 2, self.size), pg.SRCALPHA)
 
     def add(self, x, y, damage):
         if self.time > 0:
@@ -182,7 +183,7 @@ class FloatingNumber:
         self.time -= frame_time
         percent_time_left = self.time / self.start_time
         if self.damage > 0 and self.time > 0:
-            temp_surface = pg.Surface((self.size * 2, self.size), pg.SRCALPHA)
-            self.text.update(temp_surface)
-            temp_surface.set_alpha(255 * percent_time_left)
-            surface.blit(temp_surface, (self.x, self.y))
+            self.temp_surface.fill((0, 0, 0, 0))
+            self.text.update(self.temp_surface)
+            self.temp_surface.set_alpha(255 * percent_time_left)
+            surface.blit(self.temp_surface, (self.x, self.y))

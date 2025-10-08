@@ -2,7 +2,6 @@ import pygame as pg
 
 screen_pages = {}
 
-
 class ScreenPage:
     def __init__(self, screen: pg.Surface, page_name: str, screen_init: bool = True):
         screen_pages[page_name] = self

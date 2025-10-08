@@ -8,8 +8,10 @@
             "default": "infested_zombie.png",
             "animation": ["infested_zombie.png", "infested_zombie-A1.png", "infested_zombie-A2.png", "infested_zombie-A3.png", "infested_zombie-A4.png", "infested_zombie-A5.png", "infested_zombie-A6.png", "infested_zombie-A7.png"]
         },
-        "health": 60,
-        "speed": 90,
+        "properties":{
+            "health": 60,
+            "speed": 90
+        },
         "effects": [
             {
                 "effect": "spawn_zombie",

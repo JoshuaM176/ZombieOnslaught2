@@ -7,8 +7,8 @@ from objects.projectiles.toxin import Toxin
 
 
 def regen(self, frame_time, regen, **_):
-    if self.health < self.max_health:
-        self.health += regen * frame_time
+    if self.properties.health < self.properties.max_health:
+        self.properties.health += regen * frame_time
         self.update_health_bar()
 
 
@@ -45,19 +45,19 @@ def initial_velocity(
 
 def invincibility_frames(self, frame_time, id, seconds, **_):
     if seconds > 0:
-        self.invincible = True
+        self.properties.invincible = True
         self.effects[id]["values"]["seconds"]["value"] -= frame_time
     else:
-        self.invincible = False
+        self.properties.invincible = False
         self.remove_effects.append(id)
 
 
 def freeze_frames(self, frame_time, id, seconds, **_):
     if seconds > 0:
-        self.frozen = True
+        self.properties.frozen = True
         self.effects[id]["values"]["seconds"]["value"] -= frame_time
     else:
-        self.frozen = False
+        self.properties.frozen = False
         self.remove_effects.append(id)
 
 def spawn_toxin(self, **_):

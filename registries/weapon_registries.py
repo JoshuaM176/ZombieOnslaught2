@@ -1,18 +1,8 @@
-from util.resource_loading import ResourceLoader, load_sprite
+from util.resource_loading import ResourceLoader, convert_files_to_sprites
 from objects.weapons import Weapon
 import pygame as pg
 
 weapon_categories = ["melee", "pistol", "smg", "rifle", "shotgun", "sniper"]
-
-
-def convert_files_to_sprites(resource: dict):
-    for key, value in resource.items():
-        if isinstance(value, list):
-            for item in range(len(value)):
-                value[item] = load_sprite(value[item], "weapons", -1)
-        else:
-            resource[key] = load_sprite(resource[key], "weapons", -1)
-    return resource
 
 
 class WeaponRegistry:
@@ -26,9 +16,7 @@ class WeaponRegistry:
         resource_loader.set_defaults()
         resources = resource_loader.get_all()
         for name, data in resources.items():
-            data["weapon"]["sprites"] = convert_files_to_sprites(
-                data["weapon"]["sprites"]
-            )
+            convert_files_to_sprites(data["weapon"]["sprites"], "weapons")
             weapon = {name: resources[name]}
             weapon[name].update({"name": name})
             self.weapons[data["weapon"]["type"]].update(weapon)
@@ -78,17 +66,6 @@ class WeaponRegistry:
             if data["player"].get("available"):
                 available.append(data)
         return available
-
-
-class CustomWeaponRegistry:
-    def __init__(self):
-        self.weapons: dict[str, list[Weapon]] = {"melee": [], "smg": []}
-
-    def add_weapon(self, weapon: Weapon, cat: str):
-        self.weapons[cat].append(weapon)
-
-    def get(self, cat: str):
-        return self.weapons.get(cat)
 
 
 class EquippedWeaponRegistry:

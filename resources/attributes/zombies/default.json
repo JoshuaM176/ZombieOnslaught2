@@ -1,6 +1,5 @@
 {
     "default": {
-        "base_round": 0,
         "zombiepedia": {
             "display_name": "default",
             "description": "placeholder\ntest",
@@ -13,13 +12,16 @@
             "animation": ["zombie-A1.png", "zombie-A2.png", "zombie-A1.png", "zombie.png", "zombie-A3.png", "zombie-A4.png", "zombie-A3.png", "zombie.png"]
         },
         "animation_length": 1,
-        "health": 50,
-        "speed": 100,
-        "body_armour": 0,
-        "head_armour": 0,
+        "properties": {
+            "base_round": 0,
+            "health": 50,
+            "speed": 100,
+            "body_armour": 0,
+            "head_armour": 0,
+            "reward": 10
+        },
         "hitbox": [36, 48, 72, 80],
         "head_hitbox": [40, 14, 72, 34],
-        "reward": 10,
         "weapon_stats": {
             "name": "fist",
             "category": "melee"
