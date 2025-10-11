@@ -141,7 +141,7 @@ class Store(ScreenPage, ButtonContainer):
             f"Ammo Capacity: {self.weapon['ammo']['bullets']}",
             f"Bullet in Chamber: {self.weapon['ammo']['bullet_in_chamber']}",
             f"Projectile Speed: {self.weapon['projectile']['speed']}",
-            f"Bullet Penetration: {self.weapon['projectile']['penetration'] * 100}%",
+            f"Bullet Penetration: {round(self.weapon['projectile']['penetration'] * 100)}%",
             f"Movement Speed: {self.weapon['player']['movement']}",
             f"Recoil {self.weapon['weapon']['recoil_per_shot'] * 100}",
             f"Recoil Control {self.weapon['weapon']['recoil_control'] * 100}",

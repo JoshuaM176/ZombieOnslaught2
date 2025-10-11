@@ -39,7 +39,6 @@
             "tracer": false
         },
         "store": {
-            "price": 1000,
             "shiftX": 18,
             "shiftY": -12
         }

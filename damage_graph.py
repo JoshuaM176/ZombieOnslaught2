@@ -11,25 +11,26 @@ resource_loader.load_all()
 resource_loader.set_defaults()
 weapons = resource_loader.get_all()
 
-weapon_names = weapons.keys()
-
-df = pd.DataFrame(columns=weapon_names)
+weapon_names = []
+df = pd.DataFrame()
 
 if False:
-    for weapon, data in weapons.items():
+    for weapon, data in [data for data in weapons.items() if data[1]["weapon"]["type"] in ("rifle", "smg")]:
+        weapon_names.append(weapon)
         for i in range(2000):
             df.loc[i, weapon] = (
                 (
-                    data["bullet"]["damage"]
-                    - data["bullet"]["dropoff"] * i / data["bullet"]["speed"]
+                    data["projectile"]["damage"]
+                    - data["projectile"]["dropoff"] * i / data["projectile"]["speed"]
                 )
-                * data["weapon"]["bullets"]
+                * data["weapon"]["projectiles"]
                 * data["weapon"]["firerate"]
                 / 60
             )
 
 if True:
-    for weapon, data in weapons.items():
+    for weapon, data in [data for data in weapons.items() if data[1]["weapon"]["type"] in ("rifle", "smg")]:
+        weapon_names.append(weapon)
         if data["ammo"]["reload_type"] == 0:
             total_time = (
                 data["ammo"]["bullets"] / data["weapon"]["firerate"] * 60
@@ -43,13 +44,15 @@ if True:
         for i in range(2000):
             df.loc[i, weapon] = (
                 (
-                    data["bullet"]["damage"]
-                    - data["bullet"]["dropoff"] * i / data["bullet"]["speed"]
+                    data["projectile"]["damage"]
+                    - data["projectile"]["dropoff"] * i / data["projectile"]["speed"]
                 )
-                * data["weapon"]["bullets"]
+                * data["weapon"]["projectiles"]
                 * data["ammo"]["bullets"]
                 / total_time
             )
+
+
 
 for weapon in weapon_names:
     plt.plot(df[:][weapon], label=weapon)

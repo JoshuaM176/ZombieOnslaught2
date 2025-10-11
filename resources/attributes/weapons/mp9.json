@@ -2,7 +2,7 @@
     "MP9": {
         "player": {
             "movement": 360,
-            "available": true
+            "available": false
         },
         "weapon": {
             "sprites": {
@@ -25,10 +25,10 @@
             "mags": 11,
             "mag_time": 18,
             "reload_time": 1,
-            "reload_on_empty": 0.35
+            "reload_on_empty": 0.3
         },
         "projectile": {
-            "damage": 10.2,
+            "damage": 10.4,
             "head_mult": 1.4,
             "dropoff": 12,
             "speed": 2600,
@@ -38,13 +38,6 @@
         },
         "store": {
             "price": 3500,
-            "requirements": [
-                {
-                    "type": "weapon",
-                    "name": "MP7",
-                    "cat": "smg"
-                }
-            ],
             "shiftX": 24,
             "shiftY": -16
         }

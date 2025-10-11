@@ -41,7 +41,7 @@
             "requirements": [
                 {
                     "type": "weapon",
-                    "name": "MP9",
+                    "name": "P90",
                     "cat": "smg"
                 }
             ],

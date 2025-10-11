@@ -1,0 +1,58 @@
+{
+    "6P41": {
+        "player": {
+            "movement": 240,
+            "available": true
+        },
+        "weapon": {
+            "sprites": {
+                "default": "6p41.png",
+                "reloading": ["6p41-R1.png", "6p41-R2.png", "6p41-R3.png", "6p41-R2.png", "6p41-R1.png"],
+                "extra_reload_sprite": "ak-47-F.png",
+                "fire_sprite": "6p41.png"
+            },
+            "type": "rifle",
+            "firerate": 600,
+            "fire_animation_length": 0.04,
+            "shiftX": 40,
+            "shiftY": 20,
+            "recoil_per_shot": 0.013,
+            "recoil_control": 0.006,
+            "max_recoil": 0.05
+        },
+        "ammo": {
+            "bullets": 100,
+            "bullet_in_chamber": false,
+            "mags": 2,
+            "mag_time": 45,
+            "reload_time": 2.5,
+            "reload_on_empty": 0
+        },
+        "projectile": {
+            "damage": 18,
+            "head_mult": 1.8,
+            "dropoff": 4,
+            "speed": 3400,
+            "penetration": 0.55,
+            "shiftX": 96,
+            "shiftY": 88
+        },
+        "store": {
+            "price": 15000,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "SUPER 90",
+                    "cat": "shotgun"
+                },
+                {
+                    "type": "weapon",
+                    "name": "SKS",
+                    "cat": "sniper"
+                }
+            ],
+            "shiftX": 16,
+            "shiftY": -16
+        }
+    }
+}

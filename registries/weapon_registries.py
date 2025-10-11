@@ -25,10 +25,13 @@ class WeaponRegistry:
     def _calc_total_weapons_cost(self):
         for cat, weapons in self.weapons.items():
             for weapon, data in weapons.items():
-                data["store"]["total_cost"] = self._calc_weapon_cost(cat, weapon, [])
+                data["store"]["total_cost"] = self._calc_weapon_cost(cat, weapon)
 
-    def _calc_weapon_cost(self, cat, name, visited):
+    def _calc_weapon_cost(self, cat, name, visited = None, counted = None):
+        visited = [] if not visited else [item for item in visited]
+        counted = [] if not counted else counted
         if name in visited:
+            print(visited)
             raise Exception(f"Circular dependency in requirements, {name} {cat}")
         visited.append(name)
         weapon = self.weapons[cat].get(name)
@@ -38,7 +41,9 @@ class WeaponRegistry:
         total_cost = weapon["store"]["price"]
         for req in weapon["store"]["requirements"]:
             if (req["type"]) == "weapon":
-                total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited)
+                if (req["cat"], req["name"]) not in counted:
+                    counted.append((req["cat"], req["name"]))
+                    total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited, counted)
         return total_cost
 
     def check_requirements(self, cat, name):
