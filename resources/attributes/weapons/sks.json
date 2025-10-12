@@ -4,13 +4,13 @@
             "movement": 250,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "sks.png",
-                "reloading": ["sks-R1.png", "sks-R2.png", "sks-R3.png", "sks-R4.png", "sks-R5.png"],
-                "extra_reload_sprite": "sks-F.png",
-                "fire_sprite": "sks-F.png"
-            },
+        "sprites": {
+            "default": "sks.png",
+            "reloading": ["sks-R1.png", "sks-R2.png", "sks-R3.png", "sks-R4.png", "sks-R5.png"],
+            "extra_reload_sprite": "sks-F.png",
+            "fire_sprite": "sks-F.png"
+        },
+        "properties": {
             "type": "sniper",
             "firerate": 125,
             "fire_animation_length": 0.01,
@@ -29,9 +29,9 @@
             "reload_on_empty": 0
         },
         "projectile": {
-            "damage": 80,
+            "damage": 60,
             "head_mult": 1.8,
-            "dropoff": 5,
+            "dropoff": 3,
             "speed": 3500,
             "penetration": 0.8,
             "shiftX": 96,

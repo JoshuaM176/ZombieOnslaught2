@@ -99,7 +99,7 @@ class Store(ScreenPage, ButtonContainer):
         equipped_weapon = self.equipped_weapons.get(self.category)
         if equipped_weapon:
             self.screen.blit(player_sprite, (50, 60, 50, 50))
-            self.screen.blit(equipped_weapon.sprites["default"], (50 + equipped_weapon.shiftX, 60 + equipped_weapon.shiftY, 50, 50))
+            self.screen.blit(equipped_weapon.sprites["default"], (50 + equipped_weapon.properties.shiftX, 60 + equipped_weapon.properties.shiftY, 50, 50))
         return self.go2
 
     def set_weapon_buttons(self):
@@ -107,10 +107,10 @@ class Store(ScreenPage, ButtonContainer):
         available_weapons = self.weapon_registry.get_available_weapons(self.category)
         available_weapons.sort(key=lambda weapon: weapon["store"]["total_cost"])
         x = 50
-        y = 450
+        y = 480
         for weapon in available_weapons:
             self.weapon_buttons.append(
-                self.WeaponButton(x, y, 100, 100, self.screen, weapon, self.select_weapon, self.weapon_registry.check_requirements(self.category, weapon["name"])))
+                self.WeaponButton(x, y, 110, 110, self.screen, weapon, self.select_weapon, self.weapon_registry.check_requirements(self.category, weapon["name"])))
             x += 150
             if x > self.screen.get_width() - 100:
                 x = 50
@@ -132,10 +132,10 @@ class Store(ScreenPage, ButtonContainer):
         self.stats_text = []
         x = -300
         y = 255
-        for stat in [
-            f"Damage: {self.weapon['projectile']['damage'] * self.weapon['weapon']['projectiles']}",
-            f"Dropoff: {self.weapon['projectile']['dropoff'] * self.weapon['weapon']['projectiles']}",
-            f"Firerate: {self.weapon['weapon']['firerate']}",
+        stats = [
+            f"Damage: {self.weapon['projectile']['damage'] * self.weapon['properties']['projectile_count']}",
+            f"Dropoff: {self.weapon['projectile']['dropoff'] * self.weapon['properties']['projectile_count']}",
+            f"Firerate: {self.weapon['properties']['firerate']}",
             f"Headshot Damage: {self.weapon['projectile']['head_mult']}",
             f"Reload Time: {self.weapon['ammo']['reload_time']}(+{self.weapon['ammo']['reload_on_empty']})",
             f"Ammo Capacity: {self.weapon['ammo']['bullets']}",
@@ -143,16 +143,24 @@ class Store(ScreenPage, ButtonContainer):
             f"Projectile Speed: {self.weapon['projectile']['speed']}",
             f"Bullet Penetration: {round(self.weapon['projectile']['penetration'] * 100)}%",
             f"Movement Speed: {self.weapon['player']['movement']}",
-            f"Recoil {self.weapon['weapon']['recoil_per_shot'] * 100}",
-            f"Recoil Control {self.weapon['weapon']['recoil_control'] * 100}",
-            f"Max Recoil: {self.weapon['weapon']['max_recoil'] * 100}",
+            f"Recoil {self.weapon['properties']['recoil_per_shot'] * 100}",
+            f"Recoil Control {self.weapon['properties']['recoil_control'] * 100}",
+            f"Max Recoil: {self.weapon['properties']['max_recoil'] * 100}",
             f"Magazines: {self.weapon['ammo']['mags']}",
             f"Resupply Time: {self.weapon['ammo']['mag_time']}",
             f"Reload Type: {self.reload_type[self.weapon['ammo']['reload_type']]}"
-        ]:
+        ]
+        if self.weapon['properties']['burst'] > 1:
+            stats.append(f"Fire Type: Burst-{self.weapon['properties']['burst']}")
+            stats.append(f"Burst Delay: {self.weapon['properties']['burst_delay']}")
+        elif self.weapon['properties']['burst'] == 1:
+            stats.append("Fire Type: Semi-Automatic")
+        else:
+            stats.append("Fire Type: Automatic")
+        for stat in stats:
             self.stats_text.append(Text(stat, 25, self.screen.get_width()/2 + x, y))
             y += 25
-            if y > 450:
+            if y > 475:
                 y = 255
                 x += 350
 
@@ -171,8 +179,8 @@ class Store(ScreenPage, ButtonContainer):
             self.func = func
             self.weapon_dict = weapon
             self.weapon = pg.sprite.Sprite()
-            self.weapon.sprite = weapon["weapon"]["sprites"]["default"]
-            self.weapon.rect = weapon["weapon"]["sprites"]["default"].get_rect()
+            self.weapon.sprite = weapon["sprites"]["default"]
+            self.weapon.rect = weapon["sprites"]["default"].get_rect()
             self.weapon.rect.topleft = (x + weapon["store"]["shiftX"],y + weapon["store"]["shiftY"])
             self.price = weapon["store"]["price"]
             self.reqs_met = reqs_met

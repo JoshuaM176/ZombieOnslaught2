@@ -1,12 +1,12 @@
 {
     "Bow": {
-        "weapon": {
-            "sprites": {
-                "default": "bow.png",
-                "reloading": ["bow.png"],
-                "extra_reload_sprite": "bow.png",
-                "fire_sprite": "bow.png"
-            },
+        "sprites": {
+            "default": "bow.png",
+            "reloading": ["bow.png"],
+            "extra_reload_sprite": "bow.png",
+            "fire_sprite": "bow.png"
+        },
+        "properties": {
             "type": "sniper",
             "firerate": 30,
             "fire_animation_length": 0.01,

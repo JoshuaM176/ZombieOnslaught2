@@ -16,10 +16,10 @@ class WeaponRegistry:
         resource_loader.set_defaults()
         resources = resource_loader.get_all()
         for name, data in resources.items():
-            convert_files_to_sprites(data["weapon"]["sprites"], "weapons")
+            convert_files_to_sprites(data["sprites"], "weapons")
             weapon = {name: resources[name]}
             weapon[name].update({"name": name})
-            self.weapons[data["weapon"]["type"]].update(weapon)
+            self.weapons[data["properties"]["type"]].update(weapon)
         self._calc_total_weapons_cost()
 
     def _calc_total_weapons_cost(self):
@@ -118,13 +118,13 @@ class EquippedWeaponRegistry:
     def get_next_name(self):
         cat = self.get_next()
         if self.get(cat):
-            return self.get(cat).name
+            return self.get(cat).properties.name
         return False
 
     def get_prev_name(self):
         cat = self.get_prev()
         if self.get(cat):
-            return self.get(cat).name
+            return self.get(cat).properties.name
         return False
 
     def update(self, frame_time):

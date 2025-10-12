@@ -4,13 +4,13 @@
             "movement": 270,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "ak-47.png",
-                "reloading": ["ak-47-R1.png", "ak-47-R2.png", "ak-47-R3.png", "ak-47-R2.png", "ak-47-R1.png"],
-                "extra_reload_sprite": "ak-47-F.png",
-                "fire_sprite": "ak-47-F.png"
-            },
+        "sprites": {
+            "default": "ak-47.png",
+            "reloading": ["ak-47-R1.png", "ak-47-R2.png", "ak-47-R3.png", "ak-47-R2.png", "ak-47-R1.png"],
+            "extra_reload_sprite": "ak-47-F.png",
+            "fire_sprite": "ak-47-F.png"
+        },
+        "properties": {
             "type": "rifle",
             "firerate": 650,
             "fire_animation_length": 0.04,

@@ -4,16 +4,16 @@
             "movement": 260,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "super90.png",
-                "reloading": ["super90-R1.png", "super90-R1.png", "super90.png"],
-                "extra_reload_sprite": "super90-F.png",
-                "fire_sprite": "super90-F.png"
-            },
+        "sprites": {
+            "default": "super90.png",
+            "reloading": ["super90-R1.png", "super90-R1.png", "super90.png"],
+            "extra_reload_sprite": "super90-F.png",
+            "fire_sprite": "super90-F.png"
+        },
+        "properties": {
             "type": "shotgun",
             "firerate": 75,
-            "projectiles": 8,
+            "projectile_count": 8,
             "fire_animation_length": 0.5,
             "shiftX": 40,
             "shiftY": 20,

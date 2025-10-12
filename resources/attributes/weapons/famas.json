@@ -1,0 +1,55 @@
+{
+    "FAMAS": {
+        "player": {
+            "movement": 290,
+            "available": true
+        },
+        "sprites": {
+            "scale": 5,
+            "default": "famas.png",
+            "reloading": ["famas-R1.png", "famas-R2.png", "famas-R3.png", "famas-R2.png", "famas-R1.png"],
+            "extra_reload_sprite": "famas-F.png",
+            "fire_sprite": "famas-F.png"
+        },
+        "properties": {
+            "type": "rifle",
+            "firerate": 1000,
+            "fire_animation_length": 0.03,
+            "shiftX": 20,
+            "shiftY": 16,
+            "recoil_per_shot": 0.001,
+            "recoil_control": 0.006,
+            "max_recoil": 0.01,
+            "burst": 3,
+            "burst_delay": 0.4
+        },
+        "ammo": {
+            "bullets": 25,
+            "mags": 5,
+            "mag_time": 25,
+            "reload_time": 1.4,
+            "reload_on_empty": 0.25
+        },
+        "projectile": {
+            "damage": 22,
+            "head_mult": 1.6,
+            "dropoff": 6,
+            "speed": 3550,
+            "penetration": 0.4,
+            "shiftX": 104,
+            "shiftY": 84
+        },
+        "store": {
+            "price": 25000,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "6P41",
+                    "cat": "rifle"
+                }
+            ],
+            "shiftX": 4,
+            "shiftY": -16
+        }
+    }
+}

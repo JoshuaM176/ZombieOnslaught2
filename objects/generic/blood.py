@@ -11,7 +11,7 @@ class Blood():
     ):
         self.x = x
         self.y = y
-        mult = sqrt(damage)*0.1 + 1
+        mult = sqrt(damage)*0.1 + min(damage*0.1, 1)
         size = 10 * mult
         self.time = 5 * mult
         self.start_time = self.time

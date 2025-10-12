@@ -4,13 +4,13 @@
             "movement": 240,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "6p41.png",
-                "reloading": ["6p41-R1.png", "6p41-R2.png", "6p41-R3.png", "6p41-R2.png", "6p41-R1.png"],
-                "extra_reload_sprite": "ak-47-F.png",
-                "fire_sprite": "6p41.png"
-            },
+        "sprites": {
+            "default": "6p41.png",
+            "reloading": ["6p41-R1.png", "6p41-R2.png", "6p41-R3.png", "6p41-R2.png", "6p41-R1.png"],
+            "extra_reload_sprite": "ak-47-F.png",
+            "fire_sprite": "6p41.png"
+        },
+        "properties": {
             "type": "rifle",
             "firerate": 600,
             "fire_animation_length": 0.04,
@@ -24,7 +24,7 @@
             "bullets": 100,
             "bullet_in_chamber": false,
             "mags": 2,
-            "mag_time": 45,
+            "mag_time": 40,
             "reload_time": 2.5,
             "reload_on_empty": 0
         },
@@ -38,17 +38,12 @@
             "shiftY": 88
         },
         "store": {
-            "price": 15000,
+            "price": 20000,
             "requirements": [
                 {
                     "type": "weapon",
-                    "name": "SUPER 90",
-                    "cat": "shotgun"
-                },
-                {
-                    "type": "weapon",
-                    "name": "SKS",
-                    "cat": "sniper"
+                    "name": "M4A1",
+                    "cat": "rifle"
                 }
             ],
             "shiftX": 16,

@@ -5,13 +5,13 @@
             "owned": false,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "five-seven.png",
-                "reloading": ["five-seven-R1.png", "five-seven-R2.png", "five-seven.png", "five-seven-R2.png", "five-seven-R1.png"],
-                "extra_reload_sprite": "five-seven.png",
-                "fire_sprite": "five-seven-F.png"
-            },
+        "sprites": {
+            "default": "five-seven.png",
+            "reloading": ["five-seven-R1.png", "five-seven-R2.png", "five-seven.png", "five-seven-R2.png", "five-seven-R1.png"],
+            "extra_reload_sprite": "five-seven.png",
+            "fire_sprite": "five-seven-F.png"
+        },
+        "properties": {
             "type": "pistol",
             "firerate": 600,
             "fire_animation_length": 0.001,
@@ -32,7 +32,7 @@
         "projectile": {
             "damage": 14,
             "head_mult": 1.4,
-            "dropoff": 9,
+            "dropoff": 11,
             "speed": 2500,
             "penetration": 0.1,
             "shiftX": 80,

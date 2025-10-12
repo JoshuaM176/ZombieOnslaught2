@@ -4,13 +4,13 @@
             "movement": 360,
             "available": false
         },
-        "weapon": {
-            "sprites": {
-                "default": "mp7.png",
-                "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
-                "extra_reload_sprite": "mp7-F.png",
-                "fire_sprite": "mp7-F.png"
-            },
+        "sprites": {
+            "default": "mp7.png",
+            "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
+            "extra_reload_sprite": "mp7-F.png",
+            "fire_sprite": "mp7-F.png"
+        },
+        "properties": {
             "type": "smg",
             "firerate": 1260,
             "fire_animation_length": 0.02,

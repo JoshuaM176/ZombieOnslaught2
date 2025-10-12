@@ -46,8 +46,8 @@ class EntityRegistry:
         return True
     
     def clear(self):
-        for entity in self.entities:
-            self.deregister(entity)
+        for i in range(len(self.entities)-1, -1, -1):
+            self.deregister(self.entities[i])
 
     def hit_check(self, projectiles: ProjectileRegistry):
         for entity in self.entities:

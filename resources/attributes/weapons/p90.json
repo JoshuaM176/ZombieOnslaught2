@@ -4,13 +4,13 @@
             "movement": 300,
             "available": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "p90.png",
-                "reloading": ["p90-R1.png", "p90-R2.png", "p90-R3.png", "p90-R4.png", "p90-R5.png"],
-                "extra_reload_sprite": "p90-F.png",
-                "fire_sprite": "p90-F.png"
-            },
+        "sprites": {
+            "default": "p90.png",
+            "reloading": ["p90-R1.png", "p90-R2.png", "p90-R3.png", "p90-R4.png", "p90-R5.png"],
+            "extra_reload_sprite": "p90-F.png",
+            "fire_sprite": "p90-F.png"
+        },
+        "properties": {
             "type": "smg",
             "firerate": 950,
             "fire_animation_length": 0.03,

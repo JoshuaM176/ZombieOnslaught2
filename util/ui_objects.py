@@ -77,7 +77,7 @@ class ProgressBar():
 
 class ButtonContainer:
     def __init__(self):
-        self.buttons = []
+        self.buttons: list[Button] = []
 
     def check_buttons(self, event, x: int, y: int):
         for button in self.buttons:

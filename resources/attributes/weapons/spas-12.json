@@ -1,0 +1,61 @@
+{
+    "SPAS-12": {
+        "player": {
+            "movement": 260,
+            "available": true
+        },
+        "sprites": {
+            "default": "spas-12.png",
+            "reloading": ["spas-12-R1.png", "spas-12-R1.png", "spas-12.png"],
+            "extra_reload_sprite": "spas-12-F.png",
+            "fire_sprite": "spas-12-F.png"
+        },
+        "properties": {
+            "type": "shotgun",
+            "firerate": 120,
+            "projectile_count": 8,
+            "fire_animation_length": 0.35,
+            "shiftX": 32,
+            "shiftY": 20,
+            "downwards_recoil": true,
+            "recoil_per_shot": 0.05,
+            "recoil_control": 0.05,
+            "max_recoil": 0.075
+        },
+        "ammo": {
+            "bullets": 9,
+            "mags": 45,
+            "mag_time": 9,
+            "bullet_in_chamber": false,
+            "reload_time": 0.5,
+            "reload_on_empty": 0.35,
+            "reload_type": 1
+        },
+        "projectile": {
+            "damage": 15,
+            "head_mult": 1,
+            "dropoff": 20,
+            "speed": 2800,
+            "penetration": 0,
+            "shiftX": 80,
+            "shiftY": 80
+        },
+        "store": {
+            "price": 20000,
+            "shiftX": 10,
+            "shiftY": -16,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "SUPER 90",
+                    "cat": "shotgun"
+                },
+                {
+                    "type": "weapon",
+                    "name": "SKS",
+                    "cat": "sniper"
+                }
+            ]
+        }
+    }
+}

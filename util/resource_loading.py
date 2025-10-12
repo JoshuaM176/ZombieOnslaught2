@@ -35,12 +35,13 @@ def load_sprite(name: str, category: str, colorkey=None, scale=8):
 
 
 def convert_files_to_sprites(resource: dict, location: str):
+    scale = resource.pop("scale", None) or 8
     for key, value in resource.items():
         if isinstance(value, list):
             for item in range(len(value)):
-                value[item] = load_sprite(value[item], location, -1)
+                value[item] = load_sprite(value[item], location, -1, scale)
         else:
-            resource[key] = load_sprite(resource[key], location, -1)
+            resource[key] = load_sprite(resource[key], location, -1, scale)
 
 
 def save_data(resource, location, data):

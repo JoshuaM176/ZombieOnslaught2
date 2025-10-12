@@ -6,18 +6,19 @@
             "available": false,
             "default": false
         },
-        "weapon":{
-            "sprites": {
-                "default": "mp7.png",
-                "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
-                "extra_reload_sprite": "none.png",
-                "fire_sprite": "none.png"
-            },
+        "sprites": {
+            "default": "mp7.png",
+            "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
+            "extra_reload_sprite": "none.png",
+            "fire_sprite": "none.png"
+        },
+        "properties":{
             "type": "melee",
             "firerate": 60,
             "fire_animation_length": 0.01,
             "burst": 0,
-            "projectiles": 1,
+            "burst_delay": 0,
+            "projectile_count": 1,
             "shiftX": 0,
             "shiftY": 0,
 	        "downwards_recoil": false,

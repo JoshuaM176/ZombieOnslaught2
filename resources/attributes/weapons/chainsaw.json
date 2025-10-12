@@ -6,13 +6,13 @@
             "available": true,
             "default": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "chainsaw.png",
-                "reloading": ["chainsaw-R1.png"],
-                "fire_sprite": "chainsaw-F.png",
-                "extra_reload_sprite": "chainsaw.png"
-            },
+        "sprites": {
+            "default": "chainsaw.png",
+            "reloading": ["chainsaw-R1.png"],
+            "fire_sprite": "chainsaw-F.png",
+            "extra_reload_sprite": "chainsaw.png"
+        },
+        "properties": {
             "type": "melee",
             "firerate": 1200,
             "shiftX": 40,

@@ -51,7 +51,6 @@ class Game(ScreenPage):
         self.game_info = GameInfo(**rsrc_ldr.get("game_info"))
         self.stats = Stats(self.zombie_registry.resources, **rsrc_ldr.get("stats"))
         self.settings = Settings(self.screen, rsrc_ldr.get("settings")).settings_data
-        event_bus.add_event("ui_bus", {"money": self.game_info.money})
 
     def _create_player(self):
         player_key_map = self.settings.player_key_map
@@ -63,8 +62,14 @@ class Game(ScreenPage):
         self.store = Store(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
         self.zombiepedia = Zombiepedia(self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia"))
 
-    def __screen_init__(self):
+    def _ui_init(self):
+        if hasattr(self, "ui"):
+            curr_ui = self.ui.data
+            event_bus.add_event("ui_bus", curr_ui)
         self.ui = UI(self.screen)
+
+    def __screen_init__(self):
+        self._ui_init()
         self.hut_render_plain = pg.sprite.RenderPlain(())
         self.huts = []
         for i in range(round(self.screen.get_width() / 500)):
@@ -99,7 +104,7 @@ class Game(ScreenPage):
         self.player.update(frame_time)
         self.ui.update()
         self.money_number.update(frame_time, self.screen)
-        if self.player.health < 0:
+        if self.player.properties.health < 0:
             self.end_game()
         return self.go2
 
@@ -110,6 +115,7 @@ class Game(ScreenPage):
     def reset(self):
         self.zombie_registry.clear()
         self.game_info.reset()
+        self.player.reset()
         for hut in self.huts:
             hut.reset()
 
@@ -141,8 +147,6 @@ class Game(ScreenPage):
             for event_type, value in event.items():
                 self.event_map.get(event_type)(**value)
         self.save_game()
-        if self.game_info.round == 0:
-            self.player.reset()
         self.game_info.money += self.game_info.round
         self.game_info.round += 1
         self.game_info.update_spawn_rates()
@@ -181,7 +185,7 @@ class Game(ScreenPage):
         player_weapons = []
         for cat in self.player.weapons.equipped_list:
             if self.player.weapons.get(cat):
-                player_weapons.append({"name": self.player.weapons.get(cat).name, "cat": cat})
+                player_weapons.append({"name": self.player.weapons.get(cat).properties.name, "cat": cat})
         player_info.update({"player": {"equipped_weapons": player_weapons}})
         save_data("player", "attributes", player_info)
 
@@ -198,13 +202,7 @@ class GameInfo:
     def __post_init__(self):
         self.pool = ["zombie"] * 200
         self.max_village_health = self.village_health
-        event_bus.add_event(
-            "ui_bus",
-            {
-                "village_health": self.village_health,
-                "max_village_health": self.max_village_health,
-            },
-        )
+        self.set_ui()
 
     def update_spawn_rates(self):
         for data in self.spawn_data:
@@ -241,6 +239,18 @@ class GameInfo:
         self.pool_index = 0
         self.pool = ["zombie"] * 200
         self.village_health = self.max_village_health
+        self.set_ui()
+
+    def set_ui(self):
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "money": self.money,
+                "round": self.round,
+                "village_health": self.village_health,
+                "max_village_health": self.max_village_health,
+            },
+        )
 
 
 @dataclass

@@ -4,6 +4,14 @@ from util.event_bus import event_bus
 import sys
 from game.screenpage import screen_pages
 
+track_performance = True
+if track_performance:
+    import cProfile
+    import pstats
+    profiler = cProfile.Profile()
+    profiler.enable()
+
+
 pg.init()
 clock = pg.time.Clock()
 if len(sys.argv) > 2:
@@ -60,3 +68,9 @@ while running:
     clock.tick(180)
 
 pg.quit()
+
+
+if track_performance:
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative').print_stats()

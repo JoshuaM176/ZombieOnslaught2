@@ -77,7 +77,7 @@ class Entity(pg.sprite.Sprite):
             self.y = -100
 
     def hit_check(self, bullet: Bullet):
-        if bullet is not None and bullet.damage > 0:
+        if bullet is not None and bullet.damage > 0 and self.properties.health > 0:
             if self not in bullet.recent_hits:
                 if self.head_hitbox.check(bullet.x, bullet.y):
                     self.hit(bullet, True)
@@ -93,11 +93,12 @@ class Entity(pg.sprite.Sprite):
             damage *= 1 - max(self.properties.head_armour - bullet.armour_pierce, 0)
         else:
             damage *= 1 - max(self.properties.body_armour - bullet.armour_pierce, 0)
+        damage_dealt = min(damage, self.properties.health)
         if self.damage_numbers:
-            self.damage_number.add(self.x, self.y, damage)
+            self.damage_number.add(self.x, self.y, damage_dealt)
         self.properties.health -= damage
         if self.properties.blood:
-            self.generic_registry.add(Blood(bullet.x, bullet.y, damage))
+            self.generic_registry.add(Blood(bullet.x, bullet.y, damage_dealt))
         
 
 
@@ -203,7 +204,7 @@ class Zombie(Entity):
     
     def update_health_bar(self):
         self.progress_bar.update_progress(self.properties.health/self.properties.max_health)
-        self.progress_bar.update_text(str(max(round(self.properties.health),0)))
+        self.progress_bar.update_text(str(max(round(self.properties.health),1)))
     
     def hit(self, bullet: Bullet, head: bool):
         super().hit(bullet, head)
@@ -310,7 +311,7 @@ class Player(Entity):
             self.render_plain.add(self.equipped_weapon)
             self.ui_bus.send(
                 {
-                    "weapon": self.equipped_weapon.name,
+                    "weapon": self.equipped_weapon.properties.name,
                     "bullets": self.equipped_weapon.ammo.get(),
                     "max_bullets": self.equipped_weapon.ammo.max_bullets,
                     "mags": self.equipped_weapon.ammo.mags,
@@ -349,12 +350,12 @@ class Player(Entity):
 
     def reset(self):
         self.x = 100
-        self.health = self.properties.max_health
+        self.properties.health = self.properties.max_health
         self.reset_input()
         self.weapons.reset()
         self.ui_bus.send(
             {
-                "weapon": self.equipped_weapon.name,
+                "weapon": self.equipped_weapon.properties.name,
                 "bullets": self.equipped_weapon.ammo.get(),
                 "max_bullets": self.equipped_weapon.ammo.max_bullets,
                 "mags": self.equipped_weapon.ammo.mags,

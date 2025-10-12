@@ -1,0 +1,57 @@
+{
+    "M4A1": {
+        "player": {
+            "movement": 265,
+            "available": true
+        },
+        "sprites": {
+            "default": "m4a1.png",
+            "reloading": ["m4a1-R1.png", "m4a1-R2.png", "m4a1-R3.png", "m4a1-R2.png", "m4a1-R1.png"],
+            "extra_reload_sprite": "m4a1-F.png",
+            "fire_sprite": "m4a1-F.png"
+        },
+        "properties": {
+            "type": "rifle",
+            "firerate": 750,
+            "fire_animation_length": 0.04,
+            "shiftX": 32,
+            "shiftY": 24,
+            "recoil_per_shot": 0.005,
+            "recoil_control": 0.005,
+            "max_recoil": 0.02
+        },
+        "ammo": {
+            "bullets": 30,
+            "mags": 5,
+            "mag_time": 25,
+            "reload_time": 1.6,
+            "reload_on_empty": 0.35
+        },
+        "projectile": {
+            "damage": 18,
+            "head_mult": 1.6,
+            "dropoff": 4,
+            "speed": 3500,
+            "penetration": 0.45,
+            "shiftX": 96,
+            "shiftY": 76
+        },
+        "store": {
+            "price": 5000,
+            "requirements": [
+                {
+                    "type": "weapon",
+                    "name": "SUPER 90",
+                    "cat": "shotgun"
+                },
+                {
+                    "type": "weapon",
+                    "name": "SKS",
+                    "cat": "sniper"
+                }
+            ],
+            "shiftX": 10,
+            "shiftY": -16
+        }
+    }
+}

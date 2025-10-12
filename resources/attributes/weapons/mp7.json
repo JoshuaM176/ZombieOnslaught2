@@ -6,18 +6,19 @@
             "available": true,
             "default": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "mp7.png",
-                "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
-                "extra_reload_sprite": "mp7-F.png",
-                "fire_sprite": "mp7-F.png"
-            },
+        "sprites": {
+            "scale": 6,
+            "default": "mp7.png",
+            "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
+            "extra_reload_sprite": "mp7-F.png",
+            "fire_sprite": "mp7-F.png"
+        },
+        "properties": {
             "type": "smg",
             "firerate": 1200,
             "fire_animation_length": 0.02,
-            "shiftX": 40,
-            "shiftY": 20,
+            "shiftX": 24,
+            "shiftY": 0,
             "recoil_per_shot": 0.005,
             "recoil_control": 0.005,
             "max_recoil": 0.02

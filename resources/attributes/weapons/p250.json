@@ -6,13 +6,13 @@
             "available": true,
             "default": true
         },
-        "weapon": {
-            "sprites": {
-                "default": "p250.png",
-                "reloading": ["p250-R1.png", "p250-R2.png", "p250.png", "p250-R2.png", "p250-R1.png"],
-                "extra_reload_sprite": "p250.png",
-                "fire_sprite": "p250-F.png"
-            },
+        "sprites": {
+            "default": "p250.png",
+            "reloading": ["p250-R1.png", "p250-R2.png", "p250.png", "p250-R2.png", "p250-R1.png"],
+            "extra_reload_sprite": "p250.png",
+            "fire_sprite": "p250-F.png"
+        },
+        "properties": {
             "type": "pistol",
             "firerate": 600,
             "fire_animation_length": 0.001,

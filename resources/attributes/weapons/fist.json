@@ -6,12 +6,12 @@
             "available": false,
             "default": false
         },
-        "weapon":{
-            "sprites": {
-                "default": "none.png",
-                "reloading": ["none.png"],
-                "fire_sprite": "none.png"
-            },
+        "sprites": {
+            "default": "none.png",
+            "reloading": ["none.png"],
+            "fire_sprite": "none.png"
+        },
+        "properties":{
             "type": "melee",
             "firerate": 120,
             "recoil_per_shot": 1,
