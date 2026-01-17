@@ -23,6 +23,8 @@ class UI:
             "max_stamina": 100,
             "village_health": 10,
             "max_village_health": 10,
+            "experience": 0,
+            "experience_required": 100
         }
         self.data_text_map = {
             "weapon": "weapon_info",
@@ -40,7 +42,10 @@ class UI:
             "stamina": "stamina_info",
             "max_stamina": "stamina_info",
             "village_health": "village_info",
-            "max_village_health": "village_info"
+            "max_village_health": "village_info",
+            "level": "level_info",
+            "experience": "experience_info",
+            "experience_required": "experience_info"
         }
         self.text_map = {
             "weapon_info": self.WeaponText(screen),
@@ -52,7 +57,9 @@ class UI:
             "mag_progress_info": self.MagBar(screen),
             "health_info": self.HealthBar(screen),
             "stamina_info": self.StaminaBar(screen),
-            "village_info": self.VillageHealthBar(screen)
+            "village_info": self.VillageHealthBar(screen),
+            "experience_info": self.ExperienceBar(screen),
+            "level_info": self.LevelText(screen)
         }
 
     def update(self):
@@ -94,17 +101,17 @@ class UI:
 
     class MoneyText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 30, 25, screen.get_height()-215)
+            super().__init__("", 30, 25, screen.get_height()-213)
 
         def update_text(self, ui_self):
-            super().update_text(f"Money: {ui_self.data.get('money'):.0f}")
+            super().update_text(f"${ui_self.data.get('money'):.0f}")
 
     class RoundText(Text):
         def __init__(self, screen: pg.Surface):
             super().__init__("", 30, 25, 35)
 
         def update_text(self, ui_self):
-            super().update_text(f"Round: {ui_self.data.get('round'):.0f}")
+            super().update_text(f"Round {ui_self.data.get('round'):.0f}")
 
     class NextPrevWeapon(Text):
         def __init__(self, screen: pg.Surface, font):
@@ -143,3 +150,18 @@ class UI:
         def update_text(self, ui_self):
             self.update_progress(ui_self.data["village_health"] / ui_self.data["max_village_health"])
             super().update_text(str(max(round(ui_self.data["village_health"]), 1)))
+
+    class ExperienceBar(ProgressBar):
+        def __init__(self, screen):
+            super().__init__(1, screen.get_width() * 0.3, screen.get_height() - 190, screen.get_width() * 0.4, 20, color = (100, 255, 100), text = "")
+
+        def update_text(self, ui_self):
+            self.update_progress(ui_self.data["experience"] / ui_self.data["experience_required"])
+            super().update_text(f"{ui_self.data["experience"]} / {ui_self.data["experience_required"]}")
+
+    class LevelText(Text):
+        def __init__(self, screen: pg.Surface):
+            super().__init__("", 30, 25, screen.get_height()-242)
+
+        def update_text(self, ui_self):
+            super().update_text(f"Lvl. {ui_self.data["level"]}")

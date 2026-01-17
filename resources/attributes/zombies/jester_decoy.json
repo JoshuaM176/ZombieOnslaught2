@@ -1,0 +1,72 @@
+{
+    "jester_decoy": {
+        "base_round": 100,
+        "zombiepedia": {
+            "display_name": "Jester Decoy",
+            "description": "A decoy created by the jester."
+        },
+        "sprites": {
+            "default": "zombie_jester.png",
+            "animation": ["zombie_jester-A1.png", "zombie_jester-A2.png", "zombie_jester-A1.png", "zombie_jester.png", "zombie_jester-A3.png", "zombie_jester-A4.png", "zombie_jester-A3.png", "zombie_jester.png"]
+        },
+        "properties": {
+            "health": 1,
+            "speed": 105,
+            "reward": 0,
+            "experience": 0
+        },
+        "effects": [
+            {
+                "effect": "set_attr",
+                "trigger": "init",
+                "values": [
+                    {
+                        "name": "name",
+                        "value": "x"
+                    },
+                    {
+                        "type": "format_eval",
+                        "name": "value",
+                        "value": "{self.x} + random.uniform(-250,250)"
+                    }
+                ]
+            },
+            {
+                "effect": "set_attr",
+                "trigger": "init",
+                "values": [
+                    {
+                        "name": "name",
+                        "value": "y"
+                    },
+                    {
+                        "type": "format_eval",
+                        "name": "value",
+                        "value": "{self.y} + random.uniform(-250,250)"
+                    }
+                ]
+            },
+            {
+                "effect": "create_smoke",
+                "trigger": "init",
+                "values": [
+                    {
+                        "type": "repeat_format_eval",
+                        "name": "x",
+                        "value": "{self.x}-50"
+                    },
+                    {
+                        "type": "repeat_format_eval",
+                        "name": "y",
+                        "value": "{self.y}"
+                    },
+                    {
+                        "type": "default",
+                        "name": "size",
+                        "value": 250
+                    }
+                ]
+            }
+        ]
+    }
+}

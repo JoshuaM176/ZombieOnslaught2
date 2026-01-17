@@ -1,6 +1,5 @@
 import pygame as pg
 from registries.projectile_registries import ProjectileRegistry
-from objects.projectiles.bullet import Bullet
 from objects.projectiles.arrow import Arrow
 from random import uniform
 from math import floor
@@ -43,8 +42,9 @@ class Weapon(pg.sprite.Sprite):
         sprites: dict,
         ammo: dict,
         projectile: dict,
-        projectile_registry: ProjectileRegistry,
-        bus: str,
+        projectile_registry: ProjectileRegistry | None = None,
+        projectile_registries: ProjectileRegistry | None = None,
+        bus: str = "trash",
         **_,
     ):
         super().__init__()
@@ -58,6 +58,8 @@ class Weapon(pg.sprite.Sprite):
         self.properties = WeaponProperties(name = name, projectile_type = self.projectile.pop("type"), **properties)
         self.player = player
         self.projectile_registry = projectile_registry
+        if not self.projectile_registry:
+            self.projectile_registry = projectile_registries["zombie_bullet_registry"] if self.properties.projectile_type == "bullet" else projectile_registries["zombie_projectile_registry"]
         self.ammo = Ammo(**ammo)
         self.ui_bus = event_bus.put_events(bus)
         self.ui_bus.send(None)
@@ -92,11 +94,11 @@ class Weapon(pg.sprite.Sprite):
         for i in range(self.properties.projectile_count):
             match self.properties.projectile_type:
                 case "bullet":
-                    projectile = Bullet(
-                    x,
-                    y,
-                    **self.projectile,
-                    recoil=uniform(self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil),
+                    self.projectile_registry.add(
+                        x,
+                        y,
+                        **self.projectile,
+                        recoil = uniform(self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil)
                     )
                 case "arrow":
                     projectile = Arrow(
@@ -105,7 +107,7 @@ class Weapon(pg.sprite.Sprite):
                         **self.projectile,
                         recoil=uniform(self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil),
                     )
-            self.projectile_registry.add(projectile)
+                    self.projectile_registry.add(projectile)
             self.properties.recoil += self.properties.recoil_per_shot
             if self.properties.recoil > self.properties.max_recoil:
                 self.properties.recoil = self.properties.max_recoil

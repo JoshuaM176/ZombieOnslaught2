@@ -6,7 +6,6 @@ from util.resource_loading import load_sprite, ResourceLoader
 from util.event_bus import event_bus
 from util.ui_objects import FloatingNumber, ProgressBar
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
-from registries.generic_registries import GenericRegistry
 from math import sqrt
 from objects.zombie_effects import effect_map
 from objects.projectiles.bullet import Bullet
@@ -33,7 +32,6 @@ class Entity(pg.sprite.Sprite):
     def __init__(
         self,
         screen: pg.Surface,
-        generic_registry: GenericRegistry,
         x: int,
         y: int,
         hitbox: list[int],
@@ -46,7 +44,6 @@ class Entity(pg.sprite.Sprite):
     ):
         super().__init__()
         self.screen = screen
-        self.generic_registry = generic_registry
         self.x = x
         self.y = y
         self.hitbox = HitBox(x, y, *hitbox)
@@ -98,7 +95,7 @@ class Entity(pg.sprite.Sprite):
             self.damage_number.add(self.x, self.y, damage_dealt)
         self.properties.health -= damage
         if self.properties.blood:
-            self.generic_registry.add(Blood(bullet.x, bullet.y, damage_dealt))
+            event_bus.add_event("generic_registry_l1_bus", Blood(bullet.x, bullet.y, damage_dealt))
         
 
 
@@ -109,8 +106,7 @@ class Zombie(Entity):
         x: int,
         y: int,
         weapon_registry,
-        projectile_registry,
-        generic_registry,
+        projectile_registries,
         round_scaling: int = 0,
         parent=None,
         zombies=None,
@@ -120,13 +116,14 @@ class Zombie(Entity):
         self.zombies = zombies
         self.summoned_zombies = []
         self.remove_effects = []
-        super().__init__(screen, generic_registry, x, y, damage_numbers=True, property_class=ZombieProperties, **attrs)
+        super().__init__(screen, x, y, damage_numbers=True, property_class=ZombieProperties, **attrs)
         self.properties._round_scale_init(round_scaling)
         weapon = weapon_registry.get_weapon(
             attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"]
         )
-        self.projectile_registry=projectile_registry
-        self.weapon = Weapon(**weapon, projectile_registry=projectile_registry, bus="trash")
+        self.projectile_registry = projectile_registries["zombie_projectile_registry"]
+        self.bullet_registry = projectile_registries["zombie_bullet_registry"]
+        self.weapon = Weapon(**weapon, projectile_registry=self.bullet_registry, bus="trash")
         if attrs["weapon_stats"].get("projectile"):
             self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()
@@ -251,6 +248,7 @@ class Zombie(Entity):
 @dataclass
 class ZombieProperties(EntityProperties):
     reward: int
+    experience: int
     base_round: int
 
     def __post_init__(self):
@@ -270,14 +268,14 @@ class ZombieProperties(EntityProperties):
 
 
 class Player(Entity):
-    def __init__(self, x, y, bullet_registry, weapon_registry: WeaponRegistry, generic_registry: GenericRegistry, key_map, screen):
-        self.bullet_registry = bullet_registry
+    def __init__(self, x, y, projectile_registries: dict, weapon_registry: WeaponRegistry, key_map, screen):
+        self.bullet_registry = projectile_registries["player_bullet_registry"]
         resource_loader = ResourceLoader("player", "attributes")
         resource_loader.load_all()
         resources = resource_loader.get("player")
         resources["sprite"] = load_sprite("player.png", "player", -1)
         self.properties = PlayerProperties(**resources["properties"])
-        super().__init__(screen, generic_registry, x, y, property_class = PlayerProperties, **resources)
+        super().__init__(screen, x, y, property_class = PlayerProperties, **resources)
         self.render_plain = pg.sprite.RenderPlain((self))
         self.sprinting = False
         self.shooting = False
@@ -446,8 +444,37 @@ class PlayerProperties(EntityProperties):
     stamina: int
     stamina_regen_delay: int
     stamina_regen: int
+    experience: int = 0
+    experience_required: int = 100
+    level: int = 0
+    level_tokens: int = 0
+
 
     def __post_init__(self):
         self.max_stamina = self.stamina
         self.time_resting = -self.stamina_regen_delay
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "level": self.level,
+                "level_tokens": self.level_tokens,
+                "experience": self.experience,
+                "experience_required": self.experience_required
+            })
         return super().__post_init__()
+    
+    def add_experience(self, experience: int):
+        self.experience += experience
+        if self.experience >= self.experience_required:
+            self.experience -= self.experience_required
+            self.experience_required = round(self.experience_required * 1.1)
+            self.level += 1
+            self.level_tokens += 1
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "level": self.level,
+                "level_tokens": self.level_tokens,
+                "experience": self.experience,
+                "experience_required": self.experience_required
+            })

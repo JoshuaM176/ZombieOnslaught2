@@ -3,7 +3,6 @@ from util.resource_loading import ResourceLoader, convert_files_to_sprites, load
 from objects.entities import Entity, Zombie
 from registries.projectile_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
-from registries.generic_registries import GenericRegistry
 from util.event_bus import event_bus
 
 class EntityRegistry:
@@ -61,13 +60,11 @@ class ZombieRegistry(EntityRegistry):
         self,
         weapon_registry: WeaponRegistry,
         projectile_registry: ProjectileRegistry,
-        generic_registry: GenericRegistry,
         screen: pg.Surface,
     ):
         super().__init__("zombies")
         self.projectile_registry = projectile_registry
         self.weapon_registry = weapon_registry
-        self.generic_registry = generic_registry
         self.orphaned_damage_numbers = []
         self.screen = screen
 
@@ -78,7 +75,6 @@ class ZombieRegistry(EntityRegistry):
             y,
             self.weapon_registry,
             self.projectile_registry,
-            self.generic_registry,
             round_scaling = round,
             parent = parent,
             zombies = self.entities,
@@ -124,10 +120,11 @@ class ZombieRegistry(EntityRegistry):
             zombie.damage_number.update(frame_time, self.screen)
             if zombie.properties.health <= 0:
                 event_bus.add_event(
-                    "game_end_of_round_bus",
+                    "game_event_bus",
                     {
                         "killed_zombie": {
                             "money": zombie.properties.reward,
+                            "experience": zombie.properties.experience,
                             "zombie": zombie.properties.name,
                         }
                     },

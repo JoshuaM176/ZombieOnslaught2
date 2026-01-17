@@ -16,6 +16,8 @@ pg.init()
 clock = pg.time.Clock()
 if len(sys.argv) > 2:
     screen = pg.display.set_mode((int(sys.argv[1]), int(sys.argv[2])), pg.RESIZABLE)
+    SCREEN_WIDTH = int(sys.argv[1])
+    SCREEN_HEIGHT = int(sys.argv[2])
 else:
     screen = pg.display.set_mode(
         (pg.display.Info().current_w, pg.display.Info().current_h - 100), pg.RESIZABLE
@@ -31,6 +33,8 @@ event_bus.create_bus("input_bus")
 event_bus.create_bus("ui_bus")
 event_bus.create_bus("game_event_bus")
 event_bus.create_bus("game_end_of_round_bus")
+event_bus.create_bus("generic_registry_l1_bus")
+event_bus.create_bus("generic_registry_l2_bus")
 event_bus.create_bus("trash")
 main_menu = MainMenu(screen)
 curr_screen = "main_menu"
@@ -54,6 +58,8 @@ while running:
                 event_bus.add_event("input_bus", event)
         if event.type == pg.VIDEORESIZE:
             for name, screen_obj in screen_pages.items():
+                SCREEN_WIDTH = screen.get_width()
+                SCREEN_HEIGHT = screen.get_height()
                 screen_obj.__screen_init__()
     match curr_screen:
         case "main_menu":
@@ -66,7 +72,7 @@ while running:
             curr_screen = screen_pages[curr_screen].update()
     pg.display.flip()
     clock.tick(180)
-
+    #print(1/time_since_last_frame)
 pg.quit()
 
 

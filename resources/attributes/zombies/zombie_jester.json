@@ -1,0 +1,63 @@
+{
+    "zombie_jester": {
+        "base_round": 100,
+        "zombiepedia": {
+            "display_name": "Zombie Jester",
+            "description": "A medieval jester with a few tricks up his sleeve."
+        },
+        "sprites": {
+            "default": "zombie_jester.png",
+            "animation": ["zombie_jester-A1.png", "zombie_jester-A2.png", "zombie_jester-A1.png", "zombie_jester.png", "zombie_jester-A3.png", "zombie_jester-A4.png", "zombie_jester-A3.png", "zombie_jester.png"]
+        },
+        "properties": {
+            "health": 110,
+            "speed": 105,
+            "reward": 10   
+        },
+        "effects": [
+            {
+                "effect": "spawn_zombie",
+                "trigger": "timer",
+                "values": [
+                    {
+                        "name": "frequency",
+                        "value": 1.5
+                    },
+                    {
+                        "name": "spawn_zombie",
+                        "value": "jester_decoy"
+                    },
+                    {
+                        "type": "repeat_format_eval",
+                        "name": "count",
+                        "value": "min(1, 5-len(self.summoned_zombies))"
+                    }
+                ]
+            },
+            {
+                "effect": "create_smoke",
+                "trigger": "timer",
+                "values": [
+                    {
+                        "name": "frequency",
+                        "value": 1.5
+                    },
+                    {
+                        "type": "repeat_format_eval",
+                        "name": "x",
+                        "value": "{self.x} + random.uniform(-250, 250)"
+                    },
+                    {
+                        "type": "repeat_format_eval",
+                        "name": "y",
+                        "value": "{self.y} + random.uniform(-250, 250)"
+                    },
+                    {
+                        "name": "size",
+                        "value": 200
+                    }
+                ]
+            }
+        ]
+    }
+}

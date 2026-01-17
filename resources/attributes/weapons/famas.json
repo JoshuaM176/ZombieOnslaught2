@@ -5,7 +5,6 @@
             "available": true
         },
         "sprites": {
-            "scale": 5,
             "default": "famas.png",
             "reloading": ["famas-R1.png", "famas-R2.png", "famas-R3.png", "famas-R2.png", "famas-R1.png"],
             "extra_reload_sprite": "famas-F.png",
@@ -15,8 +14,8 @@
             "type": "rifle",
             "firerate": 1000,
             "fire_animation_length": 0.03,
-            "shiftX": 20,
-            "shiftY": 16,
+            "shiftX": 32,
+            "shiftY": 24,
             "recoil_per_shot": 0.001,
             "recoil_control": 0.006,
             "max_recoil": 0.01,
@@ -48,7 +47,7 @@
                     "cat": "rifle"
                 }
             ],
-            "shiftX": 4,
+            "shiftX": 14,
             "shiftY": -16
         }
     }

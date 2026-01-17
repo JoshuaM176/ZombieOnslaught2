@@ -29,7 +29,6 @@ class Blood():
                     (x - width / 2, y - height / 2, width, height)
                     )
         
-        
 
     def update(self, frame_time, screen: pg.Surface, _):
         self.time -= frame_time

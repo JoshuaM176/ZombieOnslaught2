@@ -2,7 +2,8 @@
     "zombie_archer": {
         "base_round": 100,
         "zombiepedia": {
-            "display_name": "Zombie Archer"
+            "display_name": "Zombie Archer",
+            "description": "A medieval archer that can fire arrows."
         },
         "sprites": {
             "default": "zombie_archer.png",

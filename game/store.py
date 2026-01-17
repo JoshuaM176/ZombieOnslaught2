@@ -28,28 +28,28 @@ class Store(ScreenPage, ButtonContainer):
         self.weapon_sprite = None
         self.weapon_buttons = []
         self.reload_type = {0: "Full", 1: "Single"}
+        self.stats_text = []
+        self.text = []
+        self.requirements_text = []
         super().__init__(screen, "store")
         self.select_weapon(self.weapon_registry.get_weapon("smg", "MP7"))
+        self.text += [self.category_text, self.weapon_text, self.money_text, self.stat_text]
 
     def __screen_init__(self):
         self.ui_buttons = []
-        self.text = []
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
         self.ui_buttons.append(self.BuyOrEquip(scr_w / 2 - 100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected))
         self.ui_buttons.append(FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.return_to_game, [], "Return to Game"))
-        self.ui_buttons.append(FuncButton(scr_w / 2 + 100, 50, 50, 50, self.screen, self.next_page, [], ">"))
-        self.ui_buttons.append(FuncButton(scr_w / 2 - 150, 50, 50, 50, self.screen, self.prev_page, [], "<"))
+        self.ui_buttons.append(FuncButton(scr_w / 2 + 120, 50, 50, 50, self.screen, self.next_page, [], ">"))
+        self.ui_buttons.append(FuncButton(scr_w / 2 - 170, 50, 50, 50, self.screen, self.prev_page, [], "<"))
         self.set_weapon_buttons()
         self.category_text = Text(self.category.upper(), 50, scr_w / 2, 50, align="CENTER")
         self.weapon_text = Text("", 40, scr_w / 2, 100, align="CENTER")
         self.money_text = Text(f"${round(self.game_info.money)}", 30, 25, 25)
         self.price_text = Text("$0", 25, scr_w / 2 + 100, 160)
         self.requirement_text = Text("Requirements", 25, scr_w / 2, 130, align="CENTER")
-        self.requirements_text = []
         self.stat_text = Text("Stats", 30, scr_w / 2, 240, align="CENTER")
-        self.stats_text = []
-        self.text += [self.category_text, self.weapon_text, self.money_text, self.stat_text]
 
     def return_to_game(self):
         self.set_screen("game")

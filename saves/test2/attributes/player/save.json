@@ -1,0 +1,1 @@
+{"player": {"properties": {"stamina": 10, "health": 10, "experience": 90, "experience_required": 100, "level": 0, "level_tokens": 0}, "equipped_weapons": [{"name": "Chainsaw", "cat": "melee"}, {"name": "P250", "cat": "pistol"}, {"name": "MP7", "cat": "smg"}]}}

@@ -1,6 +1,7 @@
 from util.event_bus import event_bus
 from math import log
 from objects.projectiles.toxin import Toxin
+from objects.generic.smoke import Smoke
 
 # the arguments self, frame_time and id are passed in to all effects
 # self represents the zombie calling it, and id representing the position of the effect in the zombie's effects property
@@ -64,6 +65,9 @@ def spawn_toxin(self, **_):
     x, y, w, h = self.hitbox.get()
     self.projectile_registry.add(Toxin(x + w/2, y + h/2, 1, 1))
 
+def create_smoke(self, x, y, size, **_):
+    _, _, w, h = self.hitbox.get()
+    event_bus.add_event("generic_registry_l2_bus", Smoke(x, y, size))
 
 def set_attr(self, name, value, **_):
     setattr(self, name, value)
@@ -76,5 +80,6 @@ effect_map = {
     "set_attr": set_attr,
     "invincibility_frames": invincibility_frames,
     "freeze_frames": freeze_frames,
-    "spawn_toxin": spawn_toxin
+    "spawn_toxin": spawn_toxin,
+    "create_smoke": create_smoke
 }
