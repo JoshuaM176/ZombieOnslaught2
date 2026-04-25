@@ -1,9 +1,10 @@
 import pygame as pg
 from util.event_bus import event_bus
+from typing import override, Literal
 
 
 class Text:
-    def __init__(self, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
+    def __init__(self, text: str, size: int, x: int, y: int, color: tuple=(0, 0, 0), align: Literal["LEFT", "RIGHT", "CENTER"]="LEFT", font=None):
         self.align = align
         self.x = x
         self.y = y
@@ -14,10 +15,13 @@ class Text:
             self.font = pg.font.Font(pg.font.get_default_font(), size)
         self.text = self.font.render(text, True, color)
 
-    def update_text(self, text):
+    def update_text(self, text: str):
         self.text = self.font.render(text, True, self.color)
 
-    def update_pos(self, x, y):
+    def update_color(self, color: tuple) -> None:
+        self.color = color
+
+    def update_pos(self, x: int, y: int):
         self.x = x
         self.y = y
 
@@ -27,6 +31,8 @@ class Text:
                 screen.blit(self.text, self.text.get_rect(topleft=(self.x, self.y)))
             case "CENTER":
                 screen.blit(self.text, self.text.get_rect(center=(self.x, self.y)))
+            case "RIGHT":
+                screen.blit(self.text, self.text.get_rect(topright=(self.x, self.y)))
 
 
 class ProgressBar:

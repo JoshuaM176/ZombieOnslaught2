@@ -89,6 +89,7 @@ class Game(ScreenPage):
 
     def update(self, frame_time: float):
         self.go2 = self.page_name
+        event_bus.add_event("ui_bus", {"frame_time": frame_time})
         game_event_bus = event_bus.get_events("game_event_bus")
         for event in game_event_bus:
             for event_type, value in event.items():

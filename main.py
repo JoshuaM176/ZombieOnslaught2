@@ -73,6 +73,7 @@ try:
     pg.quit()
 except Exception as e:
     logger.exception(e)
+    raise e
 finally:
     zip_logs()
     if track_performance:
