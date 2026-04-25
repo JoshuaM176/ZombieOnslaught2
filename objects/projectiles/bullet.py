@@ -4,6 +4,7 @@ import pygame as pg
 
 logger = logging.getLogger(__name__)
 
+
 class Bullet(Projectile):
     def __init__(
         self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer
@@ -43,9 +44,9 @@ class Tracer:
         start_y: float,
         end_x: float,
         end_y: float,
-        alpha,
+        alpha: float,
         color: tuple = (200, 200, 0),
-        size: int = 2,
+        size: float = 2,
     ):
         self.start_x = start_x
         self.start_y = start_y
@@ -56,14 +57,12 @@ class Tracer:
         self.size = size
 
     def update(self, frame_time, screen):
-        alpha = self.alpha
-        self.alpha -= 9000 * frame_time
-        logger.debug(f"Drawing tracer with alpha {self.alpha}")
-        if alpha > 0:
+        if self.alpha > 0:
             pg.draw.line(
                 screen,
-                self.color + [alpha],
+                (*self.color,self.alpha),
                 (self.start_x, self.start_y),
                 (self.end_x, self.end_y),
                 self.size,
             )
+            self.alpha -= 9000 * frame_time

@@ -5,6 +5,7 @@ import pygame as pg
 
 logger = logging.getLogger(__name__)
 
+
 class ProjectileRegistry:
     def __init__(self, size: int, screen, alpha_screen):
         self.screen = screen

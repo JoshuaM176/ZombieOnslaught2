@@ -1,8 +1,6 @@
 from game.screenpage import ScreenPage
-from registries.entity_registries import ZombieRegistry
-from registries.weapon_registries import WeaponRegistry, weapon_categories
-from registries.projectile_registries import ProjectileRegistry, BulletRegistry
-from registries.generic_registries import GenericRegistry
+from registries.weapon_registries import weapon_categories
+from registries import ZombieRegistry, ProjectileRegistry, BulletRegistry, GenericRegistry, WeaponRegistry
 from objects.entities import Player
 from game.game_ui import UI
 from game.game_over import GameOver
@@ -107,11 +105,12 @@ class Game(ScreenPage):
             self.player.hit_check(projectile)
         for projectile in self.projectile_registries["zombie_projectile_registry"]:
             self.player.hit_check(projectile)
-        for projectile_registry in self.projectile_registries.values():
-            projectile_registry.update(frame_time)
         # Clear Screen
         self.screen.fill(color=(150, 150, 150), rect=self.rect)
         self.alpha_screen.fill((0, 0, 0, 0), rect=self.rect)
+        # Update projectiles
+        for projectile_registry in self.projectile_registries.values():
+            projectile_registry.update(frame_time)
         # Draw
         self.hut_render_plain.draw(self.screen)
         self.generic_registryl1.update(frame_time)
