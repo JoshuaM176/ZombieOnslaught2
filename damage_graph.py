@@ -19,10 +19,7 @@ if True:
         weapon_names.append(weapon)
         for i in range(2000):
             df.loc[i, weapon] = (
-                (
-                    data["projectile"]["damage"]
-                    - data["projectile"]["dropoff"] * i / data["projectile"]["speed"]
-                )
+                (data["projectile"]["damage"] - data["projectile"]["dropoff"] * i / data["projectile"]["speed"])
                 * data["properties"]["projectile_count"]
                 * data["properties"]["firerate"]
                 / 60
@@ -32,10 +29,7 @@ if False:
     for weapon, data in [data for data in weapons.items() if data[1]["properties"]["type"] in ("rifle")]:
         weapon_names.append(weapon)
         if data["ammo"]["reload_type"] == 0:
-            total_time = (
-                data["ammo"]["bullets"] / data["weapon"]["firerate"] * 60
-                + data["ammo"]["reload_time"]
-            )
+            total_time = data["ammo"]["bullets"] / data["weapon"]["firerate"] * 60 + data["ammo"]["reload_time"]
         elif data["ammo"]["reload_type"] == 1:
             total_time = (
                 data["ammo"]["bullets"] / data["properties"]["firerate"] * 60
@@ -43,15 +37,11 @@ if False:
             )
         for i in range(2000):
             df.loc[i, weapon] = (
-                (
-                    data["projectile"]["damage"]
-                    - data["projectile"]["dropoff"] * i / data["projectile"]["speed"]
-                )
+                (data["projectile"]["damage"] - data["projectile"]["dropoff"] * i / data["projectile"]["speed"])
                 * data["properties"]["projectile_count"]
                 * data["ammo"]["bullets"]
                 / total_time
             )
-
 
 
 for weapon in weapon_names:

@@ -8,6 +8,7 @@ resource_loader.load_all()
 arrow = resource_loader.get("arrow")
 convert_files_to_sprites(arrow, "projectiles")
 
+
 class Arrow(Projectile):
     def __init__(
         self,
@@ -23,7 +24,7 @@ class Arrow(Projectile):
         penetration,
         head_mult,
         flip_sprite: bool = False,
-        **_
+        **_,
     ):
         self.x = x + shiftX
         self.y = y + shiftY
@@ -53,4 +54,3 @@ class Arrow(Projectile):
             self.gravity += 100 * frame_time
             screen.blit(self.image, self.rect)
         return None
-    

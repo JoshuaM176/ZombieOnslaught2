@@ -10,9 +10,13 @@ class GameOver(ScreenPage, ButtonContainer):
     def __screen_init__(self):
         self.buttons = []
         scr_w = self.screen.get_width()
-        self.buttons.append(FuncButton(scr_w / 2 + 100, 300, 500, 100, self.screen, self.set_screen, ["store"], "Go To Store"))
-        self.buttons.append(FuncButton(scr_w / 2 - 600, 300, 500, 100, self.screen, self.set_screen,["game"], "Play Again"))
-        self.game_over_text = Text("GAME OVER!", 100,self.screen.get_width() / 2, 100, align="CENTER")
+        self.buttons.append(
+            FuncButton(scr_w / 2 + 100, 300, 500, 100, self.screen, self.set_screen, ["store"], "Go To Store")
+        )
+        self.buttons.append(
+            FuncButton(scr_w / 2 - 600, 300, 500, 100, self.screen, self.set_screen, ["game"], "Play Again")
+        )
+        self.game_over_text = Text("GAME OVER!", 100, self.screen.get_width() / 2, 100, align="CENTER")
 
     def update(self):
         self.go2 = self.page_name

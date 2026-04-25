@@ -3,11 +3,13 @@ from time import time
 from util.event_bus import event_bus
 import sys
 from game.screenpage import screen_pages
+import util.logging
 
 track_performance = True
 if track_performance:
     import cProfile
     import pstats
+
     profiler = cProfile.Profile()
     profiler.enable()
 
@@ -19,9 +21,7 @@ if len(sys.argv) > 2:
     SCREEN_WIDTH = int(sys.argv[1])
     SCREEN_HEIGHT = int(sys.argv[2])
 else:
-    screen = pg.display.set_mode(
-        (pg.display.Info().current_w, pg.display.Info().current_h - 100), pg.RESIZABLE
-    )
+    screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h - 100), pg.RESIZABLE)
 from game.gameplay import Game  # noqa: E402
 from game.main_menu import MainMenu  # noqa E402
 
@@ -47,13 +47,7 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
-        if event.type in (
-            pg.KEYDOWN,
-            pg.KEYUP,
-            pg.MOUSEBUTTONDOWN,
-            pg.MOUSEBUTTONUP,
-            pg.MOUSEWHEEL
-        ):
+        if event.type in (pg.KEYDOWN, pg.KEYUP, pg.MOUSEBUTTONDOWN, pg.MOUSEBUTTONUP, pg.MOUSEWHEEL):
             if not (event.type == pg.MOUSEBUTTONUP and event.button in (4, 5)):
                 event_bus.add_event("input_bus", event)
         if event.type == pg.VIDEORESIZE:
@@ -72,11 +66,11 @@ while running:
             curr_screen = screen_pages[curr_screen].update()
     pg.display.flip()
     clock.tick(180)
-    #print(1/time_since_last_frame)
+    # print(1/time_since_last_frame)
 pg.quit()
 
 
 if track_performance:
     profiler.disable()
     stats = pstats.Stats(profiler)
-    stats.sort_stats('cumulative').print_stats()
+    #stats.sort_stats("cumulative").print_stats()

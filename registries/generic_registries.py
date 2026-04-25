@@ -1,6 +1,7 @@
 from py_doubly_linked_list import DoublyLinkedList
 
-class GenericRegistry():
+
+class GenericRegistry:
     def __init__(self, screen, alpha_screen):
         self.screen = screen
         self.alpha_screen = alpha_screen
@@ -10,6 +11,6 @@ class GenericRegistry():
         self.items.append(item)
 
     def update(self, frame_time):
-        for i in range(len(self.items)-1, -1, -1):
+        for i in range(len(self.items) - 1, -1, -1):
             if not self.items[i].update(frame_time, self.screen, self.alpha_screen):
                 del self.items[i]

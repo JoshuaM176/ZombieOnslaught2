@@ -1,2 +1,2 @@
 include = ["*.py"]
-line-length = 150
+line-length = 120

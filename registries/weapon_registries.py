@@ -27,7 +27,7 @@ class WeaponRegistry:
             for weapon, data in weapons.items():
                 data["store"]["total_cost"] = self._calc_weapon_cost(cat, weapon)
 
-    def _calc_weapon_cost(self, cat, name, visited = None, counted = None):
+    def _calc_weapon_cost(self, cat, name, visited=None, counted=None):
         visited = [] if not visited else [item for item in visited]
         counted = [] if not counted else counted
         if name in visited:
@@ -75,7 +75,7 @@ class WeaponRegistry:
 
 class EquippedWeaponRegistry:
     def __init__(self, bullet_registry):
-        self.bullet_registry = bullet_registry 
+        self.bullet_registry = bullet_registry
         self.weapons = {}
         for cat in weapon_categories:
             self.weapons.update({cat: None})
@@ -84,9 +84,7 @@ class EquippedWeaponRegistry:
         self.render_plain = pg.sprite.RenderPlain(())
 
     def equip(self, weapon: dict, cat: str):
-        self.weapons[cat] = Weapon(
-            **weapon, projectile_registry=self.bullet_registry, bus="ui_bus"
-        )
+        self.weapons[cat] = Weapon(**weapon, projectile_registry=self.bullet_registry, bus="ui_bus")
 
     def get(self, cat: str):
         return self.weapons.get(cat)

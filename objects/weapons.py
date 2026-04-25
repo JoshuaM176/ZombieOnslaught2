@@ -6,8 +6,9 @@ from math import floor
 from util.event_bus import event_bus
 from dataclasses import dataclass
 
+
 @dataclass(kw_only=True)
-class WeaponProperties():
+class WeaponProperties:
     name: str
     type: str
     firerate: int
@@ -33,6 +34,7 @@ class WeaponProperties():
         self.burst_fired = 0
         self.sprite_time = 0
 
+
 class Weapon(pg.sprite.Sprite):
     def __init__(
         self,
@@ -55,11 +57,15 @@ class Weapon(pg.sprite.Sprite):
         )
         self.temp_sprite = None
         self.projectile = projectile.copy()
-        self.properties = WeaponProperties(name = name, projectile_type = self.projectile.pop("type"), **properties)
+        self.properties = WeaponProperties(name=name, projectile_type=self.projectile.pop("type"), **properties)
         self.player = player
         self.projectile_registry = projectile_registry
         if not self.projectile_registry:
-            self.projectile_registry = projectile_registries["zombie_bullet_registry"] if self.properties.projectile_type == "bullet" else projectile_registries["zombie_projectile_registry"]
+            self.projectile_registry = (
+                projectile_registries["zombie_bullet_registry"]
+                if self.properties.projectile_type == "bullet"
+                else projectile_registries["zombie_projectile_registry"]
+            )
         self.ammo = Ammo(**ammo)
         self.ui_bus = event_bus.put_events(bus)
         self.ui_bus.send(None)
@@ -98,14 +104,18 @@ class Weapon(pg.sprite.Sprite):
                         x,
                         y,
                         **self.projectile,
-                        recoil = uniform(self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil)
+                        recoil=uniform(
+                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil
+                        ),
                     )
                 case "arrow":
                     projectile = Arrow(
                         x,
                         y,
                         **self.projectile,
-                        recoil=uniform(self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil),
+                        recoil=uniform(
+                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil
+                        ),
                     )
                     self.projectile_registry.add(projectile)
             self.properties.recoil += self.properties.recoil_per_shot
@@ -222,9 +232,7 @@ class Ammo:
     def reload(self, frame_time):
         if self.reload_type == 0:
             self.bullets = 0
-        time = (
-            self.reload_time if self.get() else self.reload_time + self.reload_on_empty
-        )
+        time = self.reload_time if self.get() else self.reload_time + self.reload_on_empty
         rtn = self.reload_progress / self.reload_time
         self.reload_progress += frame_time
         if self.reload_progress >= time:

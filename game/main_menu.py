@@ -19,17 +19,48 @@ class MainMenu(ScreenPage, ButtonContainer):
 
     def __screen_init__(self):
         self.buttons = []
-        self.texts  = []
+        self.texts = []
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
-        self.select_save_button = SelectSaveButton(scr_w / 2 - 300, scr_h * 0.3, 600, scr_h * 0.3, self.screen, self.set_profile, self.deleting_profile, self.profile)
+        self.select_save_button = SelectSaveButton(
+            scr_w / 2 - 300,
+            scr_h * 0.3,
+            600,
+            scr_h * 0.3,
+            self.screen,
+            self.set_profile,
+            self.deleting_profile,
+            self.profile,
+        )
         self.buttons.append(self.select_save_button)
-        self.buttons.append(FuncButton(scr_w / 2 - 250, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Start Game"))
-        self.buttons.append(FuncButton(scr_w / 2 - 250, scr_h * 0.7, 500, 100, self.screen, self.select_create_profile, [], "Create Profile"))
-        self.buttons.append(DeleteProfileButton(scr_w / 2 + 325, scr_h * 0.35, 300, 150, self.screen, self.delete_profile, [], "Delete Profile", {"size": 35}))
+        self.buttons.append(
+            FuncButton(scr_w / 2 - 250, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Start Game")
+        )
+        self.buttons.append(
+            FuncButton(
+                scr_w / 2 - 250, scr_h * 0.7, 500, 100, self.screen, self.select_create_profile, [], "Create Profile"
+            )
+        )
+        self.buttons.append(
+            DeleteProfileButton(
+                scr_w / 2 + 325,
+                scr_h * 0.35,
+                300,
+                150,
+                self.screen,
+                self.delete_profile,
+                [],
+                "Delete Profile",
+                {"size": 35},
+            )
+        )
         self.texts.append(Text("Zombie Onslaught", 100, scr_w / 2, 100, align="CENTER"))
-        self.profile_text = Text(f"Profile: {save_names[self.profile].upper()}", 75, scr_w / 2, scr_h / 5, align = "CENTER")
-        self.typed_input_display = Text(f"|{self.typed_input}", round(min(75, scr_h / 15)), scr_w / 2, scr_h * 0.65, align = "CENTER")
+        self.profile_text = Text(
+            f"Profile: {save_names[self.profile].upper()}", 75, scr_w / 2, scr_h / 5, align="CENTER"
+        )
+        self.typed_input_display = Text(
+            f"|{self.typed_input}", round(min(75, scr_h / 15)), scr_w / 2, scr_h * 0.65, align="CENTER"
+        )
         self.texts += [self.profile_text]
 
     def update(self):
@@ -73,7 +104,7 @@ class MainMenu(ScreenPage, ButtonContainer):
             self.deleting_profile = False
             save_names.pop(self.profile)
             if self.profile > 0:
-                self.set_profile(self.profile-1)
+                self.set_profile(self.profile - 1)
             else:
                 self.set_profile(self.profile)
             set_save_profile(save_names[self.profile])
@@ -113,9 +144,11 @@ class SelectSaveButton(Button):
         self.profiles_text = []
         for profile in save_names:
             if deleting_profile and profile == save_names[selected_profile]:
-                self.profiles_text.append(Text(profile.upper(), 60, self.screen.get_width() / 2, 0, color = (100, 0, 0), align="CENTER"))
+                self.profiles_text.append(
+                    Text(profile.upper(), 60, self.screen.get_width() / 2, 0, color=(100, 0, 0), align="CENTER")
+                )
             else:
-                self.profiles_text.append(Text(profile.upper(), 60, self.screen.get_width() / 2, 0, align="CENTER")) 
+                self.profiles_text.append(Text(profile.upper(), 60, self.screen.get_width() / 2, 0, align="CENTER"))
 
     def update(self, **_):
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)

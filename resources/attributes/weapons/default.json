@@ -9,8 +9,8 @@
         "sprites": {
             "default": "mp7.png",
             "reloading": ["mp7-R1.png", "mp7-R2.png", "mp7-R3.png", "mp7-R2.png", "mp7-R1.png"],
-            "extra_reload_sprite": "none.png",
-            "fire_sprite": "none.png"
+            "extra_reload_sprite": "mp7.png",
+            "fire_sprite": "mp7.png"
         },
         "properties":{
             "type": "melee",

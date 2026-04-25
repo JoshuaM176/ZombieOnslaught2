@@ -1,11 +1,14 @@
 from queue import Queue
+import logging
 
+logger = logging.getLogger(__name__)
 
 class EventBus:
     def __init__(self):
         self.busses: dict[str:Queue] = {}
 
     def create_bus(self, name: str):
+        logger.info(f"Creating event bus {name}")
         q = Queue()
         self.busses[name] = q
 

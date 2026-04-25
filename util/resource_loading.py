@@ -89,9 +89,7 @@ class ResourceLoader:
 
     def set_defaults(self):
         for key in self.resources.keys():
-            self.resources[key] = self.update(
-                self.resources["default"], self.resources[key]
-            )
+            self.resources[key] = self.update(self.resources["default"], self.resources[key])
 
     def get(self, name: str):
         return self.resources[name]

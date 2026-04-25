@@ -2,8 +2,8 @@ from objects.projectiles.projectile import Projectile
 import pygame as pg
 import random
 
-class Toxin(Projectile):
 
+class Toxin(Projectile):
     def __init__(
         self,
         x,
@@ -30,7 +30,9 @@ class Toxin(Projectile):
 
     def update(self, frame_time, _, screen: pg.Surface):
         if self.damage > 0:
-            pg.draw.rect(screen, color=(200,0,200, 255*self.damage/self.start_damage), rect=(self.x, self.y, 2, 2))
+            pg.draw.rect(
+                screen, color=(200, 0, 200, 255 * self.damage / self.start_damage), rect=(self.x, self.y, 2, 2)
+            )
             self.damage -= self.dropoff * frame_time
             self.x += self.horizontal_movement * frame_time
             self.y += self.vertical_movement * frame_time

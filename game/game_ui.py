@@ -24,7 +24,7 @@ class UI:
             "village_health": 10,
             "max_village_health": 10,
             "experience": 0,
-            "experience_required": 100
+            "experience_required": 100,
         }
         self.data_text_map = {
             "weapon": "weapon_info",
@@ -45,7 +45,7 @@ class UI:
             "max_village_health": "village_info",
             "level": "level_info",
             "experience": "experience_info",
-            "experience_required": "experience_info"
+            "experience_required": "experience_info",
         }
         self.text_map = {
             "weapon_info": self.WeaponText(screen),
@@ -59,7 +59,7 @@ class UI:
             "stamina_info": self.StaminaBar(screen),
             "village_info": self.VillageHealthBar(screen),
             "experience_info": self.ExperienceBar(screen),
-            "level_info": self.LevelText(screen)
+            "level_info": self.LevelText(screen),
         }
 
     def update(self):
@@ -80,28 +80,28 @@ class UI:
 
     class BulletText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 75, 50, screen.get_height()-125)
+            super().__init__("", 75, 50, screen.get_height() - 125)
 
         def update_text(self, ui_self):
             super().update_text(f"{ui_self.data.get('bullets')}/{ui_self.data.get('max_bullets')}")
 
     class MagText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 25, 50, screen.get_height()-50)
+            super().__init__("", 25, 50, screen.get_height() - 50)
 
         def update_text(self, ui_self):
             super().update_text(f"{ui_self.data.get('mags')}/{ui_self.data.get('max_mags')}")
 
     class WeaponText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 25, 50, screen.get_height()-150)
+            super().__init__("", 25, 50, screen.get_height() - 150)
 
         def update_text(self, ui_self):
             super().update_text(ui_self.data.get("weapon"))
 
     class MoneyText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 30, 25, screen.get_height()-213)
+            super().__init__("", 30, 25, screen.get_height() - 213)
 
         def update_text(self, ui_self):
             super().update_text(f"${ui_self.data.get('money'):.0f}")
@@ -115,10 +115,12 @@ class UI:
 
     class NextPrevWeapon(Text):
         def __init__(self, screen: pg.Surface, font):
-            super().__init__("", 10, 5, screen.get_height()-165, font = font)
+            super().__init__("", 10, 5, screen.get_height() - 165, font=font)
 
         def update_text(self, ui_self):
-            super().update_text(f"{ui_self.data.get("prev_weapon") or "":<10} <--> {ui_self.data.get("next_weapon") or "":>10}")
+            super().update_text(
+                f"{ui_self.data.get('prev_weapon') or '':<10} <--> {ui_self.data.get('next_weapon') or '':>10}"
+            )
 
     class MagBar(ProgressBar):
         def __init__(self, screen):
@@ -129,7 +131,15 @@ class UI:
 
     class StaminaBar(ProgressBar):
         def __init__(self, screen):
-            super().__init__(1, screen.get_width() * 0.25, screen.get_height() - 250, screen.get_width() * 0.5, 20, color = (0 , 100, 255), text = "")
+            super().__init__(
+                1,
+                screen.get_width() * 0.25,
+                screen.get_height() - 250,
+                screen.get_width() * 0.5,
+                20,
+                color=(0, 100, 255),
+                text="",
+            )
 
         def update_text(self, ui_self):
             self.update_progress(ui_self.data["stamina"] / ui_self.data["max_stamina"])
@@ -137,7 +147,15 @@ class UI:
 
     class HealthBar(ProgressBar):
         def __init__(self, screen):
-            super().__init__(1, screen.get_width() * 0.25, screen.get_height() - 230, screen.get_width() * 0.5, 20, color = (0 , 200, 0), text = "")
+            super().__init__(
+                1,
+                screen.get_width() * 0.25,
+                screen.get_height() - 230,
+                screen.get_width() * 0.5,
+                20,
+                color=(0, 200, 0),
+                text="",
+            )
 
         def update_text(self, ui_self):
             self.update_progress(ui_self.data["health"] / ui_self.data["max_health"])
@@ -145,7 +163,15 @@ class UI:
 
     class VillageHealthBar(ProgressBar):
         def __init__(self, screen):
-            super().__init__(1, screen.get_width() * 0.25, screen.get_height() - 210, screen.get_width() * 0.5, 20, color = (200 , 200, 0), text = "")
+            super().__init__(
+                1,
+                screen.get_width() * 0.25,
+                screen.get_height() - 210,
+                screen.get_width() * 0.5,
+                20,
+                color=(200, 200, 0),
+                text="",
+            )
 
         def update_text(self, ui_self):
             self.update_progress(ui_self.data["village_health"] / ui_self.data["max_village_health"])
@@ -153,15 +179,23 @@ class UI:
 
     class ExperienceBar(ProgressBar):
         def __init__(self, screen):
-            super().__init__(1, screen.get_width() * 0.3, screen.get_height() - 190, screen.get_width() * 0.4, 20, color = (100, 255, 100), text = "")
+            super().__init__(
+                1,
+                screen.get_width() * 0.3,
+                screen.get_height() - 190,
+                screen.get_width() * 0.4,
+                20,
+                color=(100, 255, 100),
+                text="",
+            )
 
         def update_text(self, ui_self):
             self.update_progress(ui_self.data["experience"] / ui_self.data["experience_required"])
-            super().update_text(f"{ui_self.data["experience"]} / {ui_self.data["experience_required"]}")
+            super().update_text(f"{ui_self.data['experience']} / {ui_self.data['experience_required']}")
 
     class LevelText(Text):
         def __init__(self, screen: pg.Surface):
-            super().__init__("", 30, 25, screen.get_height()-242)
+            super().__init__("", 30, 25, screen.get_height() - 242)
 
         def update_text(self, ui_self):
-            super().update_text(f"Lvl. {ui_self.data["level"]}")
+            super().update_text(f"Lvl. {ui_self.data['level']}")

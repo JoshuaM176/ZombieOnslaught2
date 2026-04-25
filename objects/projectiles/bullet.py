@@ -1,34 +1,14 @@
 from objects.projectiles.projectile import Projectile
+import logging
 import pygame as pg
 
-class Bullet(Projectile):
+logger = logging.getLogger(__name__)
 
+class Bullet(Projectile):
     def __init__(
-        self,
-        x,
-        y,
-        shiftX,
-        shiftY,
-        damage,
-        armour_pierce,
-        dropoff,
-        speed,
-        recoil,
-        penetration,
-        head_mult,
-        tracer
+        self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer
     ):
-        super().__init__(
-            x + shiftX,
-            y + shiftY,
-            damage,
-            armour_pierce,
-            dropoff,
-            speed,
-            recoil,
-            penetration,
-            head_mult
-        )
+        super().__init__(x + shiftX, y + shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult)
         self.start_damage = damage
         self.tracer = tracer
 
@@ -54,7 +34,8 @@ class Bullet(Projectile):
                 else None
             )
         return None
-    
+
+
 class Tracer:
     def __init__(
         self,
@@ -77,6 +58,7 @@ class Tracer:
     def update(self, frame_time, screen):
         alpha = self.alpha
         self.alpha -= 9000 * frame_time
+        logger.debug(f"Drawing tracer with alpha {self.alpha}")
         if alpha > 0:
             pg.draw.line(
                 screen,

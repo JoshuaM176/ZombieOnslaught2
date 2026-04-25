@@ -61,13 +61,16 @@ def freeze_frames(self, frame_time, id, seconds, **_):
         self.properties.frozen = False
         self.remove_effects.append(id)
 
+
 def spawn_toxin(self, **_):
     x, y, w, h = self.hitbox.get()
-    self.projectile_registry.add(Toxin(x + w/2, y + h/2, 1, 1))
+    self.projectile_registry.add(Toxin(x + w / 2, y + h / 2, 1, 1))
+
 
 def create_smoke(self, x, y, size, **_):
     _, _, w, h = self.hitbox.get()
     event_bus.add_event("generic_registry_l2_bus", Smoke(x, y, size))
+
 
 def set_attr(self, name, value, **_):
     setattr(self, name, value)
@@ -81,5 +84,5 @@ effect_map = {
     "invincibility_frames": invincibility_frames,
     "freeze_frames": freeze_frames,
     "spawn_toxin": spawn_toxin,
-    "create_smoke": create_smoke
+    "create_smoke": create_smoke,
 }

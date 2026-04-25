@@ -18,6 +18,7 @@ from util.ui_objects import FloatingNumber
 from game.hut import Hut
 import pygame as pg
 
+
 class Game(ScreenPage):
     def __init__(self, screen: pg.Surface):
         resource_loader = ResourceLoader("game", "attributes")
@@ -35,7 +36,7 @@ class Game(ScreenPage):
         self.projectile_registries: dict[str, ProjectileRegistry] = {
             "player_bullet_registry": BulletRegistry(200, self.screen, self.alpha_screen),
             "zombie_bullet_registry": BulletRegistry(400, self.screen, self.alpha_screen),
-            "zombie_projectile_registry": ProjectileRegistry(400, self.screen, self.alpha_screen)
+            "zombie_projectile_registry": ProjectileRegistry(400, self.screen, self.alpha_screen),
         }
         self.generic_registryl1 = GenericRegistry(self.screen, self.alpha_screen)
         self.generic_registryl2 = GenericRegistry(self.screen, self.alpha_screen)
@@ -50,7 +51,7 @@ class Game(ScreenPage):
             "reset": self.reset,
             "damage_village": self.damage_village,
             "killed_zombie": self.killed_zombie,
-            "save_game": self.save_game
+            "save_game": self.save_game,
         }
         self.game_info = GameInfo(**rsrc_ldr.get("game_info"))
         self.stats = Stats(self.zombie_registry.resources, **rsrc_ldr.get("stats"))
@@ -64,7 +65,9 @@ class Game(ScreenPage):
     def _create_screens(self, rsrc_ldr: ResourceLoader):
         self.game_over = GameOver(self.screen)
         self.store = Store(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
-        self.zombiepedia = Zombiepedia(self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia"))
+        self.zombiepedia = Zombiepedia(
+            self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia")
+        )
 
     def _ui_init(self):
         if hasattr(self, "ui"):
@@ -98,10 +101,7 @@ class Game(ScreenPage):
             self.generic_registryl2.add(event)
         if self.zombie_registry.is_empty():
             self.new_round()
-        self.screen.fill(color=(150, 150, 150), rect=self.rect)
-        self.alpha_screen.fill((0, 0, 0, 0), rect=self.rect)
-        self.hut_render_plain.draw(self.screen)
-        self.generic_registryl1.update(frame_time)
+        # Hit registration
         self.zombie_registry.hit_check(self.projectile_registries["player_bullet_registry"])
         for projectile in self.projectile_registries["zombie_bullet_registry"]:
             self.player.hit_check(projectile)
@@ -109,6 +109,12 @@ class Game(ScreenPage):
             self.player.hit_check(projectile)
         for projectile_registry in self.projectile_registries.values():
             projectile_registry.update(frame_time)
+        # Clear Screen
+        self.screen.fill(color=(150, 150, 150), rect=self.rect)
+        self.alpha_screen.fill((0, 0, 0, 0), rect=self.rect)
+        # Draw
+        self.hut_render_plain.draw(self.screen)
+        self.generic_registryl1.update(frame_time)
         self.zombie_registry.update(frame_time)
         self.screen.blit(self.alpha_screen, (0, 0))
         self.player.update(frame_time)
@@ -200,7 +206,7 @@ class Game(ScreenPage):
             "experience": self.player.properties.experience,
             "experience_required": self.player.properties.experience_required,
             "level": self.player.properties.level,
-            "level_tokens": self.player.properties.level_tokens
+            "level_tokens": self.player.properties.level_tokens,
         }
         player_weapons = []
         for cat in self.player.weapons.equipped_list:

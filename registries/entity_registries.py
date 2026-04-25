@@ -5,6 +5,7 @@ from registries.projectile_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
 
+
 class EntityRegistry:
     def __init__(self, entity_type: str):
         self.render_plain = pg.sprite.RenderPlain(())
@@ -14,9 +15,7 @@ class EntityRegistry:
         self.resources = resource_loader.get_all()
         for key, item in self.resources.items():
             item["properties"]["name"] = key
-            self.resources[key]["sprite"] = load_sprite(
-                self.resources[key]["sprite"], entity_type, -1
-            )
+            self.resources[key]["sprite"] = load_sprite(self.resources[key]["sprite"], entity_type, -1)
             convert_files_to_sprites(self.resources[key]["sprites"], "zombies")
         self.entities: list[Entity] = []
 
@@ -43,9 +42,9 @@ class EntityRegistry:
         if len(self.entities) > 0:
             return False
         return True
-    
+
     def clear(self):
-        for i in range(len(self.entities)-1, -1, -1):
+        for i in range(len(self.entities) - 1, -1, -1):
             self.deregister(self.entities[i])
 
     def hit_check(self, projectiles: ProjectileRegistry):
@@ -75,9 +74,9 @@ class ZombieRegistry(EntityRegistry):
             y,
             self.weapon_registry,
             self.projectile_registry,
-            round_scaling = round,
-            parent = parent,
-            zombies = self.entities,
+            round_scaling=round,
+            parent=parent,
+            zombies=self.entities,
             **self.resources[zombie_type],
         )
         self.register(zombie)
@@ -100,8 +99,8 @@ class ZombieRegistry(EntityRegistry):
 
     def update(self, frame_time):
         # debug
-        #for entity in self.entities:
-            #entity.head_hitbox.display(self.screen)
+        # for entity in self.entities:
+        # entity.head_hitbox.display(self.screen)
         # entity.hitbox.display(screen)
         self.render_plain.update(frame_time, self.screen)
         self.render_plain.draw(self.screen)

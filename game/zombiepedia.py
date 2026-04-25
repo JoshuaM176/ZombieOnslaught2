@@ -45,7 +45,11 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         x = 50
         y = 250
         for i in range(start_index, min(start_index + self.zombies_per_page, len(zombies))):
-            self.zombie_buttons.append(self.ZombieButton(x, y, 200, 200, self.screen, zombies[i], self.select_zombie, self.stats[zombies[i]["name"]]))
+            self.zombie_buttons.append(
+                self.ZombieButton(
+                    x, y, 200, 200, self.screen, zombies[i], self.select_zombie, self.stats[zombies[i]["name"]]
+                )
+            )
             x += 300
             if x > self.screen.get_width() - 100:
                 x = 50
@@ -58,14 +62,14 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         self.description_text = []
         self.stats_text = []
         for i, desc in enumerate(zombie_dict["zombiepedia"]["description"].split("\n")):
-            self.description_text.append(Text(desc, 25, 750, self.screen.get_height()-300+30*i))
+            self.description_text.append(Text(desc, 25, 750, self.screen.get_height() - 300 + 30 * i))
         x = 300
-        y = self.screen.get_height()-300
+        y = self.screen.get_height() - 300
         for stat in [
-            f"Health: {zombie_dict["properties"]["health"]}",
-            f"Body Armour: {round(zombie_dict["properties"]["body_armour"] * 100)}",
-            f"Head Armour: {round(zombie_dict["properties"]["head_armour"] * 100)}",
-            f"Speed: {zombie_dict["properties"]["speed"]}",
+            f"Health: {zombie_dict['properties']['health']}",
+            f"Body Armour: {round(zombie_dict['properties']['body_armour'] * 100)}",
+            f"Head Armour: {round(zombie_dict['properties']['head_armour'] * 100)}",
+            f"Speed: {zombie_dict['properties']['speed']}",
             f"Number Killed: {self.stats[self.selected_zombie]}",
         ]:
             self.stats_text.append(Text(stat, 40, x, y))

@@ -39,8 +39,12 @@ class Store(ScreenPage, ButtonContainer):
         self.ui_buttons = []
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
-        self.ui_buttons.append(self.BuyOrEquip(scr_w / 2 - 100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected))
-        self.ui_buttons.append(FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.return_to_game, [], "Return to Game"))
+        self.ui_buttons.append(
+            self.BuyOrEquip(scr_w / 2 - 100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected)
+        )
+        self.ui_buttons.append(
+            FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.return_to_game, [], "Return to Game")
+        )
         self.ui_buttons.append(FuncButton(scr_w / 2 + 120, 50, 50, 50, self.screen, self.next_page, [], ">"))
         self.ui_buttons.append(FuncButton(scr_w / 2 - 170, 50, 50, 50, self.screen, self.prev_page, [], "<"))
         self.set_weapon_buttons()
@@ -60,16 +64,21 @@ class Store(ScreenPage, ButtonContainer):
             self.category = weapon_categories[weapon_categories.index(self.category) + 1]
         self.set_weapon_buttons()
         self.select_weapon(
-            self.weapon_registry.get_weapon(self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]))
+            self.weapon_registry.get_weapon(
+                self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]
+            )
+        )
         self.category_text.update_text(self.category.upper())
 
     def prev_page(self):
         if weapon_categories.index(self.category) > 0:
-            self.category = weapon_categories[
-                weapon_categories.index(self.category) - 1]
+            self.category = weapon_categories[weapon_categories.index(self.category) - 1]
         self.set_weapon_buttons()
         self.select_weapon(
-            self.weapon_registry.get_weapon(self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]))
+            self.weapon_registry.get_weapon(
+                self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"]
+            )
+        )
         self.category_text.update_text(self.category.upper())
 
     def update(self):
@@ -99,7 +108,10 @@ class Store(ScreenPage, ButtonContainer):
         equipped_weapon = self.equipped_weapons.get(self.category)
         if equipped_weapon:
             self.screen.blit(player_sprite, (50, 60, 50, 50))
-            self.screen.blit(equipped_weapon.sprites["default"], (50 + equipped_weapon.properties.shiftX, 60 + equipped_weapon.properties.shiftY, 50, 50))
+            self.screen.blit(
+                equipped_weapon.sprites["default"],
+                (50 + equipped_weapon.properties.shiftX, 60 + equipped_weapon.properties.shiftY, 50, 50),
+            )
         return self.go2
 
     def set_weapon_buttons(self):
@@ -110,7 +122,17 @@ class Store(ScreenPage, ButtonContainer):
         y = 480
         for weapon in available_weapons:
             self.weapon_buttons.append(
-                self.WeaponButton(x, y, 110, 110, self.screen, weapon, self.select_weapon, self.weapon_registry.check_requirements(self.category, weapon["name"])))
+                self.WeaponButton(
+                    x,
+                    y,
+                    110,
+                    110,
+                    self.screen,
+                    weapon,
+                    self.select_weapon,
+                    self.weapon_registry.check_requirements(self.category, weapon["name"]),
+                )
+            )
             x += 150
             if x > self.screen.get_width() - 100:
                 x = 50
@@ -120,11 +142,11 @@ class Store(ScreenPage, ButtonContainer):
     def select_weapon(self, weapon):
         self.weapon = weapon
         self.weapon_text.update_text(self.weapon["name"])
-        self.price_text.update_text(f"${self.weapon["store"]["price"]}")
+        self.price_text.update_text(f"${self.weapon['store']['price']}")
         y = 0
         self.requirements_text = []
         for req in self.weapon["store"]["requirements"]:
-            self.requirements_text.append(Text(req["name"], 25, self.screen.get_width() / 2, y + 155, align = "CENTER"))
+            self.requirements_text.append(Text(req["name"], 25, self.screen.get_width() / 2, y + 155, align="CENTER"))
             y += 25
         self.set_stats()
 
@@ -148,17 +170,17 @@ class Store(ScreenPage, ButtonContainer):
             f"Max Recoil: {self.weapon['properties']['max_recoil'] * 100}",
             f"Magazines: {self.weapon['ammo']['mags']}",
             f"Resupply Time: {self.weapon['ammo']['mag_time']}",
-            f"Reload Type: {self.reload_type[self.weapon['ammo']['reload_type']]}"
+            f"Reload Type: {self.reload_type[self.weapon['ammo']['reload_type']]}",
         ]
-        if self.weapon['properties']['burst'] > 1:
+        if self.weapon["properties"]["burst"] > 1:
             stats.append(f"Fire Type: Burst-{self.weapon['properties']['burst']}")
             stats.append(f"Burst Delay: {self.weapon['properties']['burst_delay']}")
-        elif self.weapon['properties']['burst'] == 1:
+        elif self.weapon["properties"]["burst"] == 1:
             stats.append("Fire Type: Semi-Automatic")
         else:
             stats.append("Fire Type: Automatic")
         for stat in stats:
-            self.stats_text.append(Text(stat, 25, self.screen.get_width()/2 + x, y))
+            self.stats_text.append(Text(stat, 25, self.screen.get_width() / 2 + x, y))
             y += 25
             if y > 475:
                 y = 255
@@ -167,7 +189,9 @@ class Store(ScreenPage, ButtonContainer):
     def buy_or_equip_selected(self):
         if self.weapon["player"]["owned"]:
             self.equipped_weapons.equip(self.weapon, self.category)
-        elif self.game_info.money >= self.weapon["store"]["price"] and self.weapon_registry.check_requirements(self.category, self.weapon["name"]):
+        elif self.game_info.money >= self.weapon["store"]["price"] and self.weapon_registry.check_requirements(
+            self.category, self.weapon["name"]
+        ):
             self.game_info.money -= self.weapon["store"]["price"]
             event_bus.add_event("ui_bus", {"money": self.game_info.money})
             self.weapon["player"]["owned"] = True
@@ -181,7 +205,7 @@ class Store(ScreenPage, ButtonContainer):
             self.weapon = pg.sprite.Sprite()
             self.weapon.sprite = weapon["sprites"]["default"]
             self.weapon.rect = weapon["sprites"]["default"].get_rect()
-            self.weapon.rect.topleft = (x + weapon["store"]["shiftX"],y + weapon["store"]["shiftY"])
+            self.weapon.rect.topleft = (x + weapon["store"]["shiftX"], y + weapon["store"]["shiftY"])
             self.price = weapon["store"]["price"]
             self.reqs_met = reqs_met
             super().__init__(x, y, width, height, screen)
@@ -204,7 +228,7 @@ class Store(ScreenPage, ButtonContainer):
             super().__init__(x, y, width, height, screen)
             self.func = func
             self.weapon = weapon
-            self.text = Text("", 50, self.x + self.width / 2, self.y + self.height / 2, align = "CENTER")
+            self.text = Text("", 50, self.x + self.width / 2, self.y + self.height / 2, align="CENTER")
 
         def click(self, x, y, button):
             if button == 1:

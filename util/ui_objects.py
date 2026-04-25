@@ -1,17 +1,9 @@
 import pygame as pg
 from util.event_bus import event_bus
 
-class Text():
-    def __init__(
-            self,
-            text,
-            size,
-            x,
-            y,
-            color=(0, 0, 0),
-            align="LEFT",
-            font=None
-    ):
+
+class Text:
+    def __init__(self, text, size, x, y, color=(0, 0, 0), align="LEFT", font=None):
         self.align = align
         self.x = x
         self.y = y
@@ -37,30 +29,20 @@ class Text():
                 screen.blit(self.text, self.text.get_rect(center=(self.x, self.y)))
 
 
-class ProgressBar():
-    def __init__(
-            self,
-            progress,
-            x,
-            y,
-            width,
-            height,
-            color = (0, 255, 0),
-            text = None
-                 ):
+class ProgressBar:
+    def __init__(self, progress, x, y, width, height, color=(0, 255, 0), text=None):
         self.progress = progress
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.color = color
-        self.text = Text(text, height, x + width/2, y + height/2, align="CENTER") if text is not None else None
-
+        self.text = Text(text, height, x + width / 2, y + height / 2, align="CENTER") if text is not None else None
 
     def update_pos(self, x, y):
         self.x = x
         self.y = y
-        self.text.update_pos(x + self.width/2, y + self.height/2)
+        self.text.update_pos(x + self.width / 2, y + self.height / 2)
 
     def update_text(self, text: str):
         self.text.update_text(text)
@@ -81,12 +63,7 @@ class ButtonContainer:
 
     def check_buttons(self, event, x: int, y: int):
         for button in self.buttons:
-            if (
-                x > button.x
-                and x < button.x + button.width
-                and y > button.y
-                and y < button.y + button.height
-            ):
+            if x > button.x and x < button.x + button.width and y > button.y and y < button.y + button.height:
                 match event.type:
                     case pg.MOUSEBUTTONDOWN:
                         button.click(x, y, event.button)
@@ -128,9 +105,7 @@ class Button:
 
 
 class FuncButton(Button):
-    def __init__(
-        self, x, y, width, height, screen, func, args, text, text_kwargs: dict = {}
-    ):
+    def __init__(self, x, y, width, height, screen, func, args, text, text_kwargs: dict = {}):
         super().__init__(x, y, width, height, screen)
         self.func = func
         self.args = args
@@ -149,14 +124,12 @@ class FuncButton(Button):
             self.func(*self.args)
 
     def update(self, **kwargs):
-        pg.draw.rect(
-            self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10
-        )
+        pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         self.text.update(self.screen)
 
 
 class FloatingNumber:
-    def __init__(self, time, size = 15, color = (255, 0, 0)):
+    def __init__(self, time, size=15, color=(255, 0, 0)):
         self.x = 0
         self.y = 0
         self.damage = 0

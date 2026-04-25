@@ -1,19 +1,8 @@
 from math import sqrt
 
+
 class Projectile:
-    def __init__(
-        self,
-        x,
-        y,
-        damage,
-        armour_pierce,
-        dropoff,
-        speed,
-        recoil,
-        penetration,
-        head_mult,
-        **_
-    ):
+    def __init__(self, x, y, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, **_):
         self.x = x
         self.y = y
         self.start_x = self.x
