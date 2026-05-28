@@ -75,14 +75,14 @@ class Entity(pg.sprite.Sprite):
             self.y = -100
 
     def hit_check(self, bullet: Bullet):
-        if bullet is not None and bullet.damage > 0 and self.properties.health > 0:
-            if self not in bullet.recent_hits:
-                if self.head_hitbox.check(bullet.x, bullet.y):
-                    self.hit(bullet, True)
-                    bullet.hit(self)
-                elif self.hitbox.check(bullet.x, bullet.y):
-                    self.hit(bullet, False)
-                    bullet.hit(self)
+        if bullet is None or bullet.damage < 0 or self.properties.health < 0 or self in bullet.recent_hits:
+            return
+        if self.head_hitbox.check(bullet.x, bullet.y):
+            self.hit(bullet, True)
+            bullet.hit(self)
+        elif self.hitbox.check(bullet.x, bullet.y):
+            self.hit(bullet, False)
+            bullet.hit(self)
 
     def hit(self, bullet: Bullet, head: bool):
         damage = bullet.damage

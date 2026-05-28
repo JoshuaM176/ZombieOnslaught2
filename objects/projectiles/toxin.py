@@ -23,19 +23,23 @@ class Toxin(Projectile):
         self.horizontal_movement = random.uniform(-300, 100)
         self.vertical_movement = 0
         self.gravity = random.uniform(-200, 100)
-        self.recent_hits = {}
+        self.recent_hits = set()
+        self.bold_time = 0
 
     def hit(self, entity):
-        self.recent_hits[entity] = True
+        self.recent_hits.add(entity)
+        self.bold_time = 1
 
     def update(self, frame_time, _, screen: pg.Surface):
         if self.damage > 0:
+            size = 4 if self.bold_time > 0 else 2
             pg.draw.rect(
-                screen, color=(200, 0, 200, 255 * self.damage / self.start_damage), rect=(self.x, self.y, 2, 2)
+                screen, color=(200, 0, 200, 255 * self.damage / self.start_damage), rect=(self.x, self.y, size, size)
             )
             self.damage -= self.dropoff * frame_time
             self.x += self.horizontal_movement * frame_time
             self.y += self.vertical_movement * frame_time
             self.y += self.gravity * frame_time
             self.gravity += 10 * frame_time
+            self.bold_time -= frame_time
         return None

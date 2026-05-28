@@ -15,10 +15,10 @@ class Projectile:
         self.horizontal_movement = speed / sqrt(recoil + 1)
         self.vertical_movement = -self.horizontal_movement * recoil
         self.gravity = 0
-        self.recent_hits = {}
+        self.recent_hits = set()
 
     def hit(self, entity):
-        self.recent_hits[entity] = True
+        self.recent_hits.add(entity)
         self.damage *= self.penetration
         speed_mult = 0.75 + self.penetration * 0.1
         self.horizontal_movement *= speed_mult

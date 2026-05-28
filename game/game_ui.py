@@ -224,7 +224,6 @@ class UI:
             self.y = screen.get_height() - 213
 
         def update_text(self, data: dict):
-            print("MONEY ADDED")
             self.add(140, self.y, data["money_added"])
 
         def update(self, screen: pg.Surface, frame_time: float) -> None:
