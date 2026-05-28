@@ -23,7 +23,6 @@ class Game(ScreenPage):
         resource_loader.load_all()
         super().__init__(screen, "game", screen_init=False)
         self.alpha_screen = pg.Surface(screen.get_size(), pg.SRCALPHA)
-        self.money_number = FloatingNumber(2, size=25, color=(0, 200, 0))
         self._create_registries()
         self._game_prop_init(resource_loader)
         self._create_player()
@@ -71,7 +70,7 @@ class Game(ScreenPage):
         if hasattr(self, "ui"):
             curr_ui = self.ui.data
             event_bus.add_event("ui_bus", curr_ui)
-        self.ui = UI(self.screen)
+        self.ui = UI(self.screen, self.alpha_screen)
 
     def __screen_init__(self):
         self._ui_init()
@@ -119,8 +118,7 @@ class Game(ScreenPage):
         self.screen.blit(self.alpha_screen, (0, 0))
         self.player.update(frame_time)
         self.generic_registryl2.update(frame_time)
-        self.ui.update()
-        self.money_number.update(frame_time, self.screen)
+        self.ui.update(frame_time)
         if self.player.properties.health < 0:
             self.end_game()
         return self.go2
@@ -148,8 +146,7 @@ class Game(ScreenPage):
 
     def add_money(self, money: float):
         self.game_info.money += money
-        self.money_number.add(140, self.screen.get_height() - 250, money)
-        event_bus.add_event("ui_bus", {"money": self.game_info.money})
+        event_bus.add_event("ui_bus", {"money": self.game_info.money, "money_added": money})
 
     def damage_village(self, damage: float):
         self.game_info.village_health -= damage

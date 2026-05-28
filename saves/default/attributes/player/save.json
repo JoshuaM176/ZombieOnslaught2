@@ -1,1 +1,1 @@
-{"player": {"properties": {"stamina": 10, "health": 10, "experience": 144, "experience_required": 287, "level": 11, "level_tokens": 11}, "equipped_weapons": [{"name": "Chainsaw", "cat": "melee"}, {"name": "P250", "cat": "pistol"}, {"name": "MP7", "cat": "smg"}]}}
+{"player": {"properties": {"stamina": 10, "health": 10, "experience": 301, "experience_required": 348, "level": 13, "level_tokens": 13}, "equipped_weapons": [{"name": "Chainsaw", "cat": "melee"}, {"name": "P250", "cat": "pistol"}, {"name": "MP7", "cat": "smg"}]}}

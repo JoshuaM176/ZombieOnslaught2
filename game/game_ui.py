@@ -1,11 +1,12 @@
 import pygame as pg
 from util.event_bus import event_bus
-from util.ui_objects import get_font, Text, ProgressBar
+from util.ui_objects import get_font, Text, ProgressBar, FloatingNumber
 
 
 class UI:
-    def __init__(self, screen: pg.Surface):
+    def __init__(self, screen: pg.Surface, alpha_screen: pg.Surface):
         self.screen = screen
+        self.alpha_screen = alpha_screen
         self.data = {
             "weapon": "MP7",
             "bullets": 0,
@@ -25,6 +26,7 @@ class UI:
             "max_village_health": 10,
             "experience": 0,
             "experience_required": 100,
+            "money_added": 0
         }
         self.data_text_map = {
             "weapon": "weapon_info",
@@ -46,6 +48,7 @@ class UI:
             "level": "level_info",
             "experience": "experience_info",
             "experience_required": "experience_info",
+            "money_added": "money_added_info"
         }
         self.text_map = {
             "weapon_info": self.WeaponText(screen),
@@ -61,13 +64,19 @@ class UI:
             "experience_info": self.ExperienceBar(screen),
             "level_info": self.LevelText(screen),
         }
+        self.frame_text_map = {
+            "money_added_info": self.MoneyNumber(screen)
+        }
 
-    def update(self):
+    def update(self, frame_time: float):
         ui_bus = event_bus.get_events("ui_bus")
         for item in ui_bus:
             for atr, val in item.items():
                 self.data[atr] = val
                 func = self.text_map.get(self.data_text_map.get(atr))
+                if func:
+                    func.update_text(self.data)
+                func = self.frame_text_map.get(self.data_text_map.get(atr))
                 if func:
                     func.update_text(self.data)
         pg.draw.rect(
@@ -77,6 +86,8 @@ class UI:
         )
         for _, info in self.text_map.items():
             info.update(self.screen)
+        for _, info in self.frame_text_map.items():
+            info.update(self.screen, frame_time)
 
     class BulletText(Text):
         def __init__(self, screen: pg.Surface):
@@ -197,11 +208,24 @@ class UI:
 
         def update_text(self, data: dict):
             self.update_progress(data["experience"] / data["experience_required"])
-            super().update_text(f"{data['experience']} / {data['experience_required']}")
+            super().update_text(f"{data["experience"]} / {data["experience_required"]}")
 
     class LevelText(Text):
         def __init__(self, screen: pg.Surface):
             super().__init__("", 30, 25, screen.get_height() - 242)
 
         def update_text(self, data: dict):
-            super().update_text(f"Lvl. {data['level']}")
+            super().update_text(f"Lvl. {data["level"]}")
+
+    class MoneyNumber(FloatingNumber):
+
+        def __init__(self, screen: pg.Surface):
+            super().__init__(time=2, size=25, color=(0,200,0))
+            self.y = screen.get_height() - 213
+
+        def update_text(self, data: dict):
+            print("MONEY ADDED")
+            self.add(140, self.y, data["money_added"])
+
+        def update(self, screen: pg.Surface, frame_time: float) -> None:
+            super().update(frame_time, screen)
