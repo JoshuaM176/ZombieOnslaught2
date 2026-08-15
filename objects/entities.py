@@ -85,7 +85,7 @@ class Entity[P: EntityProperties](pg.sprite.Sprite):
             self.hit(bullet, False)
             bullet.hit(self)
 
-    def hit(self, bullet: Bullet, head: bool):
+    def hit(self, bullet: Bullet, head: bool) -> None:
         damage = bullet.damage
         if head:
             damage *= bullet.head_mult
@@ -184,7 +184,7 @@ class Zombie(Entity[ZombieProperties]):
                     "conditions": conditions,
                     "trigger": trigger,
                     "id": len(self.effects),
-                }
+                },
             )
             if trigger == "init":
                 self.use_effect(None, self.effects[-1])
@@ -247,7 +247,7 @@ class Zombie(Entity[ZombieProperties]):
                 case "timer":
                     effect["values"]["time"]["value"] += frame_time
                     if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"] and self.use_effect(
-                        frame_time, effect
+                        frame_time, effect,
                     ):
                         effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
@@ -351,7 +351,7 @@ class Player(Entity[PlayerProperties]):
                     "max_mags": self.equipped_weapon.ammo.max_mags,
                     "next_weapon": self.weapons.get_next_name(),
                     "prev_weapon": self.weapons.get_prev_name(),
-                }
+                },
             )
 
     def switch_weapon(self):
@@ -395,7 +395,7 @@ class Player(Entity[PlayerProperties]):
                 "max_mags": self.equipped_weapon.ammo.max_mags,
                 "next_weapon": self.weapons.get_next_name(),
                 "prev_weapon": self.weapons.get_prev_name(),
-            }
+            },
         )
 
     def reset_input(self):
@@ -410,7 +410,7 @@ class Player(Entity[PlayerProperties]):
                 "sprint": False,
                 "shooting": False,
                 "reloading": False,
-            }
+            },
         )
 
     def update_movement(self, frame_time):
@@ -452,7 +452,7 @@ class Player(Entity[PlayerProperties]):
                 "max_health": self.properties.max_health,
                 "stamina": self.properties.stamina,
                 "max_stamina": self.properties.max_stamina,
-            }
+            },
         )
 
     def update(self, frame_time):

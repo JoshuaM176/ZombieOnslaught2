@@ -124,7 +124,7 @@ class ZombieRegistry(EntityRegistry):
                             "money": zombie.properties.reward,
                             "experience": zombie.properties.experience,
                             "zombie": zombie.properties.name,
-                        }
+                        },
                     },
                 )
                 self.deregister(zombie)

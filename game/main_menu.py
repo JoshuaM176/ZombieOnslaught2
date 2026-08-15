@@ -36,12 +36,12 @@ class MainMenu(ScreenPage, ButtonContainer):
         )
         self.buttons.append(self.select_save_button)
         self.buttons.append(
-            FuncButton(scr_w / 2 - 250, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Start Game")
+            FuncButton(scr_w / 2 - 250, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Start Game"),
         )
         self.buttons.append(
             FuncButton(
-                scr_w / 2 - 250, scr_h * 0.7, 500, 100, self.screen, self.select_create_profile, [], "Create Profile"
-            )
+                scr_w / 2 - 250, scr_h * 0.7, 500, 100, self.screen, self.select_create_profile, [], "Create Profile",
+            ),
         )
         self.buttons.append(
             DeleteProfileButton(
@@ -54,14 +54,14 @@ class MainMenu(ScreenPage, ButtonContainer):
                 [],
                 "Delete Profile",
                 {"size": 35},
-            )
+            ),
         )
         self.texts.append(Text("Zombie Onslaught", 100, scr_w / 2, 100, align="CENTER"))
         self.profile_text = Text(
-            f"Profile: {save_names[self.profile].upper()}", 75, scr_w / 2, scr_h / 5, align="CENTER"
+            f"Profile: {save_names[self.profile].upper()}", 75, scr_w / 2, scr_h / 5, align="CENTER",
         )
         self.typed_input_display = Text(
-            f"|{self.typed_input}", round(min(75, scr_h / 15)), scr_w / 2, scr_h * 0.65, align="CENTER"
+            f"|{self.typed_input}", round(min(75, scr_h / 15)), scr_w / 2, scr_h * 0.65, align="CENTER",
         )
         self.texts += [self.profile_text]
 
@@ -147,7 +147,7 @@ class SelectSaveButton(Button):
         for profile in save_names:
             if deleting_profile and profile == save_names[selected_profile]:
                 self.profiles_text.append(
-                    Text(profile.upper(), 60, self.screen.get_width() / 2, 0, color=(100, 0, 0), align="CENTER")
+                    Text(profile.upper(), 60, self.screen.get_width() / 2, 0, color=(100, 0, 0), align="CENTER"),
                 )
             else:
                 self.profiles_text.append(Text(profile.upper(), 60, self.screen.get_width() / 2, 0, align="CENTER"))

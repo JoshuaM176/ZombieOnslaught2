@@ -22,10 +22,10 @@ class Settings(ScreenPage, ButtonContainer):
         scr_h = self.screen.get_height()
         self.settings_text = Text("Settings", 75, scr_w / 2, 100, align="CENTER")
         self.buttons.append(
-            FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.go_to_store, [], "Go To Store")
+            FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.go_to_store, [], "Go To Store"),
         )
         self.buttons.append(
-            FuncButton(50, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Return to Game")
+            FuncButton(50, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Return to Game"),
         )
         self.buttons.append(
             FuncButton(
@@ -37,16 +37,16 @@ class Settings(ScreenPage, ButtonContainer):
                 self.set_screen,
                 ["main_menu"],
                 "Main Menu",
-            )
+            ),
         )
         self.buttons.append(FuncButton(50, 50, 500, 100, self.screen, self.quit, [], "Quit Game"))
         self.buttons.append(
-            FuncButton(50, scr_h - 300, 500, 100, self.screen, self.set_screen, ["zombiepedia"], "View Zombiepedia")
+            FuncButton(50, scr_h - 300, 500, 100, self.screen, self.set_screen, ["zombiepedia"], "View Zombiepedia"),
         )
         self.buttons.append(
             SelectSettingsScreen(
-                scr_w / 2 - 400, scr_h * 0.3, 800, scr_h * 0.3, self.screen, self.set_screen, self.settings_screens
-            )
+                scr_w / 2 - 400, scr_h * 0.3, 800, scr_h * 0.3, self.screen, self.set_screen, self.settings_screens,
+            ),
         )
 
     def quit(self):
@@ -79,13 +79,13 @@ class SelectSettingsScreen(Button):
         self.settings_text = []
         for page in self.settings_screens:
             self.settings_text.append(
-                Text(page.upper().replace("_", " "), 60, self.screen.get_width() / 2, 0, align="CENTER")
+                Text(page.upper().replace("_", " "), 60, self.screen.get_width() / 2, 0, align="CENTER"),
             )
 
     def update(self, **_):
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         for i in range(
-            self.scroll_index, min(self.scroll_index + round((self.height - 50) / 60), len(self.settings_screens))
+            self.scroll_index, min(self.scroll_index + round((self.height - 50) / 60), len(self.settings_screens)),
         ):
             self.settings_text[i].update_pos(self.screen.get_width() / 2, self.y + 50 + (i - self.scroll_index) * 60)
             self.settings_text[i].update(self.screen)

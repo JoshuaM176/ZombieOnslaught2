@@ -62,7 +62,7 @@ class ResourceLoader:
         self.save_files = save_path.glob("*json")
 
     def load(self, path: Path):
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
         for key, value in data.items():
             self.resources[key] = value
@@ -71,7 +71,7 @@ class ResourceLoader:
         for file in self.files:
             self.load(file)
         for file in self.save_files:
-            with open(file, "r") as f:
+            with open(file) as f:
                 save_data = json.load(f)
             for key in save_data:
                 self.resources[key] = self.update(self.resources[key], save_data[key])

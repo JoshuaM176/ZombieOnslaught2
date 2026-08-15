@@ -106,7 +106,7 @@ class Weapon(pg.sprite.Sprite):
                         y,
                         **self.projectile,
                         recoil=uniform(
-                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil
+                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil,
                         ),
                     )
                 case "arrow":
@@ -115,7 +115,7 @@ class Weapon(pg.sprite.Sprite):
                         y,
                         **self.projectile,
                         recoil=uniform(
-                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil
+                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil,
                         ),
                     )
                     self.projectile_registry.add(projectile)
@@ -177,7 +177,7 @@ class Weapon(pg.sprite.Sprite):
             {
                 "mags": self.ammo.mags,
                 "mag_progress": self.ammo.mag_progress / self.ammo.mag_time,
-            }
+            },
         )
         self.rect.topleft = x + self.properties.shiftX, y + self.properties.shiftY
 

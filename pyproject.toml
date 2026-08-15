@@ -10,6 +10,10 @@ dependencies = [
 ]
 
 [dependency-groups]
+analytics = [
+    "matplotlib>=3.11.1",
+    "pandas>=3.0.5",
+]
 dev = [
     "pyrefly>=1.2.0",
     "ruff>=0.16.3",

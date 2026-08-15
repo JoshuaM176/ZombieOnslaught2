@@ -39,7 +39,7 @@ class BulletRegistry(ProjectileRegistry):
 
     def add(self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer):
         self.projectiles[self.index].__init__(
-            x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer
+            x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer,
         )
         self.index += 1
         if self.index >= self.size:

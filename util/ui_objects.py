@@ -59,10 +59,12 @@ class ProgressBar:
     def update_pos(self, x, y):
         self.x = x
         self.y = y
-        self.text.update_pos(x + self.width / 2, y + self.height / 2)
+        if self.text:
+            self.text.update_pos(x + self.width / 2, y + self.height / 2)
 
     def update_text(self, text: str):
-        self.text.update_text(text)
+        if self.text:
+            self.text.update_text(text)
 
     def update_progress(self, progress: float):
         self.progress = progress

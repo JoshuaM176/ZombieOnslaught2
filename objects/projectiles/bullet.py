@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Bullet(Projectile):
     def __init__(
-        self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer
+        self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer,
     ):
         super().__init__(x + shiftX, y + shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult)
         self.start_damage = damage

@@ -31,13 +31,13 @@ def spawn_zombie(self: Zombie, spawn_zombie: str, count: int, x: int | None = No
                     "round": 0,
                     "zombie": spawn_zombie,
                     "parent": self,
-                }
+                },
             },
         )
 
 
 def initial_velocity(
-    self: Zombie, frame_time: float, id: int, x_vel: float, y_vel: float, decay: float, **_
+    self: Zombie, frame_time: float, id: int, x_vel: float, y_vel: float, decay: float, **_,
 ):  # velocity formula is velocity*decay^seconds_passed
     if abs(x_vel) > 1 or abs(y_vel) > 1:
         decay = 1 - decay

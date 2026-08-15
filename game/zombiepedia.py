@@ -48,8 +48,8 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         for i in range(start_index, min(start_index + self.zombies_per_page, len(zombies))):
             self.zombie_buttons.append(
                 self.ZombieButton(
-                    x, y, 200, 200, self.screen, zombies[i], self.select_zombie, self.stats[zombies[i]["name"]]
-                )
+                    x, y, 200, 200, self.screen, zombies[i], self.select_zombie, self.stats[zombies[i]["name"]],
+                ),
             )
             x += 300
             if x > self.screen.get_width() - 100:
