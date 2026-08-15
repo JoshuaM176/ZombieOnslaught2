@@ -77,12 +77,12 @@ class Weapon(pg.sprite.Sprite):
         new_sprites = {}
         for key, sprite in self.sprites.items():
             if isinstance(sprite, list):
-                new_sprites[key] = [pg.transform.flip(each) for each in sprite]
+                new_sprites[key] = [pg.transform.flip(each, True, False) for each in sprite]
             else:
                 new_sprites[key] = pg.transform.flip(sprite, True, False)
         self.sprites = new_sprites
         self.base_properties.shiftX *= -1
-        self.base_projectile["speed"] *= -1
+        self.projectile["speed"] *= -1
 
     def shoot(self, x, y):
         if not self.ammo.get():

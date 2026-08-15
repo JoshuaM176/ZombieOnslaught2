@@ -40,7 +40,7 @@ class EntityRegistry:
         return self.entities
 
     def is_empty(self):
-        return len(self.entities) > 0
+        return len(self.entities) == 0
 
     def clear(self):
         for i in range(len(self.entities) - 1, -1, -1):

@@ -8,13 +8,13 @@ from objects.projectiles.projectile import Projectile
 logger = logging.getLogger(__name__)
 
 
-class ProjectileRegistry:
+class ProjectileRegistry[P: Projectile]:
     def __init__(self, size: int, screen, alpha_screen):
         self.screen = screen
         self.alpha_screen = alpha_screen
         self.index = 0
         self.size = size
-        self.projectiles: list[Projectile] = [None] * size
+        self.projectiles: list[P] = [None] * size
 
     def update(self, frame_time):
         for projectile in self.projectiles:
@@ -31,7 +31,7 @@ class ProjectileRegistry:
         return iter(self.projectiles)
 
 
-class BulletRegistry(ProjectileRegistry):
+class BulletRegistry(ProjectileRegistry[Bullet]):
     def __init__(self, size: int, screen: pg.Surface, alpha_screen: pg.Surface):
         super().__init__(size, screen, alpha_screen)
         self.projectiles = [Bullet(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, None) for x in self.projectiles]
@@ -60,7 +60,7 @@ class BulletRegistry(ProjectileRegistry):
         self.tracers.update(frame_time)
         for projectile in self.projectiles:
             if projectile:
-                self.tracers.add(projectile.update(frame_time, self.screen, self.alpha_screen))
+                self.tracers.add(projectile.update(frame_time, self.alpha_screen))
 
 
 class TracerRegistry:
@@ -68,9 +68,9 @@ class TracerRegistry:
         self.screen = alpha_screen
         self.index = 0
         self.size = size
-        self.tracers: list[Tracer] = [None] * size
+        self.tracers: list[Tracer | None] = [None] * size
 
-    def add(self, tracer: Tracer):
+    def add(self, tracer: Tracer | None):
         if tracer:
             self.tracers[self.index] = tracer
             self.index += 1

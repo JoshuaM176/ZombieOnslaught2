@@ -1,9 +1,9 @@
-from typing import override
 from __future__ import annotations
 
 import random
 from dataclasses import dataclass
 from math import sqrt
+from typing import override
 
 import pygame as pg
 
@@ -161,7 +161,7 @@ class Zombie(Entity[ZombieProperties]):
         for effect in attrs["effects"]:
             func = effect_map.get(effect["effect"])
             values = {}
-            conditions = effect["conditions"]
+            conditions = effect.get("conditions") or []
             for value_dict in effect["values"]:
                 match value_dict.get("type") or "default":
                     case "format":

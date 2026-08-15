@@ -1,4 +1,5 @@
 from __future__ import annotations
+from abc import abstractmethod, ABC
 
 from math import log
 from typing import TYPE_CHECKING, Any
@@ -13,6 +14,32 @@ if TYPE_CHECKING:
 # the arguments self, frame_time and id are passed in to all effects
 # self represents the zombie calling it, and id representing the position of the effect in the zombie's effects property
 
+
+class EntityEffect(ABC):
+    def __init__(self, zombie: Zombie, values: list[dict[str, Any]]) -> None:
+        ...
+
+    @abstractmethod
+    def execute(self, frame_time: float) -> bool:
+        """Return false if effect is over."""
+        ...
+
+class EffectValue(ABC):
+    def __init__(self, zombie: Zombie, value: Any) -> None:
+        self._zombie = zombie
+        self._value = value
+
+    @abstractmethod
+    def get(self) -> Any:
+        ...
+
+class Format(EffectValue):
+    def __init__(self, zombie: Zombie, value: Any) -> None:
+        super().__init__(zombie, value)
+        if not isinstance(self._value, str):
+            e = "EffectValue:Format requires a string value."
+            raise TypeError(e)
+        self._value = self._value.format(self=zombie)
 
 def regen(self: Zombie, frame_time: float, regen: float, **_):
     if self.properties.health < self.properties.max_health:

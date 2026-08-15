@@ -1,8 +1,24 @@
+from abc import ABC, abstractmethod
 from math import sqrt
+from typing import Any
+
+import pygame as pg
 
 
-class Projectile:
-    def __init__(self, x, y, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, **_):
+class Projectile(ABC):
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        damage: float,
+        armour_pierce: float,
+        dropoff: float,
+        speed: float,
+        recoil: float,
+        penetration: float,
+        head_mult: float,
+        **_,
+    ):
         self.x = x
         self.y = y
         self.start_x = self.x
@@ -14,7 +30,7 @@ class Projectile:
         self.head_mult = head_mult
         self.horizontal_movement = speed / sqrt(recoil + 1)
         self.vertical_movement = -self.horizontal_movement * recoil
-        self.gravity = 0
+        self.gravity: float = 0
         self.recent_hits = set()
 
     def hit(self, entity):
@@ -24,5 +40,6 @@ class Projectile:
         self.horizontal_movement *= speed_mult
         self.vertical_movement *= speed_mult
 
-    def update(self, screen):
+    @abstractmethod
+    def update(self, frame_time: float, screen: pg.Surface) -> Any:
         pass
