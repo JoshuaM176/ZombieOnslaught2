@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import random
 from dataclasses import dataclass
 from math import sqrt
@@ -17,6 +18,8 @@ from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, load_sprite
 from util.ui_objects import FloatingNumber, ProgressBar
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass(kw_only=True)
 class EntityProperties:
@@ -31,6 +34,20 @@ class EntityProperties:
         self.current_speed = self.speed
         self.max_health = self.health
         self.invincible = False
+
+
+@dataclass
+class TimerEffect:
+    effect: EntityEffect
+    frequency: float
+    time_passed: float = 0
+
+    def execute(self, frame_time: float) -> bool:
+        self.time_passed += frame_time
+        if self.time_passed > self.frequency:
+            self.time_passed -= self.frequency
+            return self.effect.execute(frame_time)
+        return True
 
 
 @dataclass(kw_only=True)
@@ -156,13 +173,12 @@ class Zombie(Entity[ZombieProperties]):
         self.health_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text=str(round(self.properties.health)))
         self.movement["horizontal"] = -1
 
-        self.death_effects = []
-        self.timer_effects = []
-        self.effects = []
+        self.death_effects: list[EntityEffect] = []
+        self.effects: list[EntityEffect | TimerEffect] = []
         for each in attrs["effects"]:
             effect = effect_map.get(each["effect_name"])
             if not effect:
-                continue # TEMPORARY
+                continue  # TEMPORARY
             effect = effect(self, each["values"])
             trigger = each.get("trigger", "default")
             match trigger:
@@ -171,9 +187,9 @@ class Zombie(Entity[ZombieProperties]):
                 case "death":
                     self.death_effects.append(effect)
                 case "init":
-                    ...
+                    self.use_effect(effect, 0)
                 case "timer":
-                    ...
+                    self.effects.append(TimerEffect(effect, each["frequency"]))
                 case _:
                     raise AttributeError(f"Unknown effect trigger: {trigger} on effect: {type(effect).__name__}")
 
@@ -182,6 +198,8 @@ class Zombie(Entity[ZombieProperties]):
         self.animation_step_length = self.animation_length / len(self.animation_sprites)
         self.animation_time = random.uniform(0, self.animation_length)
         self.animation_step = 0
+        logger.info(f"Zombie initialized with properties: {self.properties}")
+        logger.info(f"Zombie initialized with effects: {self.effects}")
 
     def use_effect(self, effect: EntityEffect, frame_time: float) -> bool:
         """Use an affect and return false if effect is over."""
@@ -194,6 +212,10 @@ class Zombie(Entity[ZombieProperties]):
                 remove_effects.append(effect)
         for effect in remove_effects:
             self.effects.remove(effect)
+
+    def use_death_effects(self) -> None:
+        for effect in self.death_effects:
+            self.use_effect(effect, 0)
 
     def update_health_bar(self):
         self.health_bar.update_progress(self.properties.health / self.properties.max_health)

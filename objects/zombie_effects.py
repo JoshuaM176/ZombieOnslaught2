@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-
 from abc import ABC, abstractmethod
 from math import log
 from typing import TYPE_CHECKING, Any, override
@@ -10,6 +9,7 @@ from objects.generic.smoke import Smoke
 from objects.projectiles.toxin import Toxin
 from util.event_bus import event_bus
 
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from objects.entities import Zombie
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 class EntityEffect(ABC):
     def __init__(self, zombie: Zombie, values: list[dict[str, Any]]) -> None:
+        logger.info(f"Initializing effect: {type(self).__name__}")
         self.zombie = zombie
         values_ = {value["name"]: _get_value(value, zombie) for value in values}
         for name, value in values_.items():
@@ -30,6 +31,11 @@ class EntityEffect(ABC):
         if not isinstance(value, EffectValue):
             raise TypeError(f"Missing value: {name} for effect {type(self).__name__}")
         return value.get()
+
+    def get_value(self, name: str, default: Any = None) -> Any:
+        if not hasattr(self, name):
+            return default
+        return self.value(name)
 
     @abstractmethod
     def execute(self, frame_time: float) -> bool:
@@ -82,26 +88,23 @@ class Regen(EntityEffect):
         return True
 
 
-def regen(self: Zombie, frame_time: float, regen: float, **_):
-    if self.properties.health < self.properties.max_health:
-        self.properties.health += regen * frame_time
-        self.update_health_bar()
-
-
-def spawn_zombie(self: Zombie, spawn_zombie: str, count: int, x: int | None = None, y: int | None = None, **_):
-    for i in range(count):
-        event_bus.add_event(
-            "game_event_bus",
-            {
-                "spawn_zombie": {
-                    "x": x or self.x,
-                    "y": y or self.y,
-                    "round": 0,
-                    "zombie": spawn_zombie,
-                    "parent": self,
+class SpawnZombie(EntityEffect):
+    @override
+    def execute(self, frame_time: float) -> bool:
+        for i in range(self.value("count")):
+            event_bus.add_event(
+                "game_event_bus",
+                {
+                    "spawn_zombie": {
+                        "x": self.get_value("x") or self.zombie.x,
+                        "y": self.get_value("y") or self.zombie.y,
+                        "round": 0,
+                        "zombie": self.value("zombie"),
+                        "parent": self.zombie,
+                    }
                 },
-            },
-        )
+            )
+        return True
 
 
 def initial_velocity(
@@ -143,17 +146,32 @@ def freeze_frames(self: Zombie, frame_time: float, id: int, seconds: float, **_)
         self.remove_effects.append(id)
 
 
-def spawn_toxin(self: Zombie, **_):
-    x, y, w, h = self.hitbox.get()
-    self.projectile_registry.add(Toxin(x + w / 2, y + h / 2, 1, 1))
+class SpawnToxin(EntityEffect):
+    @override
+    def execute(self, frame_time: float) -> bool:
+        x, y, w, h = self.zombie.hitbox.get()
+        self.zombie.projectile_registry.add(Toxin(x + w / 2, y + h / 2, 1, 1))
+        return True
 
 
-def create_smoke(self: Zombie, x: float, y: float, size: float, **_):
-    event_bus.add_event("generic_registry_l2_bus", Smoke(x, y, size))
+class CreateSmoke(EntityEffect):
+    @override
+    def execute(self, frame_time: float) -> bool:
+        event_bus.add_event("generic_registry_l2_bus", Smoke(self.value("x"), self.value("y"), self.value("size")))
+        return True
 
 
-def set_attr(self: Zombie, name: str, value: Any, **_):
-    setattr(self, name, value)
+class SetAttr(EntityEffect):
+    @override
+    def execute(self, frame_time: float) -> bool:
+        setattr(self.zombie, self.value("name"), self.value("value"))
+        return True
 
 
-effect_map = {"regen": Regen}
+effect_map = {
+    "create_smoke": CreateSmoke,
+    "regen": Regen,
+    "set_attr": SetAttr,
+    "spawn_toxin": SpawnToxin,
+    "spawn_zombie": SpawnZombie,
+}

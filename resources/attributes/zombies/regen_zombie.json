@@ -17,7 +17,6 @@
                 "values": [
                     {
                         "type": "eval",
-                        "attribute": true,
                         "name": "regen",
                         "value": "zombie.properties.health * 0.1"
                     }
