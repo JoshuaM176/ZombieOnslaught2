@@ -17,13 +17,13 @@
         "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {
-                "effect": "regen",
+                "effect_name": "regen",
                 "values": [
                     {
                         "type": "format_eval",
                         "attribute": true,
                         "name": "regen",
-                        "value": "{self.properties.health} * 0.15"
+                        "value": "{zombie.properties.health} * 0.15"
                     }
                 ]
             }

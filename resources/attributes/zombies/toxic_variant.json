@@ -15,7 +15,7 @@
         },
         "effects": [
             {
-                "effect": "spawn_toxin",
+                "effect_name": "spawn_toxin",
                 "trigger": "timer",
                 "values": [
                     {

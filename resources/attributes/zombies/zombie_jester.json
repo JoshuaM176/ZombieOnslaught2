@@ -16,7 +16,7 @@
         },
         "effects": [
             {
-                "effect": "spawn_zombie",
+                "effect_name": "spawn_zombie",
                 "trigger": "timer",
                 "values": [
                     {
@@ -28,14 +28,14 @@
                         "value": "jester_decoy"
                     },
                     {
-                        "type": "repeat_format_eval",
+                        "type": "repeat_eval",
                         "name": "count",
-                        "value": "min(1, 5-len(self.summoned_zombies))"
+                        "value": "min(1, 5-len(zombie.summoned_zombies))"
                     }
                 ]
             },
             {
-                "effect": "create_smoke",
+                "effect_name": "create_smoke",
                 "trigger": "timer",
                 "values": [
                     {
@@ -43,14 +43,14 @@
                         "value": 1.5
                     },
                     {
-                        "type": "repeat_format_eval",
+                        "type": "repeat_eval",
                         "name": "x",
-                        "value": "{self.x} + random.uniform(-250, 250)"
+                        "value": "{zombie.x} + random.uniform(-250, 250)"
                     },
                     {
-                        "type": "repeat_format_eval",
+                        "type": "repeat_eval",
                         "name": "y",
-                        "value": "{self.y} + random.uniform(-250, 250)"
+                        "value": "{zombie.y} + random.uniform(-250, 250)"
                     },
                     {
                         "name": "size",

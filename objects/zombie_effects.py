@@ -1,45 +1,86 @@
 from __future__ import annotations
-from abc import abstractmethod, ABC
 
+import logging
+
+from abc import ABC, abstractmethod
 from math import log
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from objects.generic.smoke import Smoke
 from objects.projectiles.toxin import Toxin
 from util.event_bus import event_bus
 
+
 if TYPE_CHECKING:
     from objects.entities import Zombie
-
-# the arguments self, frame_time and id are passed in to all effects
-# self represents the zombie calling it, and id representing the position of the effect in the zombie's effects property
 
 
 class EntityEffect(ABC):
     def __init__(self, zombie: Zombie, values: list[dict[str, Any]]) -> None:
-        ...
+        self.zombie = zombie
+        values_ = {value["name"]: _get_value(value, zombie) for value in values}
+        for name, value in values_.items():
+            setattr(self, name, value)
+
+    def value(self, name: str) -> Any:
+        try:
+            value = getattr(self, name)
+        except AttributeError:
+            raise AttributeError(f"Missing value: {name} for effect {type(self).__name__}")
+        if not isinstance(value, EffectValue):
+            raise TypeError(f"Missing value: {name} for effect {type(self).__name__}")
+        return value.get()
 
     @abstractmethod
     def execute(self, frame_time: float) -> bool:
         """Return false if effect is over."""
         ...
 
-class EffectValue(ABC):
+
+def _get_value(value: dict[str, Any], zombie: Zombie) -> EffectValue:
+    return {"default": EffectValue, "eval": Eval, "repeat_eval": RepeatEval}[value.get("type", "default")](
+        zombie, value["value"]
+    )
+
+
+class EffectValue:
     def __init__(self, zombie: Zombie, value: Any) -> None:
         self._zombie = zombie
         self._value = value
 
-    @abstractmethod
     def get(self) -> Any:
-        ...
+        return self._value
 
-class Format(EffectValue):
+
+class Eval(EffectValue):
     def __init__(self, zombie: Zombie, value: Any) -> None:
         super().__init__(zombie, value)
         if not isinstance(self._value, str):
             e = "EffectValue:Format requires a string value."
             raise TypeError(e)
-        self._value = self._value.format(self=zombie)
+        self._value = eval(self._value)
+
+
+class RepeatEval(EffectValue):
+    def __init__(self, zombie: Zombie, value: Any) -> None:
+        super().__init__(zombie, value)
+        if not isinstance(self._value, str):
+            e = "EffectValue:Format requires a string value."
+            raise TypeError(e)
+
+    @override
+    def get(self) -> Any:
+        return eval(self._value)
+
+
+class Regen(EntityEffect):
+    @override
+    def execute(self, frame_time: float) -> bool:
+        if self.zombie.properties.health < self.zombie.properties.max_health:
+            self.zombie.properties.health += self.value("regen") * frame_time
+            self.zombie.update_health_bar()
+        return True
+
 
 def regen(self: Zombie, frame_time: float, regen: float, **_):
     if self.properties.health < self.properties.max_health:
@@ -115,13 +156,4 @@ def set_attr(self: Zombie, name: str, value: Any, **_):
     setattr(self, name, value)
 
 
-effect_map = {
-    "regen": regen,
-    "spawn_zombie": spawn_zombie,
-    "initial_velocity": initial_velocity,
-    "set_attr": set_attr,
-    "invincibility_frames": invincibility_frames,
-    "freeze_frames": freeze_frames,
-    "spawn_toxin": spawn_toxin,
-    "create_smoke": create_smoke,
-}
+effect_map = {"regen": Regen}

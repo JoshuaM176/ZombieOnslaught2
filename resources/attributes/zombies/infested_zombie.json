@@ -14,7 +14,7 @@
         },
         "effects": [
             {
-                "effect": "spawn_zombie",
+                "effect_name": "spawn_zombie",
                 "trigger": "death",
                 "values": [
                     {

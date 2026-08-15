@@ -18,7 +18,7 @@
         "head_hitbox": [40, 8, 72, 40],
         "effects": [
             {
-                "effect": "spawn_zombie",
+                "effect_name": "spawn_zombie",
                 "trigger": "timer",
                 "values": [
                     {
@@ -30,9 +30,9 @@
                         "value": "zombie_lord_knight"
                     },
                     {
-                        "type": "repeat_format_eval",
+                        "type": "repeat_eval",
                         "name": "count",
-                        "value": "min(2, 5-len(self.summoned_zombies))"
+                        "value": "min(2, 5-len(zombie.summoned_zombies))"
                     }
                 ]
             }

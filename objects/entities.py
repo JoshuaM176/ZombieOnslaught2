@@ -11,7 +11,7 @@ from objects.generic.blood import Blood
 from objects.hitreg import HitBox
 from objects.projectiles import Projectile
 from objects.weapons import Weapon
-from objects.zombie_effects import effect_map
+from objects.zombie_effects import EntityEffect, effect_map
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, load_sprite
@@ -144,7 +144,6 @@ class Zombie(Entity[ZombieProperties]):
         self.parent = parent
         self.zombies = zombies
         self.summoned_zombies = []
-        self.remove_effects = []
         super().__init__(screen, x, y, damage_numbers=True, property_class=ZombieProperties, **attrs)
         self.properties._round_scale_init(round_scaling)
         weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
@@ -157,46 +156,26 @@ class Zombie(Entity[ZombieProperties]):
         self.health_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text=str(round(self.properties.health)))
         self.movement["horizontal"] = -1
 
+        self.death_effects = []
+        self.timer_effects = []
         self.effects = []
-        for effect in attrs["effects"]:
-            func = effect_map.get(effect["effect"])
-            values = {}
-            conditions = effect.get("conditions") or []
-            for value_dict in effect["values"]:
-                match value_dict.get("type") or "default":
-                    case "format":
-                        value = value_dict["value"].format(self=self)
-                    case "eval":
-                        value = eval(value_dict["value"])
-                    case "format_eval":
-                        value = eval(value_dict["value"].format(self=self))
-                    case "repeat_format_eval":
-                        value = value_dict["value"]
-                    case "default":
-                        value = value_dict["value"]
-                    case _:
-                        raise AttributeError("Effect has invalid or missing type.")
-                if value_dict.get("attribute"):
-                    setattr(self, value_dict["name"], value)
-                    values[value_dict["name"]] = {"attribute": True}
-                else:
-                    values[value_dict["name"]] = {"value": value}
-                    if value_dict.get("type") == "repeat_format_eval":
-                        values[value_dict["name"]].update({"repeat_format_eval": True})
-            trigger = effect.get("trigger") or "default"
-            if trigger == "timer":
-                values["time"] = {"value": 0}
-            self.effects.append(
-                {
-                    "func": func,
-                    "values": values,
-                    "conditions": conditions,
-                    "trigger": trigger,
-                    "id": len(self.effects),
-                },
-            )
-            if trigger == "init":
-                self.use_effect(None, self.effects[-1])
+        for each in attrs["effects"]:
+            effect = effect_map.get(each["effect_name"])
+            if not effect:
+                continue # TEMPORARY
+            effect = effect(self, each["values"])
+            trigger = each.get("trigger", "default")
+            match trigger:
+                case "default":
+                    self.effects.append(effect)
+                case "death":
+                    self.death_effects.append(effect)
+                case "init":
+                    ...
+                case "timer":
+                    ...
+                case _:
+                    raise AttributeError(f"Unknown effect trigger: {trigger} on effect: {type(effect).__name__}")
 
         self.animation_sprites = attrs["sprites"]["animation"]
         self.animation_length = attrs["animation_length"]
@@ -204,26 +183,17 @@ class Zombie(Entity[ZombieProperties]):
         self.animation_time = random.uniform(0, self.animation_length)
         self.animation_step = 0
 
-    def use_effect(self, frame_time, effect):
-        if self.check_effect_conditions(effect["conditions"]):
-            func = effect["func"]
-            kwargs = {"id": effect["id"]}
-            for arg, value in effect["values"].items():
-                if value.get("attribute"):
-                    kwargs.update({arg: getattr(self, arg)})
-                elif value.get("repeat_format_eval"):
-                    kwargs.update({arg: eval(value["value"].format(self=self))})
-                else:
-                    kwargs.update({arg: value["value"]})
-            func(self=self, frame_time=frame_time, **kwargs)
-            return True
-        return False
+    def use_effect(self, effect: EntityEffect, frame_time: float) -> bool:
+        """Use an affect and return false if effect is over."""
+        return effect.execute(frame_time)
 
-    def check_effect_conditions(self, conditions: list[str]):
-        for condition in conditions:
-            if not eval(condition.format(self=self)):
-                return False
-        return True
+    def use_effects(self, frame_time: float) -> None:
+        remove_effects = []
+        for effect in self.effects:
+            if not self.use_effect(effect, frame_time):
+                remove_effects.append(effect)
+        for effect in remove_effects:
+            self.effects.remove(effect)
 
     def update_health_bar(self):
         self.health_bar.update_progress(self.properties.health / self.properties.max_health)
@@ -240,9 +210,6 @@ class Zombie(Entity[ZombieProperties]):
         self.update_health_bar()
 
     def update(self, frame_time: float, screen: pg.Surface):
-        for effect in self.remove_effects:
-            self.effects[effect] = None
-        self.remove_effects = []
         if not self.properties.frozen:
             self.update_movement(frame_time)
             self.animation_time += frame_time
@@ -252,20 +219,7 @@ class Zombie(Entity[ZombieProperties]):
         if self.x < -100:
             event_bus.add_event("game_event_bus", {"damage_village": {"damage": 1}})
             self.x = screen.get_width() + 100
-        for effect in [effect for effect in self.effects if effect is not None]:
-            match effect["trigger"]:
-                case "default":
-                    self.use_effect(frame_time, effect)
-                case "death":
-                    if self.properties.health < 0:
-                        self.use_effect(frame_time, effect)
-                case "timer":
-                    effect["values"]["time"]["value"] += frame_time
-                    if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"] and self.use_effect(
-                        frame_time,
-                        effect,
-                    ):
-                        effect["values"]["time"]["value"] = 0
+        self.use_effects(frame_time)
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)

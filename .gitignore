@@ -1,4 +1,4 @@
 *.venv*
 *pyc*
 .logs
-saves
+saves/*

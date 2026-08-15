@@ -17,7 +17,7 @@
         },
         "effects": [
             {
-                "effect": "initial_velocity",
+                "effect_name": "initial_velocity",
                 "values": [
                     {
                         "type": "default",
