@@ -106,7 +106,8 @@ class Weapon(pg.sprite.Sprite):
                         y,
                         **self.projectile,
                         recoil=uniform(
-                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil,
+                            self.properties.recoil * -self.properties.downwards_recoil,
+                            self.properties.recoil,
                         ),
                     )
                 case "arrow":
@@ -115,7 +116,8 @@ class Weapon(pg.sprite.Sprite):
                         y,
                         **self.projectile,
                         recoil=uniform(
-                            self.properties.recoil * -self.properties.downwards_recoil, self.properties.recoil,
+                            self.properties.recoil * -self.properties.downwards_recoil,
+                            self.properties.recoil,
                         ),
                     )
                     self.projectile_registry.add(projectile)

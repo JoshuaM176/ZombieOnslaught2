@@ -64,7 +64,10 @@ class Game(ScreenPage):
         self.game_over = GameOver(self.screen)
         self.store = WeaponStore(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
         self.zombiepedia = Zombiepedia(
-            self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia"),
+            self.screen,
+            self.zombie_registry,
+            self.stats.zombies_killed,
+            **rsrc_ldr.get("zombiepedia"),
         )
 
     def _ui_init(self):

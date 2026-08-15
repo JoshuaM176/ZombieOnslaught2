@@ -1,3 +1,4 @@
+from typing import override
 from __future__ import annotations
 
 import random
@@ -8,7 +9,7 @@ import pygame as pg
 
 from objects.generic.blood import Blood
 from objects.hitreg import HitBox
-from objects.projectiles.bullet import Bullet
+from objects.projectiles import Projectile
 from objects.weapons import Weapon
 from objects.zombie_effects import effect_map
 from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
@@ -75,29 +76,35 @@ class Entity[P: EntityProperties](pg.sprite.Sprite):
         self.y = min(self.y, self.screen.get_height() - 350)
         self.y = max(self.y, -100)
 
-    def hit_check(self, bullet: Bullet):
+    def hit_check(self, bullet: Projectile):
         if bullet is None or bullet.damage < 0 or self.properties.health < 0 or self in bullet.recent_hits:
             return
         if self.head_hitbox.check(bullet.x, bullet.y):
-            self.hit(bullet, True)
+            self.head_hit(bullet)
             bullet.hit(self)
         elif self.hitbox.check(bullet.x, bullet.y):
-            self.hit(bullet, False)
+            self.body_hit(bullet)
             bullet.hit(self)
 
-    def hit(self, bullet: Bullet, head: bool) -> None:
+    def head_hit(self, bullet: Projectile) -> None:
+        damage = bullet.damage * bullet.head_mult
+        damage *= 1 - max(self.properties.head_armour - bullet.armour_pierce, 0)
+        self.blood(bullet.x, bullet.y, self.damage(damage))
+
+    def body_hit(self, bullet: Projectile) -> None:
         damage = bullet.damage
-        if head:
-            damage *= bullet.head_mult
-            damage *= 1 - max(self.properties.head_armour - bullet.armour_pierce, 0)
-        else:
-            damage *= 1 - max(self.properties.body_armour - bullet.armour_pierce, 0)
+        damage *= 1 - max(self.properties.body_armour - bullet.armour_pierce, 0)
+        self.blood(bullet.x, bullet.y, self.damage(damage))
+
+    def blood(self, x: float, y: float, size: float) -> None:
+        event_bus.add_event("generic_registry_l1_bus", Blood(x, y, size))
+
+    def damage(self, damage: float) -> float:
         damage_dealt = min(damage, self.properties.health)
         if self.damage_numbers:
             self.damage_number.add(self.x, self.y, damage_dealt)
         self.properties.health -= damage
-        if self.properties.blood:
-            event_bus.add_event("generic_registry_l1_bus", Blood(bullet.x, bullet.y, damage_dealt))
+        return damage_dealt
 
 
 @dataclass
@@ -158,7 +165,7 @@ class Zombie(Entity[ZombieProperties]):
             for value_dict in effect["values"]:
                 match value_dict.get("type") or "default":
                     case "format":
-                        value = format(self=self)
+                        value = value_dict["value"].format(self=self)
                     case "eval":
                         value = eval(value_dict["value"])
                     case "format_eval":
@@ -167,6 +174,8 @@ class Zombie(Entity[ZombieProperties]):
                         value = value_dict["value"]
                     case "default":
                         value = value_dict["value"]
+                    case _:
+                        raise AttributeError("Effect has invalid or missing type.")
                 if value_dict.get("attribute"):
                     setattr(self, value_dict["name"], value)
                     values[value_dict["name"]] = {"attribute": True}
@@ -220,11 +229,17 @@ class Zombie(Entity[ZombieProperties]):
         self.health_bar.update_progress(self.properties.health / self.properties.max_health)
         self.health_bar.update_text(str(max(round(self.properties.health), 1)))
 
-    def hit(self, bullet: Bullet, head: bool):
-        super().hit(bullet, head)
+    @override
+    def head_hit(self, bullet: Projectile) -> None:
+        super().head_hit(bullet)
         self.update_health_bar()
 
-    def update(self, frame_time, screen: pg.Surface):
+    @override
+    def body_hit(self, bullet: Projectile) -> None:
+        super().body_hit(bullet)
+        self.update_health_bar()
+
+    def update(self, frame_time: float, screen: pg.Surface):
         for effect in self.remove_effects:
             self.effects[effect] = None
         self.remove_effects = []
@@ -247,7 +262,8 @@ class Zombie(Entity[ZombieProperties]):
                 case "timer":
                     effect["values"]["time"]["value"] += frame_time
                     if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"] and self.use_effect(
-                        frame_time, effect,
+                        frame_time,
+                        effect,
                     ):
                         effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
@@ -269,7 +285,7 @@ class PlayerProperties(EntityProperties):
     level: int = 0
     level_tokens: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.max_stamina = self.stamina
         self.time_resting = -self.stamina_regen_delay
         event_bus.add_event(

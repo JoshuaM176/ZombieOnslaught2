@@ -31,10 +31,23 @@ class KeybindSettings(ScreenPage, ButtonContainer):
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
         self.set_key_binds_button = SetKeyBindsButton(
-            scr_w / 2 - 500, 250, 1000, 800, self.screen, self.key_map, self.actions,
+            scr_w / 2 - 500,
+            250,
+            1000,
+            800,
+            self.screen,
+            self.key_map,
+            self.actions,
         )
         self.exit_check_save_button = FuncButton(
-            50, scr_h - 150, 550, 100, self.screen, self.exit_check_save, [], "Back",
+            50,
+            scr_h - 150,
+            550,
+            100,
+            self.screen,
+            self.exit_check_save,
+            [],
+            "Back",
         )
         self.buttons += [self.set_key_binds_button, self.exit_check_save_button]
         self.buttons.append(FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.save, [], "Save"))

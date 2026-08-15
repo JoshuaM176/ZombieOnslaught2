@@ -45,7 +45,13 @@ class Settings(ScreenPage, ButtonContainer):
         )
         self.buttons.append(
             SelectSettingsScreen(
-                scr_w / 2 - 400, scr_h * 0.3, 800, scr_h * 0.3, self.screen, self.set_screen, self.settings_screens,
+                scr_w / 2 - 400,
+                scr_h * 0.3,
+                800,
+                scr_h * 0.3,
+                self.screen,
+                self.set_screen,
+                self.settings_screens,
             ),
         )
 
@@ -85,7 +91,8 @@ class SelectSettingsScreen(Button):
     def update(self, **_):
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         for i in range(
-            self.scroll_index, min(self.scroll_index + round((self.height - 50) / 60), len(self.settings_screens)),
+            self.scroll_index,
+            min(self.scroll_index + round((self.height - 50) / 60), len(self.settings_screens)),
         ):
             self.settings_text[i].update_pos(self.screen.get_width() / 2, self.y + 50 + (i - self.scroll_index) * 60)
             self.settings_text[i].update(self.screen)

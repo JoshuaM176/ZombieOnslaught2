@@ -36,7 +36,9 @@ class Toxin(Projectile):
         if self.damage > 0:
             size = 4 if self.bold_time > 0 else 2
             pg.draw.rect(
-                screen, color=(200, 0, 200, 255 * self.damage / self.start_damage), rect=(self.x, self.y, size, size),
+                screen,
+                color=(200, 0, 200, 255 * self.damage / self.start_damage),
+                rect=(self.x, self.y, size, size),
             )
             self.damage -= self.dropoff * frame_time
             self.x += self.horizontal_movement * frame_time

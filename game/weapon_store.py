@@ -66,7 +66,8 @@ class WeaponStore(ScreenPage, ButtonContainer):
         self.set_weapon_buttons()
         self.select_weapon(
             self.weapon_registry.get_weapon(
-                self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"],
+                self.category,
+                self.weapon_registry.get_available_weapons(self.category)[0]["name"],
             ),
         )
         self.category_text.update_text(self.category.upper())
@@ -77,7 +78,8 @@ class WeaponStore(ScreenPage, ButtonContainer):
         self.set_weapon_buttons()
         self.select_weapon(
             self.weapon_registry.get_weapon(
-                self.category, self.weapon_registry.get_available_weapons(self.category)[0]["name"],
+                self.category,
+                self.weapon_registry.get_available_weapons(self.category)[0]["name"],
             ),
         )
         self.category_text.update_text(self.category.upper())
@@ -192,7 +194,8 @@ class WeaponStore(ScreenPage, ButtonContainer):
         if self.weapon["player"]["owned"]:
             self.equipped_weapons.equip(self.weapon, self.category)
         elif self.game_info.money >= self.weapon["store"]["price"] and self.weapon_registry.check_requirements(
-            self.category, self.weapon["name"],
+            self.category,
+            self.weapon["name"],
         ):
             self.game_info.money -= self.weapon["store"]["price"]
             event_bus.add_event("ui_bus", {"money": self.game_info.money})
