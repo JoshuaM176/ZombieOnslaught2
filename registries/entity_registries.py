@@ -1,9 +1,10 @@
 import pygame as pg
-from util.resource_loading import ResourceLoader, convert_files_to_sprites, load_sprite
+
 from objects.entities import Entity, Zombie
 from registries.projectile_registries import ProjectileRegistry
 from registries.weapon_registries import WeaponRegistry
 from util.event_bus import event_bus
+from util.resource_loading import ResourceLoader, convert_files_to_sprites, load_sprite
 
 
 class EntityRegistry:
@@ -39,9 +40,7 @@ class EntityRegistry:
         return self.entities
 
     def is_empty(self):
-        if len(self.entities) > 0:
-            return False
-        return True
+        return len(self.entities) > 0
 
     def clear(self):
         for i in range(len(self.entities) - 1, -1, -1):

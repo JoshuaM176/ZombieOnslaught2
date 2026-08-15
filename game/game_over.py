@@ -1,13 +1,14 @@
 import pygame as pg
+
 from game.screenpage import ScreenPage
-from util.ui_objects import Text, ButtonContainer, FuncButton
+from util.ui_objects import ButtonContainer, FuncButton, Text
 
 
 class GameOver(ScreenPage, ButtonContainer):
-    def __init__(self, screen: pg.Surface):
+    def __init__(self, screen: pg.Surface) -> None:
         super().__init__(screen, "game_over")
 
-    def __screen_init__(self):
+    def __screen_init__(self) -> None:
         self.buttons = []
         scr_w = self.screen.get_width()
         self.buttons.append(
@@ -18,7 +19,7 @@ class GameOver(ScreenPage, ButtonContainer):
         )
         self.game_over_text = Text("GAME OVER!", 100, self.screen.get_width() / 2, 100, align="CENTER")
 
-    def update(self):
+    def update(self) -> str:
         self.go2 = self.page_name
         self.screen.fill((0, 100, 0))
         self.game_over_text.update(self.screen)

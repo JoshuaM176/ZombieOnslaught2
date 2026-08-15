@@ -1,10 +1,21 @@
+from typing import Literal, override
+
 import pygame as pg
+
 from util.event_bus import event_bus
-from typing import override, Literal
 
 
 class Text:
-    def __init__(self, text: str, size: int, x: int, y: int, color: tuple=(0, 0, 0), align: Literal["LEFT", "RIGHT", "CENTER"]="LEFT", font=None):
+    def __init__(
+        self,
+        text: str,
+        size: int,
+        x: int,
+        y: int,
+        color: tuple = (0, 0, 0),
+        align: Literal["LEFT", "RIGHT", "CENTER"] = "LEFT",
+        font=None,
+    ):
         self.align = align
         self.x = x
         self.y = y
@@ -111,7 +122,7 @@ class Button:
 
 
 class FuncButton(Button):
-    def __init__(self, x, y, width, height, screen, func, args, text, text_kwargs: dict = {}):
+    def __init__(self, x, y, width, height, screen, func, args, text, text_kwargs: dict | None = None):
         super().__init__(x, y, width, height, screen)
         self.func = func
         self.args = args
@@ -122,9 +133,10 @@ class FuncButton(Button):
             "size": 50,
             "align": "CENTER",
         }
-        kwargs.update(text_kwargs)
+        kwargs.update(text_kwargs or {})
         self.text = Text(**kwargs)
 
+    @override
     def click(self, x, y, button):
         if button == 1:
             self.func(*self.args)

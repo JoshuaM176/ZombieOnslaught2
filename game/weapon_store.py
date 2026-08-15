@@ -1,18 +1,19 @@
 import pygame as pg
-from util.ui_objects import Text, Button, FuncButton, ButtonContainer
+
 from game.screenpage import ScreenPage
 from registries.weapon_registries import (
-    WeaponRegistry,
     EquippedWeaponRegistry,
+    WeaponRegistry,
     weapon_categories,
 )
-from util.resource_loading import load_sprite
 from util.event_bus import event_bus
+from util.resource_loading import load_sprite
+from util.ui_objects import Button, ButtonContainer, FuncButton, Text
 
 player_sprite = load_sprite("player.png", "player", -1)
 
 
-class Store(ScreenPage, ButtonContainer):
+class WeaponStore(ScreenPage, ButtonContainer):
     def __init__(
         self,
         screen: pg.Surface,
@@ -164,6 +165,7 @@ class Store(ScreenPage, ButtonContainer):
             f"Bullet in Chamber: {self.weapon['ammo']['bullet_in_chamber']}",
             f"Projectile Speed: {self.weapon['projectile']['speed']}",
             f"Bullet Penetration: {round(self.weapon['projectile']['penetration'] * 100)}%",
+            f"Armour Pierce: {self.weapon['projectile']['armour_pierce']}",
             f"Movement Speed: {self.weapon['player']['movement']}",
             f"Recoil {self.weapon['properties']['recoil_per_shot'] * 100}",
             f"Recoil Control {self.weapon['properties']['recoil_control'] * 100}",

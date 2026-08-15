@@ -1,7 +1,9 @@
+from math import sqrt
+
+import pygame as pg
+
 from objects.projectiles.projectile import Projectile
 from util.resource_loading import ResourceLoader, convert_files_to_sprites
-import pygame as pg
-from math import sqrt
 
 resource_loader = ResourceLoader("projectiles", "attributes")
 resource_loader.load_all()
@@ -53,4 +55,3 @@ class Arrow(Projectile):
             self.y += self.gravity * frame_time
             self.gravity += 100 * frame_time
             screen.blit(self.image, self.rect)
-        return None

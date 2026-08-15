@@ -1,9 +1,11 @@
-from util.event_bus import event_bus
-import pygame as pg
-from util.ui_objects import Text, ButtonContainer, Button, FuncButton
-from util.resource_loading import ROOT, set_save_profile, delete_save_profile
 from pathlib import Path
+
+import pygame as pg
+
 from game.screenpage import ScreenPage
+from util.event_bus import event_bus
+from util.resource_loading import ROOT, delete_save_profile, set_save_profile
+from util.ui_objects import Button, ButtonContainer, FuncButton, Text
 
 saves = list(Path(ROOT, "saves").glob("*"))
 save_names = [file.name for file in saves]

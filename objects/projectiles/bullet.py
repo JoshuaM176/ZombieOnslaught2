@@ -1,6 +1,8 @@
-from objects.projectiles.projectile import Projectile
 import logging
+
 import pygame as pg
+
+from objects.projectiles.projectile import Projectile
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +62,7 @@ class Tracer:
         if self.alpha > 0:
             pg.draw.line(
                 screen,
-                (*self.color,self.alpha),
+                (*self.color, self.alpha),
                 (self.start_x, self.start_y),
                 (self.end_x, self.end_y),
                 self.size,

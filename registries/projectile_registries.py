@@ -1,7 +1,9 @@
-from objects.projectiles.projectile import Projectile
-from objects.projectiles.bullet import Tracer, Bullet
 import logging
+
 import pygame as pg
+
+from objects.projectiles.bullet import Bullet, Tracer
+from objects.projectiles.projectile import Projectile
 
 logger = logging.getLogger(__name__)
 

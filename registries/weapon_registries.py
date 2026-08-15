@@ -1,6 +1,7 @@
-from util.resource_loading import ResourceLoader, convert_files_to_sprites
-from objects.weapons import Weapon
 import pygame as pg
+
+from objects.weapons import Weapon
+from util.resource_loading import ResourceLoader, convert_files_to_sprites
 
 weapon_categories = ["melee", "pistol", "smg", "rifle", "shotgun", "sniper"]
 
@@ -17,7 +18,7 @@ class WeaponRegistry:
         resources = resource_loader.get_all()
         for name, data in resources.items():
             convert_files_to_sprites(data["sprites"], "weapons")
-            weapon = {name: resources[name]}
+            weapon = {name: data}
             weapon[name].update({"name": name})
             self.weapons[data["properties"]["type"]].update(weapon)
         self._calc_total_weapons_cost()
@@ -32,7 +33,7 @@ class WeaponRegistry:
         counted = [] if not counted else counted
         if name in visited:
             print(visited)
-            raise Exception(f"Circular dependency in requirements, {name} {cat}")
+            raise AttributeError(f"Circular dependency in requirements, {name} {cat}")
         visited.append(name)
         weapon = self.weapons[cat].get(name)
         if not weapon:
@@ -40,18 +41,16 @@ class WeaponRegistry:
             return 0
         total_cost = weapon["store"]["price"]
         for req in weapon["store"]["requirements"]:
-            if (req["type"]) == "weapon":
-                if (req["cat"], req["name"]) not in counted:
-                    counted.append((req["cat"], req["name"]))
-                    total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited, counted)
+            if (req["type"]) == "weapon" and (req["cat"], req["name"]) not in counted:
+                counted.append((req["cat"], req["name"]))
+                total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited, counted)
         return total_cost
 
     def check_requirements(self, cat, name):
         weapon = self.weapons[cat][name]
         for req in weapon["store"]["requirements"]:
-            if (req["type"]) == "weapon":
-                if not self.weapons[req["cat"]][req["name"]]["player"]["owned"]:
-                    return False
+            if (req["type"]) == "weapon" and not self.weapons[req["cat"]][req["name"]]["player"]["owned"]:
+                return False
         return True
 
     def get_weapon(self, cat: str, name: str) -> dict:
@@ -60,14 +59,14 @@ class WeaponRegistry:
     def get_default_weapons(self) -> dict[str, dict]:
         defaults = {}
         for cat, weapons in self.weapons.items():
-            for weapon, data in weapons.items():
+            for data in weapons.values():
                 if data["player"].get("default"):
                     defaults[cat] = data
         return defaults
 
     def get_available_weapons(self, cat) -> list[Weapon]:
         available = []
-        for weapon, data in self.weapons[cat].items():
+        for data in self.weapons[cat].values():
             if data["player"].get("available"):
                 available.append(data)
         return available
@@ -126,11 +125,11 @@ class EquippedWeaponRegistry:
         return False
 
     def update(self, frame_time):
-        for _, weapon in self.weapons.items():
+        for weapon in self.weapons.values():
             if weapon:
                 weapon.update(frame_time)
 
     def reset(self):
-        for _, weapon in self.weapons.items():
+        for weapon in self.weapons.values():
             if weapon:
                 weapon.reset()

@@ -1,7 +1,8 @@
-import pygame as pg
-from util.resource_loading import ResourceLoader
 import pandas as pd
+import pygame as pg
 from matplotlib import pyplot as plt
+
+from util.resource_loading import ResourceLoader
 
 pg.init()
 screen = pg.display.set_mode((1920, 1080))

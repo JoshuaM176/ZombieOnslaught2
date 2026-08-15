@@ -1,6 +1,6 @@
 from .entity_registries import EntityRegistry, ZombieRegistry
 from .generic_registries import GenericRegistry
-from .projectile_registries import ProjectileRegistry, BulletRegistry, TracerRegistry
+from .projectile_registries import BulletRegistry, ProjectileRegistry, TracerRegistry
 from .weapon_registries import WeaponRegistry
 
 __all__ = [

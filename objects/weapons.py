@@ -1,10 +1,12 @@
-import pygame as pg
-from registries.projectile_registries import ProjectileRegistry
-from objects.projectiles.arrow import Arrow
-from random import uniform
-from math import floor
-from util.event_bus import event_bus
 from dataclasses import dataclass
+from math import floor
+from random import uniform
+
+import pygame as pg
+
+from objects.projectiles.arrow import Arrow
+from registries.projectile_registries import ProjectileRegistry
+from util.event_bus import event_bus
 
 
 @dataclass(kw_only=True)
@@ -57,7 +59,8 @@ class Weapon(pg.sprite.Sprite):
         )
         self.temp_sprite = None
         self.projectile = projectile.copy()
-        self.properties = WeaponProperties(name=name, projectile_type=self.projectile.pop("type"), **properties)
+        self.base_properties = WeaponProperties(name=name, projectile_type=self.projectile.pop("type"), **properties)
+        self.properties = self.base_properties
         self.player = player
         self.projectile_registry = projectile_registry
         if not self.projectile_registry:
@@ -74,25 +77,23 @@ class Weapon(pg.sprite.Sprite):
         new_sprites = {}
         for key, sprite in self.sprites.items():
             if isinstance(sprite, list):
-                new_list = []
-                for each in sprite:
-                    new_list.append(pg.transform.flip(each, True, False))
-                new_sprites[key] = new_list
+                new_sprites[key] = [pg.transform.flip(each) for each in sprite]
             else:
                 new_sprites[key] = pg.transform.flip(sprite, True, False)
         self.sprites = new_sprites
-        self.properties.shiftX *= -1
-        self.projectile["speed"] *= -1
+        self.base_properties.shiftX *= -1
+        self.base_projectile["speed"] *= -1
 
     def shoot(self, x, y):
-        if self.ammo.get():
-            if not self.properties.burst or self.properties.burst_fired < self.properties.burst:
-                self.properties.burst_fired += 1
-                self.fire(x, y)
-                ammo = self.ammo.get()
-                self.ui_bus.send({"bullets": ammo})
-                if ammo == 0:
-                    self.properties.reloading = True
+        if not self.ammo.get():
+            return
+        if not self.properties.burst or self.properties.burst_fired < self.properties.burst:
+            self.properties.burst_fired += 1
+            self.fire(x, y)
+            ammo = self.ammo.get()
+            self.ui_bus.send({"bullets": ammo})
+            if ammo == 0:
+                self.properties.reloading = True
 
     def fire(self, x, y):
         self.ammo.shoot()
@@ -119,8 +120,7 @@ class Weapon(pg.sprite.Sprite):
                     )
                     self.projectile_registry.add(projectile)
             self.properties.recoil += self.properties.recoil_per_shot
-            if self.properties.recoil > self.properties.max_recoil:
-                self.properties.recoil = self.properties.max_recoil
+            self.properties.recoil = min(self.properties.recoil, self.properties.max_recoil)
         self.properties.time_since_last_bullet -= self.properties.time_per_bullet
         if self.ammo.reload_type == 1:
             self.properties.reloading = False
@@ -164,8 +164,7 @@ class Weapon(pg.sprite.Sprite):
             self.properties.reloading = reloading
         if self.properties.recoil > 0:
             self.properties.recoil -= self.properties.recoil_control * frame_time
-            if self.properties.recoil < 0:
-                self.properties.recoil = 0
+            self.properties.recoil = max(self.properties.recoil, 0)
         if self.properties.time_since_last_burst < self.properties.burst_delay and not self.properties.shooting:
             self.properties.time_since_last_burst += frame_time
         if self.properties.time_since_last_bullet < self.properties.time_per_bullet:
@@ -219,10 +218,9 @@ class Ammo:
             self.bullets -= 1
 
     def update(self, frame_time):
-        if self.bullet_in_chamber:
-            if not self.rounds_in_chamber and self.bullets:
-                self.rounds_in_chamber += 1
-                self.bullets -= 1
+        if self.bullet_in_chamber and not self.rounds_in_chamber and self.bullets:
+            self.rounds_in_chamber += 1
+            self.bullets -= 1
         if self.mags < self.max_mags:
             self.mag_progress += frame_time
             if self.mag_progress >= self.mag_time:
@@ -242,7 +240,7 @@ class Ammo:
                 self.bullets = self.max_bullets
             elif self.reload_type == 1:
                 self.bullets += 1
-        return rtn, False if self.bullets >= self.max_bullets else True
+        return rtn, not self.bullets >= self.max_bullets
 
     def reset(self):
         self.bullets = self.max_bullets

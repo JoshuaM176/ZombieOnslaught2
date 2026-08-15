@@ -1,6 +1,8 @@
-import pygame as pg
-from util.resource_loading import ResourceLoader, convert_files_to_sprites
 from random import uniform
+
+import pygame as pg
+
+from util.resource_loading import ResourceLoader, convert_files_to_sprites
 
 resource_loader = ResourceLoader("game", "attributes")
 resource_loader.load_all()

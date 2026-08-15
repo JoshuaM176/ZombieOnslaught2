@@ -1,6 +1,7 @@
-import pygame as pg
 import random
 from math import sqrt
+
+import pygame as pg
 
 
 class Blood:

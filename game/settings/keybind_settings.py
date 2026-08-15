@@ -1,7 +1,8 @@
 import pygame as pg
+
 from game.screenpage import ScreenPage
-from util.ui_objects import Text, ButtonContainer, Button, FuncButton
 from util.event_bus import event_bus
+from util.ui_objects import Button, ButtonContainer, FuncButton, Text
 
 
 class KeybindSettings(ScreenPage, ButtonContainer):
@@ -9,7 +10,7 @@ class KeybindSettings(ScreenPage, ButtonContainer):
         self.checked_exit = False
         self.player_key_map = {}
         self.key_map = key_map
-        self.actions = [key for key in self.key_map.keys()]
+        self.actions = [key for key in self.key_map]
         super().__init__(screen, "keybind_settings")
         self.save()
 
@@ -21,7 +22,7 @@ class KeybindSettings(ScreenPage, ButtonContainer):
             else:
                 self.key_map[action] = [key]
         for action in self.actions:
-            if action not in self.key_map.keys():
+            if action not in self.key_map:
                 self.key_map[action] = [0]
         self.set_key_binds_button.update_key_map_text()
 

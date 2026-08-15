@@ -1,7 +1,8 @@
-from game.screenpage import ScreenPage
-from util.ui_objects import FuncButton, ButtonContainer, Button, Text
-from registries.entity_registries import ZombieRegistry
 import pygame as pg
+
+from game.screenpage import ScreenPage
+from registries.entity_registries import ZombieRegistry
+from util.ui_objects import Button, ButtonContainer, FuncButton, Text
 
 
 class Zombiepedia(ScreenPage, ButtonContainer):

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import pygame as pg
 
-screen_pages = {}
+screen_pages: dict[str, ScreenPage] = {}
 
 
 class ScreenPage:
@@ -12,12 +14,11 @@ class ScreenPage:
         if screen_init:
             self.__screen_init__()
 
-    def __screen_init__(self):
+    def __screen_init__(self) -> None:
         """Called whenever screen size changes"""
-        pass
 
-    def update(self):
+    def update(self) -> None:
         return self.go2
 
-    def set_screen(self, go2: str):
+    def set_screen(self, go2: str) -> None:
         self.go2 = go2

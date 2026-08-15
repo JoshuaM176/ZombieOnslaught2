@@ -1,25 +1,28 @@
-import pygame as pg
-from objects.hitreg import HitBox
-from objects.weapons import Weapon
-from objects.generic.blood import Blood
-from util.resource_loading import load_sprite, ResourceLoader
-from util.event_bus import event_bus
-from util.ui_objects import FloatingNumber, ProgressBar
-from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
-from math import sqrt
-from objects.zombie_effects import effect_map
-from objects.projectiles.bullet import Bullet
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass
-from typing import Type
+from math import sqrt
+
+import pygame as pg
+
+from objects.generic.blood import Blood
+from objects.hitreg import HitBox
+from objects.projectiles.bullet import Bullet
+from objects.weapons import Weapon
+from objects.zombie_effects import effect_map
+from registries.weapon_registries import EquippedWeaponRegistry, WeaponRegistry
+from util.event_bus import event_bus
+from util.resource_loading import ResourceLoader, load_sprite
+from util.ui_objects import FloatingNumber, ProgressBar
 
 
 @dataclass(kw_only=True)
 class EntityProperties:
-    speed: int
-    health: int
-    body_armour: int
-    head_armour: int
+    speed: float
+    health: float
+    body_armour: float
+    head_armour: float
     name: str
     blood: bool = True
 
@@ -29,7 +32,11 @@ class EntityProperties:
         self.invincible = False
 
 
-class Entity(pg.sprite.Sprite):
+@dataclass(kw_only=True)
+class EntityEquipment: ...
+
+
+class Entity[P: EntityProperties](pg.sprite.Sprite):
     def __init__(
         self,
         screen: pg.Surface,
@@ -39,7 +46,7 @@ class Entity(pg.sprite.Sprite):
         head_hitbox: list[int],
         sprite: pg.Surface,
         properties: dict,
-        property_class: Type[EntityProperties] = None,
+        property_class: type[P] = EntityProperties,
         damage_numbers: bool = False,
         **_,
     ):
@@ -54,10 +61,7 @@ class Entity(pg.sprite.Sprite):
         self.movement = {"horizontal": 0, "vertical": 0}
         if self.damage_numbers:
             self.damage_number = FloatingNumber(2)
-        if property_class:
-            self.properties = property_class(**properties)
-        else:
-            self.properties = EntityProperties(**properties)
+        self.properties: P = property_class(**properties)
 
     def update(self):
         self.rect.topleft = (self.x, self.y)
@@ -67,12 +71,9 @@ class Entity(pg.sprite.Sprite):
         self.y += self.movement["vertical"] * self.properties.current_speed * frame_time
         if self.x < -150:
             self.x = -50
-        if self.x > self.screen.get_width():
-            self.x = self.screen.get_width()
-        if self.y > self.screen.get_height() - 350:
-            self.y = self.screen.get_height() - 350
-        if self.y < -100:
-            self.y = -100
+        self.x = min(self.x, self.screen.get_width())
+        self.y = min(self.y, self.screen.get_height() - 350)
+        self.y = max(self.y, -100)
 
     def hit_check(self, bullet: Bullet):
         if bullet is None or bullet.damage < 0 or self.properties.health < 0 or self in bullet.recent_hits:
@@ -99,7 +100,28 @@ class Entity(pg.sprite.Sprite):
             event_bus.add_event("generic_registry_l1_bus", Blood(bullet.x, bullet.y, damage_dealt))
 
 
-class Zombie(Entity):
+@dataclass
+class ZombieProperties(EntityProperties):
+    reward: float
+    experience: int
+    base_round: int
+
+    def __post_init__(self):
+        self.frozen = False
+        super().__post_init__()
+
+    def _round_scale_init(self, round_scaling: int):
+        if round_scaling:
+            round_scaling = max(round_scaling - self.base_round, 0)
+        small_scale = sqrt(round_scaling) * 0.1 + 1
+        large_scale = round_scaling / 25 + 1
+        self.reward *= small_scale
+        self.current_speed *= small_scale
+        self.health *= large_scale
+        self.max_health *= large_scale
+
+
+class Zombie(Entity[ZombieProperties]):
     def __init__(
         self,
         screen: pg.Surface,
@@ -125,14 +147,14 @@ class Zombie(Entity):
         if attrs["weapon_stats"].get("projectile"):
             self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()
-        self.progress_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text=str(round(self.properties.health)))
+        self.health_bar = ProgressBar(1, self.x - 16, self.y - 24, 80, 20, text=str(round(self.properties.health)))
         self.movement["horizontal"] = -1
 
         self.effects = []
         for effect in attrs["effects"]:
             func = effect_map.get(effect["effect"])
             values = {}
-            conditions = []
+            conditions = effect["conditions"]
             for value_dict in effect["values"]:
                 match value_dict.get("type") or "default":
                     case "format":
@@ -152,9 +174,6 @@ class Zombie(Entity):
                     values[value_dict["name"]] = {"value": value}
                     if value_dict.get("type") == "repeat_format_eval":
                         values[value_dict["name"]].update({"repeat_format_eval": True})
-            if effect.get("conditions"):
-                for condition in effect["conditions"]:
-                    conditions.append(condition)
             trigger = effect.get("trigger") or "default"
             if trigger == "timer":
                 values["time"] = {"value": 0}
@@ -198,8 +217,8 @@ class Zombie(Entity):
         return True
 
     def update_health_bar(self):
-        self.progress_bar.update_progress(self.properties.health / self.properties.max_health)
-        self.progress_bar.update_text(str(max(round(self.properties.health), 1)))
+        self.health_bar.update_progress(self.properties.health / self.properties.max_health)
+        self.health_bar.update_text(str(max(round(self.properties.health), 1)))
 
     def hit(self, bullet: Bullet, head: bool):
         super().hit(bullet, head)
@@ -227,40 +246,62 @@ class Zombie(Entity):
                         self.use_effect(frame_time, effect)
                 case "timer":
                     effect["values"]["time"]["value"] += frame_time
-                    if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"]:
-                        if self.use_effect(frame_time, effect):
-                            effect["values"]["time"]["value"] = 0
+                    if effect["values"]["time"]["value"] >= effect["values"]["frequency"]["value"] and self.use_effect(
+                        frame_time, effect
+                    ):
+                        effect["values"]["time"]["value"] = 0
         self.hitbox.update(self.x, self.y)
         self.head_hitbox.update(self.x, self.y)
         self.rect.topleft = (self.x, self.y)
         self.weapon.draw(self.x, self.y, frame_time, True, False)
         x, y, _, _ = self.head_hitbox.get()
-        self.progress_bar.update_pos(x - 16, y - 24)
-        self.progress_bar.update(screen)
+        self.health_bar.update_pos(x - 16, y - 24)
+        self.health_bar.update(screen)
 
 
 @dataclass
-class ZombieProperties(EntityProperties):
-    reward: int
-    experience: int
-    base_round: int
+class PlayerProperties(EntityProperties):
+    stamina: int
+    stamina_regen_delay: int
+    stamina_regen: int
+    experience: int = 0
+    experience_required: int = 100
+    level: int = 0
+    level_tokens: int = 0
 
     def __post_init__(self):
-        self.frozen = False
-        super().__post_init__()
+        self.max_stamina = self.stamina
+        self.time_resting = -self.stamina_regen_delay
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "level": self.level,
+                "level_tokens": self.level_tokens,
+                "experience": self.experience,
+                "experience_required": self.experience_required,
+            },
+        )
+        return super().__post_init__()
 
-    def _round_scale_init(self, round_scaling: int):
-        if round_scaling:
-            round_scaling = max(round_scaling - self.base_round, 0)
-        small_scale = sqrt(round_scaling) * 0.1 + 1
-        large_scale = round_scaling / 25 + 1
-        self.reward *= small_scale
-        self.current_speed *= small_scale
-        self.health *= large_scale
-        self.max_health *= large_scale
+    def add_experience(self, experience: int):
+        self.experience += experience
+        if self.experience >= self.experience_required:
+            self.experience -= self.experience_required
+            self.experience_required = round(self.experience_required * 1.1)
+            self.level += 1
+            self.level_tokens += 1
+        event_bus.add_event(
+            "ui_bus",
+            {
+                "level": self.level,
+                "level_tokens": self.level_tokens,
+                "experience": self.experience,
+                "experience_required": self.experience_required,
+            },
+        )
 
 
-class Player(Entity):
+class Player(Entity[PlayerProperties]):
     def __init__(self, x, y, projectile_registries: dict, weapon_registry: WeaponRegistry, key_map, screen):
         self.bullet_registry = projectile_registries["player_bullet_registry"]
         resource_loader = ResourceLoader("player", "attributes")
@@ -269,7 +310,7 @@ class Player(Entity):
         resources["sprite"] = load_sprite("player.png", "player", -1)
         self.properties = PlayerProperties(**resources["properties"])
         super().__init__(screen, x, y, property_class=PlayerProperties, **resources)
-        self.render_plain = pg.sprite.RenderPlain((self))
+        self.render_plain = pg.sprite.RenderPlain(self)
         self.sprinting = False
         self.shooting = False
         self.reloading = False
@@ -381,13 +422,11 @@ class Player(Entity):
             sprint = 1
             self.properties.current_speed *= 0.5
         if not self.movement["horizontal"] and not self.movement["vertical"]:
-            if self.properties.time_resting > 0:
-                if self.properties.stamina < self.properties.max_stamina:
-                    self.properties.stamina = min(
-                        self.properties.stamina
-                        + self.properties.time_resting * frame_time * self.properties.stamina_regen,
-                        self.properties.max_stamina,
-                    )
+            if self.properties.time_resting > 0 and self.properties.stamina < self.properties.max_stamina:
+                self.properties.stamina = min(
+                    self.properties.stamina + self.properties.time_resting * frame_time * self.properties.stamina_regen,
+                    self.properties.max_stamina,
+                )
             if self.properties.time_resting < 1:
                 self.properties.time_resting = min(self.properties.time_resting + frame_time, 1)
         else:
@@ -401,7 +440,7 @@ class Player(Entity):
                 self.properties.current_speed *= 0.7071  # For consistent movement speed diagonally
         super().update_movement(frame_time)
 
-    def update_shooting(self, shooting: bool = None, reloading: bool = None):
+    def update_shooting(self, shooting: bool | None = None, reloading: bool | None = None):
         self.shooting = shooting or self.input_dict["shooting"]
         self.reloading = reloading or self.input_dict["reloading"]
         self.input_dict["reloading"] = False
@@ -429,45 +468,3 @@ class Player(Entity):
         self.equipped_weapon.draw(self.x, self.y, frame_time, self.shooting, self.reloading)
         self.weapons.update(frame_time)
         self.render_plain.draw(self.screen)
-
-
-@dataclass
-class PlayerProperties(EntityProperties):
-    stamina: int
-    stamina_regen_delay: int
-    stamina_regen: int
-    experience: int = 0
-    experience_required: int = 100
-    level: int = 0
-    level_tokens: int = 0
-
-    def __post_init__(self):
-        self.max_stamina = self.stamina
-        self.time_resting = -self.stamina_regen_delay
-        event_bus.add_event(
-            "ui_bus",
-            {
-                "level": self.level,
-                "level_tokens": self.level_tokens,
-                "experience": self.experience,
-                "experience_required": self.experience_required,
-            },
-        )
-        return super().__post_init__()
-
-    def add_experience(self, experience: int):
-        self.experience += experience
-        if self.experience >= self.experience_required:
-            self.experience -= self.experience_required
-            self.experience_required = round(self.experience_required * 1.1)
-            self.level += 1
-            self.level_tokens += 1
-        event_bus.add_event(
-            "ui_bus",
-            {
-                "level": self.level,
-                "level_tokens": self.level_tokens,
-                "experience": self.experience,
-                "experience_required": self.experience_required,
-            },
-        )

@@ -1,8 +1,8 @@
-from datetime import datetime
-from pathlib import Path
+import logging
 import shutil
 import tarfile
-import logging
+from datetime import datetime
+from pathlib import Path
 
 time = datetime.now().strftime("%y-%m-%d:%H-%M-%S")
 
@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 def zip_logs():
     arc_dir = ROOT.joinpath(f"{time}.tar.gz")
     logger.info(f"Creating log tar {arc_dir}")
-    file = tarfile.open(arc_dir, "w:gz")
-    for log in LOG_DIR.glob("*"):
-        file.add(log)
-    file.close()
+    with tarfile.open(arc_dir, "w:gz") as f:
+        for log in LOG_DIR.glob("*"):
+            f.add(log)

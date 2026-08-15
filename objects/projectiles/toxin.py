@@ -1,6 +1,8 @@
-from objects.projectiles.projectile import Projectile
-import pygame as pg
 import random
+
+import pygame as pg
+
+from objects.projectiles.projectile import Projectile
 
 
 class Toxin(Projectile):
@@ -42,4 +44,3 @@ class Toxin(Projectile):
             self.y += self.gravity * frame_time
             self.gravity += 10 * frame_time
             self.bold_time -= frame_time
-        return None

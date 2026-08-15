@@ -1,9 +1,10 @@
-import pygame as pg
-from pathlib import Path
 import json
 import os
 import shutil
 from copy import deepcopy
+from pathlib import Path
+
+import pygame as pg
 
 ROOT = Path(os.path.abspath(__file__)).parent.parent
 save_profile = "default"
@@ -72,23 +73,23 @@ class ResourceLoader:
         for file in self.save_files:
             with open(file, "r") as f:
                 save_data = json.load(f)
-            for key in save_data.keys():
+            for key in save_data:
                 self.resources[key] = self.update(self.resources[key], save_data[key])
 
     def update(self, data: dict, new_data: dict):
         rtn_data = deepcopy(data)
         for key, value in new_data.items():
-            if isinstance(new_data[key], dict):
+            if isinstance(value, dict):
                 if rtn_data.get(key) is not None:
-                    rtn_data[key] = self.update(rtn_data[key], new_data[key])
+                    rtn_data[key] = self.update(rtn_data[key], value)
                 else:
-                    rtn_data[key] = new_data[key]
+                    rtn_data[key] = value
             else:
                 rtn_data[key] = value
         return rtn_data
 
     def set_defaults(self):
-        for key in self.resources.keys():
+        for key in self.resources:
             self.resources[key] = self.update(self.resources["default"], self.resources[key])
 
     def get(self, name: str):

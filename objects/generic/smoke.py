@@ -1,5 +1,6 @@
-import pygame as pg
 import random
+
+import pygame as pg
 
 
 class Smoke:

@@ -31,7 +31,4 @@ class HitBox:
         pg.draw.rect(screen, (100, 0, 0), points)
 
     def check(self, x, y):
-        if y >= self.start_y and y <= self.end_y:
-            if x >= self.start_x and x <= self.end_x:
-                return True
-        return False
+        return y >= self.start_y and y <= self.end_y and x >= self.start_x and x <= self.end_x

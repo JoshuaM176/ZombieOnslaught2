@@ -1,9 +1,11 @@
-import pygame as pg
-from game.screenpage import ScreenPage
-from util.ui_objects import Text, ButtonContainer, FuncButton, Button
-from util.event_bus import event_bus
-from game.settings.keybind_settings import KeybindSettings
 from dataclasses import dataclass, field
+
+import pygame as pg
+
+from game.screenpage import ScreenPage
+from game.settings.keybind_settings import KeybindSettings
+from util.event_bus import event_bus
+from util.ui_objects import Button, ButtonContainer, FuncButton, Text
 
 
 class Settings(ScreenPage, ButtonContainer):
@@ -75,9 +77,9 @@ class SelectSettingsScreen(Button):
         self.func = func
         self.settings_screens = settings_screens
         self.settings_text = []
-        for screen in self.settings_screens:
+        for page in self.settings_screens:
             self.settings_text.append(
-                Text(screen.upper().replace("_", " "), 60, self.screen.get_width() / 2, 0, align="CENTER")
+                Text(page.upper().replace("_", " "), 60, self.screen.get_width() / 2, 0, align="CENTER")
             )
 
     def update(self, **_):

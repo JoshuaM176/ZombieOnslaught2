@@ -1,10 +1,12 @@
-import pygame as pg
-from time import time
-from util.event_bus import event_bus
-import sys
-from game.screenpage import screen_pages
-from util.logging import zip_logs
 import logging
+import sys
+from time import time
+
+import pygame as pg
+
+from game.screenpage import screen_pages
+from util.event_bus import event_bus
+from util.logging import zip_logs
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +27,8 @@ if len(sys.argv) > 2:
     SCREEN_HEIGHT = int(sys.argv[2])
 else:
     screen = pg.display.set_mode((pg.display.Info().current_w, pg.display.Info().current_h - 100), pg.RESIZABLE)
-from game.gameplay import Game  # noqa: E402
-from game.main_menu import MainMenu  # noqa E402
+from game.gameplay import Game
+from game.main_menu import MainMenu
 
 running = True
 
@@ -50,11 +52,12 @@ try:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type in (pg.KEYDOWN, pg.KEYUP, pg.MOUSEBUTTONDOWN, pg.MOUSEBUTTONUP, pg.MOUSEWHEEL):
-                if not (event.type == pg.MOUSEBUTTONUP and event.button in (4, 5)):
-                    event_bus.add_event("input_bus", event)
+            if event.type in (pg.KEYDOWN, pg.KEYUP, pg.MOUSEBUTTONDOWN, pg.MOUSEBUTTONUP, pg.MOUSEWHEEL) and not (
+                event.type == pg.MOUSEBUTTONUP and event.button in (4, 5)
+            ):
+                event_bus.add_event("input_bus", event)
             if event.type == pg.VIDEORESIZE:
-                for name, screen_obj in screen_pages.items():
+                for screen_obj in screen_pages.values():
                     SCREEN_WIDTH = screen.get_width()
                     SCREEN_HEIGHT = screen.get_height()
                     screen_obj.__screen_init__()
@@ -71,9 +74,9 @@ try:
         clock.tick(180)
         # print(1/time_since_last_frame)
     pg.quit()
-except Exception as e:
-    logger.exception(e)
-    raise e
+except Exception:
+    logger.exception("Uncaught exception")
+    raise
 finally:
     zip_logs()
     if track_performance:

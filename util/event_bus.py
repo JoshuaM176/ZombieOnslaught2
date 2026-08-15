@@ -1,12 +1,12 @@
-from queue import Queue
 import logging
+from queue import Queue
 
 logger = logging.getLogger(__name__)
 
 
 class EventBus:
     def __init__(self):
-        self.busses: dict[str,Queue] = {}
+        self.busses: dict[str, Queue] = {}
 
     def create_bus(self, name: str):
         logger.info(f"Creating event bus {name}")

@@ -1,20 +1,21 @@
-from game.screenpage import ScreenPage
-from registries.weapon_registries import weapon_categories
-from registries import ZombieRegistry, ProjectileRegistry, BulletRegistry, GenericRegistry, WeaponRegistry
-from objects.entities import Player
-from game.game_ui import UI
-from game.game_over import GameOver
-from game.store import Store
-from game.settings.settings import Settings
-from game.zombiepedia import Zombiepedia
 from dataclasses import dataclass, field
+from math import floor, sqrt
 from random import choice, uniform
-from math import sqrt, floor
+
+import pygame as pg
+
+from game.game_over import GameOver
+from game.game_ui import UI
+from game.hut import Hut
+from game.screenpage import ScreenPage
+from game.settings.settings import Settings
+from game.weapon_store import WeaponStore
+from game.zombiepedia import Zombiepedia
+from objects.entities import Player
+from registries import BulletRegistry, GenericRegistry, ProjectileRegistry, WeaponRegistry, ZombieRegistry
+from registries.weapon_registries import weapon_categories
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, save_data
-from util.ui_objects import FloatingNumber
-from game.hut import Hut
-import pygame as pg
 
 
 class Game(ScreenPage):
@@ -61,7 +62,7 @@ class Game(ScreenPage):
 
     def _create_screens(self, rsrc_ldr: ResourceLoader):
         self.game_over = GameOver(self.screen)
-        self.store = Store(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
+        self.store = WeaponStore(self.screen, self.weapon_registry, self.player.weapons, self.game_info)
         self.zombiepedia = Zombiepedia(
             self.screen, self.zombie_registry, self.stats.zombies_killed, **rsrc_ldr.get("zombiepedia")
         )
@@ -175,7 +176,7 @@ class Game(ScreenPage):
                 self.create_zombie(**zombie)
             if set_round.get("replace"):
                 return
-        for i in range(0, floor(sqrt(self.game_info.round))):
+        for i in range(floor(sqrt(self.game_info.round))):
             self.create_zombie(
                 zombie=choice(self.game_info.pool),
             )
@@ -282,6 +283,6 @@ class Stats:
     zombies_killed: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
-        for key in self.resources.keys():
-            if key not in self.zombies_killed.keys():
+        for key in self.resources:
+            if key not in self.zombies_killed:
                 self.zombies_killed[key] = 0
