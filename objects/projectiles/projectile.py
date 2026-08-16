@@ -41,5 +41,5 @@ class Projectile(ABC):
         self.vertical_movement *= speed_mult
 
     @abstractmethod
-    def update(self, frame_time: float, screen: pg.Surface) -> Any:
+    def update(self, frame_time: float, screen: pg.Surface, alpha_screen: pg.Surface) -> Any:
         pass

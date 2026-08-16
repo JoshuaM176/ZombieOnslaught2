@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
+from typing import override
 
 import pygame as pg
 
 from game.screenpage import ScreenPage
 from game.settings.keybind_settings import KeybindSettings
 from util.event_bus import event_bus
-from util.ui_objects import Button, ButtonContainer, FuncButton, Text
+from util.ui_objects import Button, ButtonContainer, ButtonInfo, Text, TextButton, horizontal_button_layout
 
 
 class Settings(ScreenPage, ButtonContainer):
@@ -17,38 +18,37 @@ class Settings(ScreenPage, ButtonContainer):
         self.settings_data.player_key_map = self.keybind_settings.player_key_map
 
     def __screen_init__(self):
-        self.buttons = []
+        ButtonContainer.__init__(self)
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
-        self.settings_text = Text("Settings", 75, scr_w / 2, 100, align="CENTER")
-        self.buttons.append(
-            FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.go_to_store, [], "Go To Store"),
-        )
-        self.buttons.append(
-            FuncButton(50, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Return to Game"),
-        )
-        self.buttons.append(
-            FuncButton(
-                scr_w / 2 - 250,
+        self.settings_text = Text("Settings", 75, scr_w // 2, 100, align="CENTER")
+        self.nested_containers.append(
+            horizontal_button_layout(
+                50,
                 scr_h - 150,
-                500,
+                scr_w - 100,
                 100,
+                0.01,
                 self.screen,
-                self.set_screen,
-                ["main_menu"],
-                "Main Menu",
-            ),
+                (
+                    ButtonInfo("Go To Store", self.go_to_store),
+                    ButtonInfo("Return To Game", lambda: self.set_screen("game")),
+                    ButtonInfo("Main Menu", lambda: self.set_screen("main_menu")),
+                ),
+            )
         )
-        self.buttons.append(FuncButton(50, 50, 500, 100, self.screen, self.quit, [], "Quit Game"))
+        self.buttons.append(TextButton(50, 50, 500, 100, self.screen, self.quit, "Quit Game"))
         self.buttons.append(
-            FuncButton(50, scr_h - 300, 500, 100, self.screen, self.set_screen, ["zombiepedia"], "View Zombiepedia"),
+            TextButton(
+                50, scr_h - 300, 500, 100, self.screen, lambda: self.set_screen("zombiepedia"), "View Zombiepedia"
+            ),
         )
         self.buttons.append(
             SelectSettingsScreen(
-                scr_w / 2 - 400,
-                scr_h * 0.3,
+                scr_w // 2 - 400,
+                int(scr_h * 0.3),
                 800,
-                scr_h * 0.3,
+                int(scr_h * 0.3),
                 self.screen,
                 self.set_screen,
                 self.settings_screens,
@@ -62,13 +62,13 @@ class Settings(ScreenPage, ButtonContainer):
         event_bus.add_event("game_event_bus", {"reset": {}})
         self.set_screen("store")
 
-    def update(self):
+    @override
+    def update(self) -> str:
         self.go2 = self.page_name
         self.screen.fill((100, 100, 100))
         self.settings_text.update(self.screen)
         self.get_input()
-        for button in self.buttons:
-            button.update()
+        ButtonContainer.update(self)
         return self.go2
 
 

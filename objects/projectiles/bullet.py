@@ -24,14 +24,14 @@ class Bullet(Projectile):
         recoil: float,
         penetration: float,
         head_mult: float,
-        tracer: dict[str, Any],
+        tracer: dict[str, Any] | None,
     ):
         super().__init__(x + shiftX, y + shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult)
         self.start_damage = damage
         self.tracer = tracer
 
     @override
-    def update(self, frame_time: float, screen: pg.Surface) -> Tracer | None:
+    def update(self, frame_time: float, screen: pg.Surface, alpha_screen: pg.Surface) -> Tracer | None:
         if self.damage > 0:
             self.damage -= self.dropoff * frame_time
             start_x = self.x

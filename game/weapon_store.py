@@ -1,3 +1,5 @@
+from typing import override
+
 import pygame as pg
 
 from game.screenpage import ScreenPage
@@ -8,7 +10,7 @@ from registries.weapon_registries import (
 )
 from util.event_bus import event_bus
 from util.resource_loading import load_sprite
-from util.ui_objects import Button, ButtonContainer, FuncButton, Text
+from util.ui_objects import Button, ButtonContainer, Text, TextButton
 
 player_sprite = load_sprite("player.png", "player", -1)
 
@@ -37,24 +39,25 @@ class WeaponStore(ScreenPage, ButtonContainer):
         self.text += [self.category_text, self.weapon_text, self.money_text, self.stat_text]
 
     def __screen_init__(self):
+        ButtonContainer.__init__(self)
         self.ui_buttons = []
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
         self.ui_buttons.append(
-            self.BuyOrEquip(scr_w / 2 - 100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected),
+            self.BuyOrEquip(scr_w // 2 - 100, 120, 200, 100, self.screen, self.weapon, self.buy_or_equip_selected),
         )
         self.ui_buttons.append(
-            FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.return_to_game, [], "Return to Game"),
+            TextButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.return_to_game, "Return to Game"),
         )
-        self.ui_buttons.append(FuncButton(scr_w / 2 + 120, 50, 50, 50, self.screen, self.next_page, [], ">"))
-        self.ui_buttons.append(FuncButton(scr_w / 2 - 170, 50, 50, 50, self.screen, self.prev_page, [], "<"))
+        self.ui_buttons.append(TextButton(scr_w // 2 + 120, 50, 50, 50, self.screen, self.next_page, ">"))
+        self.ui_buttons.append(TextButton(scr_w // 2 - 170, 50, 50, 50, self.screen, self.prev_page, "<"))
         self.set_weapon_buttons()
-        self.category_text = Text(self.category.upper(), 50, scr_w / 2, 50, align="CENTER")
-        self.weapon_text = Text("", 40, scr_w / 2, 100, align="CENTER")
+        self.category_text = Text(self.category.upper(), 50, scr_w // 2, 50, align="CENTER")
+        self.weapon_text = Text("", 40, scr_w // 2, 100, align="CENTER")
         self.money_text = Text(f"${round(self.game_info.money)}", 30, 25, 25)
-        self.price_text = Text("$0", 25, scr_w / 2 + 100, 160)
-        self.requirement_text = Text("Requirements", 25, scr_w / 2, 130, align="CENTER")
-        self.stat_text = Text("Stats", 30, scr_w / 2, 240, align="CENTER")
+        self.price_text = Text("$0", 25, scr_w // 2 + 100, 160)
+        self.requirement_text = Text("Requirements", 25, scr_w // 2, 130, align="CENTER")
+        self.stat_text = Text("Stats", 30, scr_w // 2, 240, align="CENTER")
 
     def return_to_game(self):
         self.set_screen("game")
@@ -132,7 +135,8 @@ class WeaponStore(ScreenPage, ButtonContainer):
                     110,
                     self.screen,
                     weapon,
-                    self.select_weapon,
+                    lambda weapon=weapon: self.select_weapon(weapon),
+                    lambda self, weapon=weapon: bool(weapon["player"]["owned"]),
                     self.weapon_registry.check_requirements(self.category, weapon["name"]),
                 ),
             )
@@ -204,47 +208,32 @@ class WeaponStore(ScreenPage, ButtonContainer):
         self.money_text.update_text(f"${round(self.game_info.money)}")
 
     class WeaponButton(Button):
-        def __init__(self, x, y, width, height, screen, weapon, func, reqs_met):
-            self.func = func
-            self.weapon_dict = weapon
-            self.weapon = pg.sprite.Sprite()
-            self.weapon.sprite = weapon["sprites"]["default"]
-            self.weapon.rect = weapon["sprites"]["default"].get_rect()
-            self.weapon.rect.topleft = (x + weapon["store"]["shiftX"], y + weapon["store"]["shiftY"])
+        def __init__(self, x, y, width, height, screen, weapon, on_click, owned, reqs_met):
+            self.sprite = weapon["sprites"]["default"]
+            self.rect = weapon["sprites"]["default"].get_rect()
+            self.rect.topleft = (x + weapon["store"]["shiftX"], y + weapon["store"]["shiftY"])
             self.price = weapon["store"]["price"]
             self.reqs_met = reqs_met
-            super().__init__(x, y, width, height, screen)
+            super().__init__(x, y, width, height, screen, on_click, owned)
 
-        def click(self, x, y, button):
-            if button == 1:
-                self.func(self.weapon_dict)
-
+        @override
         def update(self):
-            if not self.weapon_dict["player"]["owned"]:
+            if not self.on_update(self):
                 if self.reqs_met:
                     pg.draw.rect(self.screen, (100, 100, 100), (self.x, self.y, self.width, self.height), 0)
                 else:
                     pg.draw.rect(self.screen, (100, 20, 20), (self.x, self.y, self.width, self.height), 0)
             pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
-            self.screen.blit(self.weapon.sprite, self.weapon.rect)
+            self.screen.blit(self.sprite, self.rect)
 
-    class BuyOrEquip(Button):
-        def __init__(self, x, y, width, height, screen, weapon, func):
-            super().__init__(x, y, width, height, screen)
-            self.func = func
+    class BuyOrEquip(TextButton):
+        def __init__(self, x, y, width, height, screen, weapon: dict, on_click):
             self.weapon = weapon
-            self.text = Text("", 50, self.x + self.width / 2, self.y + self.height / 2, align="CENTER")
+            super().__init__(x, y, width, height, screen, on_click, "", on_update=self._on_update)
 
-        def click(self, x, y, button):
-            if button == 1:
-                self.func()
-
-        def update(self, weapon):
+        def set_weapon(self, weapon) -> None:
             self.weapon = weapon
-            pg.draw.rect(self.screen, (0, 100, 0), (self.x, self.y, self.width, self.height), 10, 10)
-            if weapon["player"]["owned"] != self.text.text:
-                if weapon["player"]["owned"]:
-                    self.text.update_text("Equip")
-                else:
-                    self.text.update_text("Buy")
-            self.text.update(self.screen)
+
+        def _on_update(self, _) -> None:
+            if self.weapon["player"]["owned"] != self.text.text:
+                self.text.update_text(self.weapon["player"]["owned"])

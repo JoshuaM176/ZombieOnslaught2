@@ -24,7 +24,19 @@ line-length = 120
 exclude = ["spawn_rate_graph.py"]
 
 [tool.ruff.lint]
-ignore = ["DTZ"]
+select = ["ALL"]
+ignore = [
+    "ANN401",
+    "COM812",
+    "D101",
+    "D102",
+    "D107",
+    "D203",
+    "D212",
+    "DTZ",
+    "FBT001",
+    "FBT002"
+    ]
 
 [tool.pyrefly]
 project-includes = [

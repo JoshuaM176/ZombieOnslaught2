@@ -17,7 +17,7 @@ class ScreenPage:
     def __screen_init__(self) -> None:
         """Called whenever screen size changes"""
 
-    def update(self) -> None:
+    def update(self) -> str:
         return self.go2
 
     def set_screen(self, go2: str) -> None:

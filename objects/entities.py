@@ -201,7 +201,7 @@ class Zombie(Entity[ZombieProperties]):
         logger.info(f"Zombie initialized with properties: {self.properties}")
         logger.info(f"Zombie initialized with effects: {self.effects}")
 
-    def use_effect(self, effect: EntityEffect, frame_time: float) -> bool:
+    def use_effect(self, effect: EntityEffect | TimerEffect, frame_time: float) -> bool:
         """Use an affect and return false if effect is over."""
         return effect.execute(frame_time)
 

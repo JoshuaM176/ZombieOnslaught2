@@ -37,7 +37,21 @@ class BulletRegistry(ProjectileRegistry[Bullet]):
         self.projectiles = [Bullet(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, None) for x in self.projectiles]
         self.tracers = TracerRegistry(self.size * 4, alpha_screen)
 
-    def add(self, x, y, shiftX, shiftY, damage, armour_pierce, dropoff, speed, recoil, penetration, head_mult, tracer):
+    def add(
+        self,
+        x: float,
+        y: float,
+        shiftX: float,
+        shiftY: float,
+        damage: float,
+        armour_pierce: float,
+        dropoff: float,
+        speed: float,
+        recoil: float,
+        penetration: float,
+        head_mult: float,
+        tracer: dict | None,
+    ):
         self.projectiles[self.index].__init__(
             x,
             y,
@@ -60,7 +74,7 @@ class BulletRegistry(ProjectileRegistry[Bullet]):
         self.tracers.update(frame_time)
         for projectile in self.projectiles:
             if projectile:
-                self.tracers.add(projectile.update(frame_time, self.alpha_screen))
+                self.tracers.add(projectile.update(frame_time, self.screen, self.alpha_screen))
 
 
 class TracerRegistry:

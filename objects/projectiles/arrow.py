@@ -1,4 +1,5 @@
 from math import sqrt
+from typing import override
 
 import pygame as pg
 
@@ -47,7 +48,8 @@ class Arrow(Projectile):
         if flip_sprite:
             self.image = pg.transform.flip(self.image, True, False)
 
-    def update(self, frame_time: float, screen: pg.Surface):
+    @override
+    def update(self, frame_time: float, screen: pg.Surface, alpha_screen: pg.Surface):
         if self.damage > 0:
             self.damage -= self.dropoff * frame_time
             self.rect.center = (self.x, self.y)

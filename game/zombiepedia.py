@@ -1,12 +1,14 @@
+from typing import override
+
 import pygame as pg
 
 from game.screenpage import ScreenPage
 from registries.entity_registries import ZombieRegistry
-from util.ui_objects import Button, ButtonContainer, FuncButton, Text
+from util.ui_objects import Button, ButtonContainer, Text, TextButton
 
 
 class Zombiepedia(ScreenPage, ButtonContainer):
-    def __init__(self, screen, zombie_registry: ZombieRegistry, stats: dict, zombie_list: list[str]):
+    def __init__(self, screen: pg.Surface, zombie_registry: ZombieRegistry, stats: dict, zombie_list: list[str]):
         self.zombie_list = zombie_list
         self.zombies = zombie_registry.resources
         self.num_zombies = 0
@@ -23,9 +25,11 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         self.description_text = []
         self.stats_text = []
         scr_w = self.screen.get_width()
-        self.ui_buttons.append(FuncButton(50, 50, 500, 100, self.screen, self.set_screen, ["game"], "Back to Game"))
-        self.ui_buttons.append(FuncButton(scr_w / 2 - 600, 500, 300, 100, self.screen, self.prev_page, [], "<---"))
-        self.ui_buttons.append(FuncButton(scr_w / 2 + 100, 500, 300, 100, self.screen, self.next_page, [], "--->"))
+        self.ui_buttons.append(
+            TextButton(50, 50, 500, 100, self.screen, lambda: self.set_screen("game"), "Back to Game")
+        )
+        self.ui_buttons.append(TextButton(scr_w // 2 - 600, 500, 300, 100, self.screen, self.prev_page, "<---"))
+        self.ui_buttons.append(TextButton(scr_w // 2 + 100, 500, 300, 100, self.screen, self.next_page, "--->"))
         self.set_zombie_buttons()
 
     def next_page(self):
@@ -39,13 +43,14 @@ class Zombiepedia(ScreenPage, ButtonContainer):
             self.set_zombie_buttons()
 
     def set_zombie_buttons(self):
+        ButtonContainer.__init__(self)
         start_index = self.page * self.zombies_per_page
         self.zombie_buttons.clear()
         zombies = [self.zombies[zombie] | {"name": zombie} for zombie in self.zombie_list]
         self.num_zombies = len(zombies)
         x = 50
         y = 250
-        for i in range(start_index, min(start_index + self.zombies_per_page, len(zombies))):
+        for zombie in zombies[start_index : min(start_index + self.zombies_per_page, len(zombies))]:
             self.zombie_buttons.append(
                 self.ZombieButton(
                     x,
@@ -53,9 +58,9 @@ class Zombiepedia(ScreenPage, ButtonContainer):
                     200,
                     200,
                     self.screen,
-                    zombies[i],
-                    self.select_zombie,
-                    self.stats[zombies[i]["name"]],
+                    zombie,
+                    lambda zombie=zombie: self.select_zombie(zombie["name"]) if self.stats[zombie["name"]] else None,
+                    lambda x, zombie=zombie: bool(self.stats[zombie["name"]]),
                 ),
             )
             x += 300
@@ -64,7 +69,7 @@ class Zombiepedia(ScreenPage, ButtonContainer):
                 y += 300
         self.buttons = self.ui_buttons + self.zombie_buttons
 
-    def select_zombie(self, zombie):
+    def select_zombie(self, zombie: str):
         self.selected_zombie = zombie
         zombie_dict = self.zombies[self.selected_zombie]
         self.description_text = []
@@ -111,23 +116,16 @@ class Zombiepedia(ScreenPage, ButtonContainer):
         return self.go2
 
     class ZombieButton(Button):
-        def __init__(self, x, y, width, height, screen, zombie, func, seen):
-            self.func = func
-            self.zombie_dict = zombie
-            self.zombie = pg.sprite.Sprite()
-            self.zombie.sprite = zombie["sprites"]["default"]
-            self.zombie.rect = zombie["sprites"]["default"].get_rect()
-            self.zombie.rect.topleft = (x + zombie["zombiepedia"]["shiftX"], y + zombie["zombiepedia"]["shiftY"])
-            self.seen = seen
-            super().__init__(x, y, width, height, screen)
+        def __init__(self, x, y, width, height, screen, zombie, on_click, on_update):
+            self.sprite = zombie["sprites"]["default"]
+            self.rect = zombie["sprites"]["default"].get_rect()
+            self.rect.topleft = (x + zombie["zombiepedia"]["shiftX"], y + zombie["zombiepedia"]["shiftY"])
+            super().__init__(x, y, width, height, screen, on_click, on_update)
 
-        def click(self, x, y, button):
-            if self.seen:
-                self.func(self.zombie_dict["name"])
-
+        @override
         def update(self):
-            if self.seen:
+            if self.on_update(self):
                 pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
-                self.screen.blit(self.zombie.sprite, self.zombie.rect)
+                self.screen.blit(self.sprite, self.rect)
             else:
                 pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 0)

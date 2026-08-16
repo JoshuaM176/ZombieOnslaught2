@@ -3,6 +3,7 @@ import os
 import shutil
 from copy import deepcopy
 from pathlib import Path
+from typing import Any
 
 import pygame as pg
 
@@ -10,12 +11,12 @@ ROOT = Path(os.path.abspath(__file__)).parent.parent
 save_profile = "default"
 
 
-def set_save_profile(profile):
+def set_save_profile(profile) -> None:
     global save_profile
     save_profile = profile
 
 
-def delete_save_profile(profile):
+def delete_save_profile(profile) -> None:
     path = Path(ROOT, "saves", profile)
     if path.exists():
         shutil.rmtree(Path(ROOT, "saves", profile))
@@ -95,5 +96,5 @@ class ResourceLoader:
     def get(self, name: str):
         return self.resources[name]
 
-    def get_all(self):
+    def get_all(self) -> dict[str, Any]:
         return self.resources

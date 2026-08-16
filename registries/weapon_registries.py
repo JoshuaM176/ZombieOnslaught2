@@ -64,7 +64,7 @@ class WeaponRegistry:
                     defaults[cat] = data
         return defaults
 
-    def get_available_weapons(self, cat) -> list[Weapon]:
+    def get_available_weapons(self, cat) -> list[dict]:
         available = []
         for data in self.weapons[cat].values():
             if data["player"].get("available"):

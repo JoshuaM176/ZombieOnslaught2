@@ -1,11 +1,12 @@
 from pathlib import Path
+from typing import override
 
 import pygame as pg
 
 from game.screenpage import ScreenPage
 from util.event_bus import event_bus
 from util.resource_loading import ROOT, delete_save_profile, set_save_profile
-from util.ui_objects import Button, ButtonContainer, FuncButton, Text
+from util.ui_objects import Button, ButtonContainer, Text, TextButton, TextKwargs
 
 saves = list(Path(ROOT, "saves").glob("*"))
 save_names = [file.name for file in saves]
@@ -20,7 +21,7 @@ class MainMenu(ScreenPage, ButtonContainer):
         super().__init__(screen, "main_menu")
 
     def __screen_init__(self):
-        self.buttons = []
+        ButtonContainer.__init__(self)
         self.texts = []
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
@@ -36,46 +37,47 @@ class MainMenu(ScreenPage, ButtonContainer):
         )
         self.buttons.append(self.select_save_button)
         self.buttons.append(
-            FuncButton(scr_w / 2 - 250, scr_h - 150, 500, 100, self.screen, self.set_screen, ["game"], "Start Game"),
+            TextButton(
+                scr_w // 2 - 250, scr_h - 150, 500, 100, self.screen, lambda: self.set_screen("game"), "Start Game"
+            ),
         )
         self.buttons.append(
-            FuncButton(
-                scr_w / 2 - 250,
-                scr_h * 0.7,
+            TextButton(
+                scr_w // 2 - 250,
+                int(scr_h * 0.7),
                 500,
                 100,
                 self.screen,
                 self.select_create_profile,
-                [],
                 "Create Profile",
             ),
         )
         self.buttons.append(
             DeleteProfileButton(
-                scr_w / 2 + 325,
-                scr_h * 0.35,
+                scr_w // 2 + 325,
+                int(scr_h * 0.35),
                 300,
                 150,
                 self.screen,
                 self.delete_profile,
-                [],
                 "Delete Profile",
-                {"size": 35},
+                TextKwargs(size=35),
+                on_update=lambda _: self.deleting_profile,
             ),
         )
-        self.texts.append(Text("Zombie Onslaught", 100, scr_w / 2, 100, align="CENTER"))
+        self.texts.append(Text("Zombie Onslaught", 100, scr_w // 2, 100, align="CENTER"))
         self.profile_text = Text(
             f"Profile: {save_names[self.profile].upper()}",
             75,
-            scr_w / 2,
-            scr_h / 5,
+            scr_w // 2,
+            scr_h // 5,
             align="CENTER",
         )
         self.typed_input_display = Text(
             f"|{self.typed_input}",
             round(min(75, scr_h / 15)),
-            scr_w / 2,
-            scr_h * 0.65,
+            scr_w // 2,
+            int(scr_h * 0.65),
             align="CENTER",
         )
         self.texts += [self.profile_text]
@@ -86,7 +88,7 @@ class MainMenu(ScreenPage, ButtonContainer):
         for text in self.texts:
             text.update(self.screen)
         for button in self.buttons:
-            button.update(deleting_profile=self.deleting_profile, selected_profile=self.profile)
+            button.update()
         self.get_input()
         if self.creating_profile:
             self.typed_input_display.update(self.screen)
@@ -167,18 +169,21 @@ class SelectSaveButton(Button):
             else:
                 self.profiles_text.append(Text(profile.upper(), 60, self.screen.get_width() / 2, 0, align="CENTER"))
 
-    def update(self, **_):
+    @override
+    def update(self):
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         for i in range(self.scroll_index, min(self.scroll_index + round((self.height - 50) / 60), len(save_names))):
             self.profiles_text[i].update_pos(self.screen.get_width() / 2, self.y + 50 + (i - self.scroll_index) * 60)
             self.profiles_text[i].update(self.screen)
 
-    def click(self, _, mouse_y, mouse_button):
-        if mouse_button == 1:
-            area_clicked = int((mouse_y - self.y - 20) / 60) + self.scroll_index
+    @override
+    def click(self, x: int, y: int, button):
+        if button == 1:
+            area_clicked = int((y - self.y - 20) / 60) + self.scroll_index
             if area_clicked >= 0 and area_clicked < len(save_names):
                 self.func(area_clicked)
 
+    @override
     def scroll(self, scroll):
         if scroll and self.scroll_index < len(save_names) - 1:
             self.scroll_index += 1
@@ -186,9 +191,10 @@ class SelectSaveButton(Button):
             self.scroll_index -= 1
 
 
-class DeleteProfileButton(FuncButton):
-    def update(self, deleting_profile, **kwargs):
-        if deleting_profile:
+class DeleteProfileButton(TextButton):
+    @override
+    def update(self):
+        if self.on_update(self):
             pg.draw.rect(self.screen, (100, 0, 0), (self.x, self.y, self.width, self.height), 10)
         else:
             pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)

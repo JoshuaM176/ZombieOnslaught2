@@ -2,7 +2,7 @@ import pygame as pg
 
 from game.screenpage import ScreenPage
 from util.event_bus import event_bus
-from util.ui_objects import Button, ButtonContainer, FuncButton, Text
+from util.ui_objects import Button, ButtonContainer, Text, TextButton
 
 
 class KeybindSettings(ScreenPage, ButtonContainer):
@@ -27,11 +27,11 @@ class KeybindSettings(ScreenPage, ButtonContainer):
         self.set_key_binds_button.update_key_map_text()
 
     def __screen_init__(self):
-        self.buttons = []
+        ButtonContainer.__init__(self)
         scr_w = self.screen.get_width()
         scr_h = self.screen.get_height()
         self.set_key_binds_button = SetKeyBindsButton(
-            scr_w / 2 - 500,
+            scr_w // 2 - 500,
             250,
             1000,
             800,
@@ -39,18 +39,17 @@ class KeybindSettings(ScreenPage, ButtonContainer):
             self.key_map,
             self.actions,
         )
-        self.exit_check_save_button = FuncButton(
+        self.exit_check_save_button = TextButton(
             50,
             scr_h - 150,
             550,
             100,
             self.screen,
             self.exit_check_save,
-            [],
             "Back",
         )
         self.buttons += [self.set_key_binds_button, self.exit_check_save_button]
-        self.buttons.append(FuncButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.save, [], "Save"))
+        self.buttons.append(TextButton(scr_w - 550, scr_h - 150, 500, 100, self.screen, self.save, "Save"))
 
     def update(self):
         self.go2 = self.page_name

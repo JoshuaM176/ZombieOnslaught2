@@ -131,8 +131,7 @@ class Velocity(EntityEffect):
             self.effects[id]["values"]["x_vel"]["value"] *= decay
             self.effects[id]["values"]["y_vel"]["value"] *= decay
             return True
-        else:
-            return False
+        return False
 
 
 class Invincibility(EntityEffect):

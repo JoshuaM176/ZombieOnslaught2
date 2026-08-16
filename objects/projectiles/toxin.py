@@ -1,4 +1,5 @@
 import random
+from typing import override
 
 import pygame as pg
 
@@ -32,11 +33,12 @@ class Toxin(Projectile):
         self.recent_hits.add(entity)
         self.bold_time = 1
 
-    def update(self, frame_time, _, screen: pg.Surface):
+    @override
+    def update(self, frame_time, screen: pg.Surface, alpha_screen: pg.Surface):
         if self.damage > 0:
             size = 4 if self.bold_time > 0 else 2
             pg.draw.rect(
-                screen,
+                alpha_screen,
                 color=(200, 0, 200, 255 * self.damage / self.start_damage),
                 rect=(self.x, self.y, size, size),
             )
