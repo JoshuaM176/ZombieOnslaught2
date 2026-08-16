@@ -54,7 +54,7 @@ class WeaponRegistry:
         return True
 
     def get_weapon(self, cat: str, name: str) -> dict:
-        return self.weapons.get(cat).get(name)
+        return self.weapons[cat][name]
 
     def get_default_weapons(self) -> dict[str, dict]:
         defaults = {}
@@ -78,7 +78,7 @@ class EquippedWeaponRegistry:
         self.weapons = {}
         for cat in weapon_categories:
             self.weapons.update({cat: None})
-        self.equipped_list: list = weapon_categories
+        self.equipped_list = weapon_categories
         self.equipped = self.equipped_list[0]
         self.render_plain = pg.sprite.RenderPlain(())
 

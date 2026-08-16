@@ -18,13 +18,10 @@
             {
                 "effect_name": "spawn_zombie",
                 "trigger": "timer",
+                "frequency": 1.5,
                 "values": [
                     {
-                        "name": "frequency",
-                        "value": 1.5
-                    },
-                    {
-                        "name": "spawn_zombie",
+                        "name": "zombie_type",
                         "value": "jester_decoy"
                     },
                     {
@@ -37,20 +34,17 @@
             {
                 "effect_name": "create_smoke",
                 "trigger": "timer",
+                "frequency": 1.5,
                 "values": [
-                    {
-                        "name": "frequency",
-                        "value": 1.5
-                    },
                     {
                         "type": "repeat_eval",
                         "name": "x",
-                        "value": "{zombie.x} + random.uniform(-250, 250)"
+                        "value": "zombie.x + random.uniform(-250, 250)"
                     },
                     {
                         "type": "repeat_eval",
                         "name": "y",
-                        "value": "{zombie.y} + random.uniform(-250, 250)"
+                        "value": "zombie.y + random.uniform(-250, 250)"
                     },
                     {
                         "name": "size",

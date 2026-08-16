@@ -18,12 +18,10 @@
                 "trigger": "death",
                 "values": [
                     {
-                        "type": "default",
-                        "name": "spawn_zombie",
+                        "name": "zombie_type",
                         "value": "rat"
                     },
                     {
-                        "type": "default",
                         "name": "count",
                         "value": 3
                     }

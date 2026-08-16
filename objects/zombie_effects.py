@@ -17,25 +17,21 @@ if TYPE_CHECKING:
 
 class EntityEffect(ABC):
     def __init__(self, zombie: Zombie, values: list[dict[str, Any]]) -> None:
+        object.__setattr__(self, "_values", {})
         logger.info(f"Initializing effect: {type(self).__name__}")
         self.zombie = zombie
-        values_ = {value["name"]: _get_value(value, zombie) for value in values}
-        for name, value in values_.items():
-            setattr(self, name, value)
+        self._values: dict[str, EffectValue] = {value["name"]: _get_value(value, zombie) for value in values}
 
-    def value(self, name: str) -> Any:
-        try:
-            value = getattr(self, name)
-        except AttributeError:
-            raise AttributeError(f"Missing value: {name} for effect {type(self).__name__}")
-        if not isinstance(value, EffectValue):
-            raise TypeError(f"Missing value: {name} for effect {type(self).__name__}")
-        return value.get()
+    def __getattr__(self, name: str) -> Any:
+        if name in self._values:
+            return self._values[name].get()
+        raise AttributeError(f"Missing effect value: {name}")
 
-    def get_value(self, name: str, default: Any = None) -> Any:
-        if not hasattr(self, name):
-            return default
-        return self.value(name)
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in self._values:
+            self._values[name].set_value(value)
+        else:
+            object.__setattr__(self, name, value)
 
     @abstractmethod
     def execute(self, frame_time: float) -> bool:
@@ -52,6 +48,9 @@ def _get_value(value: dict[str, Any], zombie: Zombie) -> EffectValue:
 class EffectValue:
     def __init__(self, zombie: Zombie, value: Any) -> None:
         self._zombie = zombie
+        self._value = value
+
+    def set_value(self, value: Any) -> None:
         self._value = value
 
     def get(self) -> Any:
@@ -80,26 +79,33 @@ class RepeatEval(EffectValue):
 
 
 class Regen(EntityEffect):
+    regen: float
+
     @override
     def execute(self, frame_time: float) -> bool:
         if self.zombie.properties.health < self.zombie.properties.max_health:
-            self.zombie.properties.health += self.value("regen") * frame_time
+            self.zombie.properties.health += self.regen * frame_time
             self.zombie.update_health_bar()
         return True
 
 
 class SpawnZombie(EntityEffect):
+    x: float
+    y: float
+    count: int
+    zombie_type: str
+
     @override
     def execute(self, frame_time: float) -> bool:
-        for i in range(self.value("count")):
+        for i in range(self.count):
             event_bus.add_event(
                 "game_event_bus",
                 {
                     "spawn_zombie": {
-                        "x": self.get_value("x") or self.zombie.x,
-                        "y": self.get_value("y") or self.zombie.y,
+                        "x": self.x,
+                        "y": self.y,
                         "round": 0,
-                        "zombie": self.value("zombie"),
+                        "zombie": self.zombie_type,
                         "parent": self.zombie,
                     }
                 },
@@ -107,43 +113,52 @@ class SpawnZombie(EntityEffect):
         return True
 
 
-def initial_velocity(
-    self: Zombie,
-    frame_time: float,
-    id: int,
-    x_vel: float,
-    y_vel: float,
-    decay: float,
-    **_,
-):  # velocity formula is velocity*decay^seconds_passed
-    if abs(x_vel) > 1 or abs(y_vel) > 1:
-        decay = 1 - decay
-        log_decay = log(decay)
-        decay = pow(decay, frame_time)
-        self.x += x_vel * (decay / log_decay - 1 / log_decay)
-        self.y += y_vel * (decay / log_decay - 1 / log_decay)
-        self.effects[id]["values"]["x_vel"]["value"] *= decay
-        self.effects[id]["values"]["y_vel"]["value"] *= decay
-    else:
-        self.remove_effects.append(id)
+class Velocity(EntityEffect):
+    decay: float
+    x_vel: float
+    y_vel: float
+
+    @override
+    def execute(self, frame_time: float) -> bool:
+        # velocity formula is velocity*decay^seconds_passed
+        # using derivative to calc dist
+        if abs(self.x_vel) > 1 or abs(self.y_vel) > 1:
+            decay = 1 - self.decay
+            log_decay = log(decay)
+            decay = pow(decay, frame_time)
+            self.zombie.x += self.x_vel * (decay / log_decay - 1 / log_decay)
+            self.zombie.y += self.y_vel * (decay / log_decay - 1 / log_decay)
+            self.effects[id]["values"]["x_vel"]["value"] *= decay
+            self.effects[id]["values"]["y_vel"]["value"] *= decay
+            return True
+        else:
+            return False
 
 
-def invincibility_frames(self: Zombie, frame_time: float, id: int, seconds: float, **_):
-    if seconds > 0:
-        self.properties.invincible = True
-        self.effects[id]["values"]["seconds"]["value"] -= frame_time
-    else:
-        self.properties.invincible = False
-        self.remove_effects.append(id)
+class Invincibility(EntityEffect):
+    seconds: float
+
+    @override
+    def execute(self, frame_time: float) -> bool:
+        if self.seconds > 0:
+            self.zombie.properties.invincible = True
+            self.seconds -= frame_time
+            return True
+        self.zombie.properties.invincible = False
+        return False
 
 
-def freeze_frames(self: Zombie, frame_time: float, id: int, seconds: float, **_):
-    if seconds > 0:
-        self.properties.frozen = True
-        self.effects[id]["values"]["seconds"]["value"] -= frame_time
-    else:
-        self.properties.frozen = False
-        self.remove_effects.append(id)
+class Freeze(EntityEffect):
+    seconds: float
+
+    @override
+    def execute(self, frame_time: float) -> bool:
+        if self.seconds > 0:
+            self.zombie.properties.frozen = True
+            self.seconds -= frame_time
+            return True
+        self.zombie.properties.frozen = False
+        return False
 
 
 class SpawnToxin(EntityEffect):
@@ -155,23 +170,33 @@ class SpawnToxin(EntityEffect):
 
 
 class CreateSmoke(EntityEffect):
+    x: float
+    y: float
+    size: int
+
     @override
     def execute(self, frame_time: float) -> bool:
-        event_bus.add_event("generic_registry_l2_bus", Smoke(self.value("x"), self.value("y"), self.value("size")))
+        event_bus.add_event("generic_registry_l2_bus", Smoke(self.x, self.y, self.size))
         return True
 
 
 class SetAttr(EntityEffect):
+    name: str
+    value: Any
+
     @override
     def execute(self, frame_time: float) -> bool:
-        setattr(self.zombie, self.value("name"), self.value("value"))
+        setattr(self.zombie, self.name, self.value)
         return True
 
 
 effect_map = {
     "create_smoke": CreateSmoke,
+    "freeze": Freeze,
+    "invincibility": Invincibility,
     "regen": Regen,
     "set_attr": SetAttr,
     "spawn_toxin": SpawnToxin,
     "spawn_zombie": SpawnZombie,
+    "velocity": Velocity,
 }

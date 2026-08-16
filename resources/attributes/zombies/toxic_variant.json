@@ -18,8 +18,7 @@
                 "effect_name": "spawn_toxin",
                 "trigger": "timer",
                 "frequency": 0.1,
-                "values": [
-                ]
+                "values": []
             }
         ]
     }

@@ -17,10 +17,9 @@
         },
         "effects": [
             {
-                "effect_name": "initial_velocity",
+                "effect_name": "velocity",
                 "values": [
                     {
-                        "type": "default",
                         "name": "x_vel",
                         "value": 1200
                     },
@@ -30,7 +29,6 @@
                         "value": "random.uniform(-1000, 1000)"
                     },
                     {
-                        "type": "default",
                         "name": "decay",
                         "value": 0.98
                     }

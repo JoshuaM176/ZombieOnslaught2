@@ -20,13 +20,10 @@
             {
                 "effect_name": "spawn_zombie",
                 "trigger": "timer",
+                "frequency": 5,
                 "values": [
                     {
-                        "name": "frequency",
-                        "value": 5
-                    },
-                    {
-                        "name": "spawn_zombie",
+                        "name": "zombie_type",
                         "value": "zombie_lord_knight"
                     },
                     {

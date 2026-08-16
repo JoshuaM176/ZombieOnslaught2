@@ -17,7 +17,7 @@
         },
         "effects": [
             {
-                "effect_name": "invincibility_frames",
+                "effect_name": "invincibility",
                 "values": [
                     {
                         "name": "seconds",
@@ -26,7 +26,7 @@
                 ]
             },
             {
-                "effect_name": "freeze_frames",
+                "effect_name": "freeze",
                 "values": [
                     {
                         "name": "seconds",
@@ -35,7 +35,7 @@
                 ]
             },
             {
-                "effect_name": "initial_velocity",
+                "effect_name": "velocity",
                     "values": [
                         {
                             "name": "x_vel",
@@ -62,7 +62,7 @@
                     {
                         "type": "eval",
                         "name": "value",
-                        "value": "{zombie.x} + random.uniform(2000, 3000)"
+                        "value": "zombie.x + random.uniform(2000, 3000)"
                     }
                 ]
             },
@@ -77,7 +77,7 @@
                     {
                         "type": "eval",
                         "name": "value",
-                        "value": "{zombie.y} + random.uniform(-100, 100)"
+                        "value": "zombie.y + random.uniform(-100, 100)"
                     }
                 ]
             }

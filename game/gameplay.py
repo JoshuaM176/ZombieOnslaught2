@@ -227,7 +227,7 @@ class GameInfo:
     set_rounds: dict = field(default_factory=dict)
 
     def __post_init__(self):
-        self.pool = ["toxic_variant"] * 200
+        self.pool = ["zombie"] * 200
         self.max_village_health = self.village_health
         self.set_ui()
 

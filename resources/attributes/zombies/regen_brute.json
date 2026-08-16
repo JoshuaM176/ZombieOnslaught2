@@ -20,10 +20,9 @@
                 "effect_name": "regen",
                 "values": [
                     {
-                        "type": "format_eval",
-                        "attribute": true,
+                        "type": "eval",
                         "name": "regen",
-                        "value": "{zombie.properties.health} * 0.15"
+                        "value": "zombie.properties.health * 0.15"
                     }
                 ]
             }
