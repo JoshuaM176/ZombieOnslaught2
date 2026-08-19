@@ -30,13 +30,19 @@ ignore = [
     "COM812",
     "D101",
     "D102",
+    "D103",
     "D107",
     "D203",
     "D212",
     "DTZ",
     "FBT001",
-    "FBT002"
+    "FBT002",
     ]
+
+pylint = {
+    "max-args" = 10,
+    "max-positional-args" = 10
+}
 
 [tool.pyrefly]
 project-includes = [

@@ -12,8 +12,8 @@ class Text:
         self,
         text: str,
         size: int,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         color: tuple = (0, 0, 0),
         align: Literal["LEFT", "RIGHT", "CENTER"] = "LEFT",
         font: str | None = None,
@@ -34,7 +34,7 @@ class Text:
     def update_color(self, color: tuple) -> None:
         self.color = color
 
-    def update_pos(self, x: int, y: int):
+    def update_pos(self, x: float, y: float):
         self.x = x
         self.y = y
 
@@ -55,16 +55,16 @@ class TextKwargs:
 
 
 class ProgressBar:
-    def __init__(self, progress, x, y, width, height, color=(0, 255, 0), text=None):
+    def __init__(self, progress: float, x: float, y: float, width: float, height: float, color=(0, 255, 0), text=None):
         self.progress = progress
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.color = color
-        self.text = Text(text, height, x + width / 2, y + height / 2, align="CENTER") if text is not None else None
+        self.text = Text(text, int(height), x + width / 2, y + height / 2, align="CENTER") if text is not None else None
 
-    def update_pos(self, x, y):
+    def update_pos(self, x: float, y: float):
         self.x = x
         self.y = y
         if self.text:
@@ -84,7 +84,7 @@ class ProgressBar:
             self.text.update(screen)
 
 
-def get_font(name):
+def get_font(name: str):
     return pg.font.match_font(name) or pg.font.get_default_font()
 
 
@@ -93,7 +93,7 @@ class ButtonContainer:
         self.buttons: list[Button] = []
         self.nested_containers: list[ButtonContainer] = []
 
-    def check_buttons(self, event, x: int, y: int) -> bool:
+    def check_buttons(self, event: pg.event.Event, x: int, y: int) -> bool:
         for button in self.buttons:
             if x > button.x and x < button.x + button.width and y > button.y and y < button.y + button.height:
                 match event.type:
@@ -102,16 +102,13 @@ class ButtonContainer:
                     case pg.MOUSEWHEEL:
                         match event.y:
                             case 1:
-                                button.scroll(True)
+                                button.scroll(scroll = True)
                             case -1:
-                                button.scroll(False)
+                                button.scroll(scroll = False)
                 return True
-        for container in self.nested_containers:
-            if container.check_buttons(event, x, y):
-                return True
-        return False
+        return any(container.check_buttons(event, x, y) for container in self.nested_containers)
 
-    def get_input(self):
+    def get_input(self) -> None:
         mouse_x, mouse_y = pg.mouse.get_pos()
         input_bus = event_bus.get_events("input_bus")
         for event in input_bus:
@@ -146,14 +143,15 @@ def horizontal_button_layout(
         height = height * scr_h
     if margin <= 1:
         margin = margin * scr_w
+    width = width + margin
     num_buttons = len(buttons)
     full_width = width // num_buttons  # includes margin
-    button_width = full_width - margin * 2
+    button_width = full_width - margin
     container = ButtonContainer()
     for i, button in enumerate(buttons):
         container.buttons.append(
             TextButton(
-                int(x + full_width * i + margin),
+                int(x + full_width * i),
                 int(y),
                 int(button_width),
                 int(height),
@@ -176,14 +174,25 @@ class Button:
         screen: pg.Surface,
         on_click: Callable[[], Any],
         on_update: Callable[[Self], Any] | None = None,
+        calc_percentages: bool = False,
     ) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.screen = screen
+        if calc_percentages:
+            self._calc_percentages()
         self.on_click = on_click
         self.on_update = on_update or (lambda _: None)
+
+    def _calc_percentages(self) -> None:
+        scr_w = self.screen.get_width()
+        scr_h = self.screen.get_height()
+        self.x = self.x if self.x > 1 else self.x * scr_w
+        self.width = self.width if self.width > 1 else self.width * scr_w
+        self.y = self.y if self.y > 1 else self.y * scr_h
+        self.height = self.height if self.height > 1 else self.height * scr_h
 
     def click(self, x: float, y: float, button: int) -> None:  # NOQA: ARG002
         if button == 1:
@@ -200,17 +209,18 @@ class Button:
 class TextButton(Button):
     def __init__(
         self,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
         screen: pg.Surface,
         on_click: Callable[[], Any],
         text: str,
         text_kwargs: TextKwargs | None = None,
         on_update: Callable[[Self], Any] | None = None,
+        calc_percentages: bool = False,
     ) -> None:
-        super().__init__(x, y, width, height, screen, on_click, on_update)
+        super().__init__(x, y, width, height, screen, on_click, on_update, calc_percentages)
         text_kwargs = text_kwargs or TextKwargs()
         kwargs = {
             "text": text,

@@ -85,7 +85,7 @@ class SelectSettingsScreen(Button):
         self.settings_text = []
         for page in self.settings_screens:
             self.settings_text.append(
-                Text(page.upper().replace("_", " "), 60, self.screen.get_width() / 2, 0, align="CENTER"),
+                Text(page.upper().replace("_", " "), 60, self.screen.get_width() // 2, 0, align="CENTER"),
             )
 
     def update(self, **_):
@@ -97,9 +97,10 @@ class SelectSettingsScreen(Button):
             self.settings_text[i].update_pos(self.screen.get_width() / 2, self.y + 50 + (i - self.scroll_index) * 60)
             self.settings_text[i].update(self.screen)
 
-    def click(self, _, mouse_y, button):
+    @override
+    def click(self, x, y, button):
         if button == 1:
-            area_clicked = int((mouse_y - self.y - 20) / 60) + self.scroll_index
+            area_clicked = int((y - self.y - 20) / 60) + self.scroll_index
             if area_clicked >= 0 and area_clicked < len(self.settings_screens):
                 self.func(self.settings_screens[area_clicked])
 
