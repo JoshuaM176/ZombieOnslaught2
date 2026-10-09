@@ -210,7 +210,7 @@ class Game(ScreenPage):
             "level_tokens": self.player.properties.level_tokens,
         }
         player_weapons = []
-        for cat in self.player.weapons.equipped_list:
+        for cat in self.player.weapons.categories:
             if self.player.weapons.get(cat):
                 player_weapons.append({"name": self.player.weapons.get(cat).properties.name, "cat": cat})
         player_info.update({"player": {"properties": player_properties, "equipped_weapons": player_weapons}})

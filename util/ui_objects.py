@@ -84,12 +84,12 @@ class ProgressBar:
             self.text.update(screen)
 
 
-def get_font(name: str):
+def get_font(name: str) -> str:
     return pg.font.match_font(name) or pg.font.get_default_font()
 
 
 class ButtonContainer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.buttons: list[Button] = []
         self.nested_containers: list[ButtonContainer] = []
 
@@ -102,9 +102,9 @@ class ButtonContainer:
                     case pg.MOUSEWHEEL:
                         match event.y:
                             case 1:
-                                button.scroll(scroll = True)
+                                button.scroll(scroll=True)
                             case -1:
-                                button.scroll(scroll = False)
+                                button.scroll(scroll=False)
                 return True
         return any(container.check_buttons(event, x, y) for container in self.nested_containers)
 
@@ -175,6 +175,7 @@ class Button:
         on_click: Callable[[], Any],
         on_update: Callable[[Self], Any] | None = None,
         calc_percentages: bool = False,
+        condition: Callable[[], bool] | None = None,
     ) -> None:
         self.x = x
         self.y = y
@@ -185,6 +186,7 @@ class Button:
             self._calc_percentages()
         self.on_click = on_click
         self.on_update = on_update or (lambda _: None)
+        self.condition = condition
 
     def _calc_percentages(self) -> None:
         scr_w = self.screen.get_width()
@@ -202,6 +204,8 @@ class Button:
         pass
 
     def update(self) -> None:
+        if self.condition and not self.condition():
+            return
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         self.on_update(self)
 
@@ -219,8 +223,9 @@ class TextButton(Button):
         text_kwargs: TextKwargs | None = None,
         on_update: Callable[[Self], Any] | None = None,
         calc_percentages: bool = False,
+        condition: Callable[[], bool] | None = None,
     ) -> None:
-        super().__init__(x, y, width, height, screen, on_click, on_update, calc_percentages)
+        super().__init__(x, y, width, height, screen, on_click, on_update, calc_percentages, condition)
         text_kwargs = text_kwargs or TextKwargs()
         kwargs = {
             "text": text,
@@ -234,6 +239,8 @@ class TextButton(Button):
 
     @override
     def update(self) -> None:
+        if self.condition and not self.condition():
+            return
         self.on_update(self)
         pg.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 10)
         self.text.update(self.screen)

@@ -2,7 +2,7 @@
     "MP9": {
         "player": {
             "movement": 360,
-            "available": false
+            "available": true
         },
         "sprites": {
             "default": "mp7.png",

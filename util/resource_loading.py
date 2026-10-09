@@ -22,7 +22,7 @@ def delete_save_profile(profile) -> None:
         shutil.rmtree(Path(ROOT, "saves", profile))
 
 
-def load_sprite(name: str, category: str, colorkey=None, scale=8):
+def load_sprite(name: str, category: str, colorkey=None, scale=8) -> pg.Surface:
     fullname = Path(ROOT, "resources", "textures", category, name)
     image = pg.image.load(fullname)
     size = image.get_size()

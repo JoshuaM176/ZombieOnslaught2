@@ -1,127 +1,100 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pygame as pg
 
+from data.weapons import WeaponCategory, WeaponData, WeaponPrevPurchaseRequirement
 from objects.weapons import Weapon
-from util.resource_loading import ResourceLoader, convert_files_to_sprites
+from util.resource_loading import ResourceLoader
 
-weapon_categories = ["melee", "pistol", "smg", "rifle", "shotgun", "sniper"]
+if TYPE_CHECKING:
+    from registries import BulletRegistry
 
 
 class WeaponRegistry:
-    def __init__(self):
-        self.weapons = {}
-        for cat in weapon_categories:
-            self.weapons.update({cat: {}})
+    def __init__(self) -> None:
+        self.weapons: dict[WeaponCategory, dict[str, WeaponData]] = {}
         self.render_plain = pg.sprite.RenderPlain(())
         resource_loader = ResourceLoader("weapons", "attributes")
         resource_loader.load_all()
         resource_loader.set_defaults()
         resources = resource_loader.get_all()
         for name, data in resources.items():
-            convert_files_to_sprites(data["sprites"], "weapons")
-            weapon = {name: data}
-            weapon[name].update({"name": name})
+            data.update({"name": name})
+            weapon = WeaponData(**data)
+            category = weapon.properties.type
+            self.weapons[category].update({name: weapon})
             self.weapons[data["properties"]["type"]].update(weapon)
-        self._calc_total_weapons_cost()
-
-    def _calc_total_weapons_cost(self):
-        for cat, weapons in self.weapons.items():
-            for weapon, data in weapons.items():
-                data["store"]["total_cost"] = self._calc_weapon_cost(cat, weapon)
-
-    def _calc_weapon_cost(self, cat, name, visited=None, counted=None):
-        visited = [] if not visited else [item for item in visited]
-        counted = [] if not counted else counted
-        if name in visited:
-            print(visited)
-            raise AttributeError(f"Circular dependency in requirements, {name} {cat}")
-        visited.append(name)
-        weapon = self.weapons[cat].get(name)
-        if not weapon:
-            print(f"{name} {cat} not found, skipping")
-            return 0
-        total_cost = weapon["store"]["price"]
-        for req in weapon["store"]["requirements"]:
-            if (req["type"]) == "weapon" and (req["cat"], req["name"]) not in counted:
-                counted.append((req["cat"], req["name"]))
-                total_cost += self._calc_weapon_cost(req["cat"], req["name"], visited, counted)
-        return total_cost
 
     def check_requirements(self, cat, name):
         weapon = self.weapons[cat][name]
-        for req in weapon["store"]["requirements"]:
-            if (req["type"]) == "weapon" and not self.weapons[req["cat"]][req["name"]]["player"]["owned"]:
-                return False
-        return True
+        for req in weapon.store.requirements:
+            if isinstance(req, WeaponPrevPurchaseRequirement):
+                return self.weapons[req.cat][req.name].player.owned
 
-    def get_weapon(self, cat: str, name: str) -> dict:
+    def get_weapon(self, cat: WeaponCategory, name: str) -> WeaponData:
         return self.weapons[cat][name]
 
-    def get_default_weapons(self) -> dict[str, dict]:
+    def get_default_weapons(self) -> dict[WeaponCategory, WeaponData]:
         defaults = {}
         for cat, weapons in self.weapons.items():
-            for data in weapons.values():
-                if data["player"].get("default"):
-                    defaults[cat] = data
+            for weapon in weapons.values():
+                if weapon.player.default:
+                    defaults[cat] = weapon
         return defaults
 
-    def get_available_weapons(self, cat) -> list[dict]:
-        available = []
-        for data in self.weapons[cat].values():
-            if data["player"].get("available"):
-                available.append(data)
-        return available
+    def get_available_weapons(self, cat: WeaponCategory) -> list[WeaponData]:
+        return [weapon for weapon in self.weapons[cat].values() if weapon.player.available]
 
 
 class EquippedWeaponRegistry:
-    def __init__(self, bullet_registry):
+    def __init__(self, bullet_registry: BulletRegistry):
         self.bullet_registry = bullet_registry
-        self.weapons = {}
-        for cat in weapon_categories:
+        self.weapons: dict[str, Weapon | None] = {}
+        for cat in WeaponCategory:
             self.weapons.update({cat: None})
-        self.equipped_list = weapon_categories
-        self.equipped = self.equipped_list[0]
+        self.categories = list(WeaponCategory)
+        self.equipped = self.categories[0]
+        self.equipped_index = 0
         self.render_plain = pg.sprite.RenderPlain(())
 
     def equip(self, weapon: dict, cat: str):
         self.weapons[cat] = Weapon(**weapon, projectile_registry=self.bullet_registry, bus="ui_bus")
 
-    def get(self, cat: str):
-        return self.weapons.get(cat)
+    def get(self, cat: str) -> Weapon | None:
+        return self.weapons[cat]
 
-    def set_next(self):
-        next_cat = self.get_next()
-        if self.weapons.get(next_cat):
-            self.equipped = next_cat
+    def set_next(self) -> str:
+        equipped_index = min(self.equipped_index + 1, len(self.categories) - 1)
+        equipped = self.categories[equipped_index]
+        if not self.get(equipped):
             return self.equipped
-        return False
+        self.equipped_index = equipped_index
+        self.equipped = equipped
+        return self.equipped
 
     def set_previous(self):
-        prev_cat = self.get_prev()
-        if self.weapons.get(prev_cat):
-            self.equipped = prev_cat
+        equipped_index = max(self.equipped_index - 1, 0)
+        equipped = self.categories[equipped_index]
+        if not self.get(equipped):
             return self.equipped
-        return False
-
-    def get_next(self):
-        if self.equipped_list.index(self.equipped) < len(self.equipped_list) - 1:
-            return self.equipped_list[self.equipped_list.index(self.equipped) + 1]
-        return False
-
-    def get_prev(self):
-        if self.equipped_list.index(self.equipped) > 0:
-            return self.equipped_list[self.equipped_list.index(self.equipped) - 1]
-        return False
+        self.equipped_index = equipped_index
+        self.equipped = equipped
+        return self.equipped
 
     def get_next_name(self):
-        cat = self.get_next()
-        if self.get(cat):
-            return self.get(cat).properties.name
+        if self.equipped_index < len(self.categories):
+            weapon = self.get(self.categories[self.equipped_index + 1])
+            if weapon:
+                return weapon.properties.name
         return False
 
     def get_prev_name(self):
-        cat = self.get_prev()
-        if self.get(cat):
-            return self.get(cat).properties.name
+        if self.equipped_index > 0:
+            weapon = self.get(self.categories[self.equipped_index - 1])
+            if weapon:
+                return weapon.properties.name
         return False
 
     def update(self, frame_time):
