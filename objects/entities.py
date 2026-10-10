@@ -151,7 +151,7 @@ class Zombie(Entity[ZombieProperties]):
         screen: pg.Surface,
         x: int,
         y: int,
-        weapon_registry,
+        weapon_registry: WeaponRegistry,
         projectile_registries,
         round_scaling: int = 0,
         parent=None,
@@ -166,7 +166,7 @@ class Zombie(Entity[ZombieProperties]):
         weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
         self.projectile_registry = projectile_registries["zombie_projectile_registry"]
         self.bullet_registry = projectile_registries["zombie_bullet_registry"]
-        self.weapon = Weapon(**weapon, projectile_registry=self.bullet_registry, bus="trash")
+        self.weapon = Weapon(**weapon.model_dump(), projectile_registry=self.bullet_registry, bus="trash")
         if attrs["weapon_stats"].get("projectile"):
             self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()

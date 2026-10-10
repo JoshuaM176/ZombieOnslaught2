@@ -2,16 +2,15 @@ from typing import override
 
 import pygame as pg
 
+from data.weapons import WeaponCategory, WeaponData
 from game.screenpage import ScreenPage
 from registries.weapon_registries import (
     EquippedWeaponRegistry,
     WeaponRegistry,
-    WeaponCategory
 )
 from util.event_bus import event_bus
 from util.resource_loading import load_sprite
 from util.ui_objects import Button, ButtonContainer, Text, TextButton
-from data.weapons import WeaponData
 
 player_sprite = load_sprite("player.png", "player", -1)
 
@@ -65,25 +64,25 @@ class WeaponStore(ScreenPage, ButtonContainer):
         event_bus.add_event("game_event_bus", {"save_game": {}})
 
     def next_page(self):
-        if weapon_categories.index(self.category) < len(weapon_categories) - 1:
-            self.category = weapon_categories[weapon_categories.index(self.category) + 1]
+        if WeaponCategory.list().index(self.category) < len(WeaponCategory) - 1:
+            self.category = WeaponCategory.list()[WeaponCategory.list().index(self.category) + 1]
         self.set_weapon_buttons()
         self.select_weapon(
             self.weapon_registry.get_weapon(
                 self.category,
-                self.weapon_registry.get_available_weapons(self.category)[0]["name"],
+                self.weapon_registry.get_available_weapons(self.category)[0].name,
             ),
         )
         self.category_text.update_text(self.category.upper())
 
     def prev_page(self):
-        if weapon_categories.index(self.category) > 0:
-            self.category = weapon_categories[weapon_categories.index(self.category) - 1]
+        if WeaponCategory.list().index(self.category) > 0:
+            self.category = WeaponCategory.list()[WeaponCategory.list().index(self.category) - 1]
         self.set_weapon_buttons()
         self.select_weapon(
             self.weapon_registry.get_weapon(
                 self.category,
-                self.weapon_registry.get_available_weapons(self.category)[0]["name"],
+                self.weapon_registry.get_available_weapons(self.category)[0].name,
             ),
         )
         self.category_text.update_text(self.category.upper())
@@ -98,9 +97,9 @@ class WeaponStore(ScreenPage, ButtonContainer):
             text.update(self.screen)
         for button in self.weapon_buttons:
             button.update()
-        if self.weapon["player"]["owned"]:
+        if self.weapon.player.owned:
             self.ui_buttons[0].update()
-        elif self.weapon_registry.check_requirements(self.category, self.weapon["name"]):
+        elif self.weapon_registry.check_requirements(self.category, self.weapon.name):
             self.ui_buttons[0].update()
             self.price_text.update(self.screen)
         else:
@@ -124,7 +123,7 @@ class WeaponStore(ScreenPage, ButtonContainer):
     def set_weapon_buttons(self):
         self.weapon_buttons.clear()
         available_weapons = self.weapon_registry.get_available_weapons(self.category)
-        available_weapons.sort(key=lambda weapon: weapon["store"]["total_cost"])
+        # available_weapons.sort(key=lambda weapon: weapon["store"]["total_cost"]) TODO - add back total cost calculation
         x = 50
         y = 480
         for weapon in available_weapons:
@@ -137,8 +136,8 @@ class WeaponStore(ScreenPage, ButtonContainer):
                     self.screen,
                     weapon,
                     lambda weapon=weapon: self.select_weapon(weapon),
-                    lambda self, weapon=weapon: bool(weapon["player"]["owned"]),
-                    self.weapon_registry.check_requirements(self.category, weapon["name"]),
+                    lambda self, weapon=weapon: weapon.player.owned,
+                    self.weapon_registry.check_requirements(self.category, weapon.name),
                 ),
             )
             x += 150
@@ -150,12 +149,12 @@ class WeaponStore(ScreenPage, ButtonContainer):
     def select_weapon(self, weapon: WeaponData):
         self.weapon = weapon
         self.ui_buttons[0].set_weapon(weapon)
-        self.weapon_text.update_text(self.weapon["name"])
-        self.price_text.update_text(f"${self.weapon['store']['price']}")
+        self.weapon_text.update_text(self.weapon.name)
+        self.price_text.update_text(f"${self.weapon.store.price}")
         y = 0
         self.requirements_text = []
-        for req in self.weapon["store"]["requirements"]:
-            self.requirements_text.append(Text(req["name"], 25, self.screen.get_width() / 2, y + 155, align="CENTER"))
+        for req in self.weapon.store.requirements:
+            self.requirements_text.append(Text(str(req.name), 25, self.screen.get_width() / 2, y + 155, align="CENTER"))
             y += 25
         self.set_stats()
 
@@ -164,28 +163,28 @@ class WeaponStore(ScreenPage, ButtonContainer):
         x = -300
         y = 255
         stats = [
-            f"Damage: {self.weapon['projectile']['damage'] * self.weapon['properties']['projectile_count']}",
-            f"Dropoff: {self.weapon['projectile']['dropoff'] * self.weapon['properties']['projectile_count']}",
-            f"Firerate: {self.weapon['properties']['firerate']}",
-            f"Headshot Damage: {self.weapon['projectile']['head_mult']}",
-            f"Reload Time: {self.weapon['ammo']['reload_time']}(+{self.weapon['ammo']['reload_on_empty']})",
-            f"Ammo Capacity: {self.weapon['ammo']['bullets']}",
-            f"Bullet in Chamber: {self.weapon['ammo']['bullet_in_chamber']}",
-            f"Projectile Speed: {self.weapon['projectile']['speed']}",
-            f"Bullet Penetration: {round(self.weapon['projectile']['penetration'] * 100)}%",
-            f"Armour Pierce: {self.weapon['projectile']['armour_pierce']}",
-            f"Movement Speed: {self.weapon['player']['movement']}",
-            f"Recoil {self.weapon['properties']['recoil_per_shot'] * 100}",
-            f"Recoil Control {self.weapon['properties']['recoil_control'] * 100}",
-            f"Max Recoil: {self.weapon['properties']['max_recoil'] * 100}",
-            f"Magazines: {self.weapon['ammo']['mags']}",
-            f"Resupply Time: {self.weapon['ammo']['mag_time']}",
-            f"Reload Type: {self.reload_type[self.weapon['ammo']['reload_type']]}",
+            f"Damage: {self.weapon.projectile.damage * self.weapon.properties.projectile_count}",
+            f"Dropoff: {self.weapon.projectile.dropoff * self.weapon.properties.projectile_count}",
+            f"Firerate: {self.weapon.properties.firerate}",
+            f"Headshot Damage: {self.weapon.projectile.head_mult}",
+            f"Reload Time: {self.weapon.ammo.reload_time}(+{self.weapon.ammo.reload_on_empty})",
+            f"Ammo Capacity: {self.weapon.ammo.bullets}",
+            f"Bullet in Chamber: {self.weapon.ammo.bullet_in_chamber}",
+            f"Projectile Speed: {self.weapon.projectile.speed}",
+            f"Bullet Penetration: {round(self.weapon.projectile.penetration * 100)}%",
+            f"Armour Pierce: {self.weapon.projectile.armour_pierce}",
+            f"Movement Speed: {self.weapon.player.movement}",
+            f"Recoil {self.weapon.properties.recoil_per_shot * 100}",
+            f"Recoil Control {self.weapon.properties.recoil_control * 100}",
+            f"Max Recoil: {self.weapon.properties.max_recoil * 100}",
+            f"Magazines: {self.weapon.ammo.mags}",
+            f"Resupply Time: {self.weapon.ammo.mag_time}",
+            f"Reload Type: {self.reload_type[self.weapon.ammo.reload_type]}",
         ]
-        if self.weapon["properties"]["burst"] > 1:
-            stats.append(f"Fire Type: Burst-{self.weapon['properties']['burst']}")
-            stats.append(f"Burst Delay: {self.weapon['properties']['burst_delay']}")
-        elif self.weapon["properties"]["burst"] == 1:
+        if self.weapon.properties.burst > 1:
+            stats.append(f"Fire Type: Burst-{self.weapon.properties.burst}")
+            stats.append(f"Burst Delay: {self.weapon.properties.burst_delay}")
+        elif self.weapon.properties.burst == 1:
             stats.append("Fire Type: Semi-Automatic")
         else:
             stats.append("Fire Type: Automatic")
@@ -197,24 +196,24 @@ class WeaponStore(ScreenPage, ButtonContainer):
                 x += 350
 
     def buy_or_equip_selected(self):
-        if self.weapon["player"]["owned"]:
+        if self.weapon.player.owned:
             self.equipped_weapons.equip(self.weapon, self.category)
-        elif self.game_info.money >= self.weapon["store"]["price"] and self.weapon_registry.check_requirements(
+        elif self.game_info.money >= self.weapon.store.price and self.weapon_registry.check_requirements(
             self.category,
-            self.weapon["name"],
+            self.weapon.name,
         ):
-            self.game_info.money -= self.weapon["store"]["price"]
+            self.game_info.money -= self.weapon.store.price
             event_bus.add_event("ui_bus", {"money": self.game_info.money})
-            self.weapon["player"]["owned"] = True
+            self.weapon.player.owned = True
             self.set_weapon_buttons()
         self.money_text.update_text(f"${round(self.game_info.money)}")
 
     class WeaponButton(Button):
-        def __init__(self, x, y, width, height, screen, weapon, on_click, owned, reqs_met):
-            self.sprite = weapon["sprites"]["default"]
-            self.rect = weapon["sprites"]["default"].get_rect()
-            self.rect.topleft = (x + weapon["store"]["shiftX"], y + weapon["store"]["shiftY"])
-            self.price = weapon["store"]["price"]
+        def __init__(self, x, y, width, height, screen, weapon: WeaponData, on_click, owned, reqs_met):
+            self.sprite = weapon.sprites.default
+            self.rect = weapon.sprites.default.get_rect()
+            self.rect.topleft = (x + weapon.store.shiftX, y + weapon.store.shiftY)
+            self.price = weapon.store.price
             self.reqs_met = reqs_met
             super().__init__(x, y, width, height, screen, on_click, owned)
 
@@ -238,5 +237,5 @@ class WeaponStore(ScreenPage, ButtonContainer):
 
         def _on_update(self, _) -> None:
             if self.weapon:
-                if self.weapon["player"]["owned"] != self.text.text:
-                    self.text.update_text("Equip" if self.weapon["player"]["owned"] else "Buy")
+                if self.weapon.player.owned != self.text.text:
+                    self.text.update_text("Equip" if self.weapon.player.owned else "Buy")

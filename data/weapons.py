@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from enum import StrEnum, auto
+from functools import cache
 from typing import Annotated, Any
 
 import pygame as pg
@@ -24,6 +26,15 @@ class WeaponCategory(StrEnum):
     rifle = auto()
     shotgun = auto()
     sniper = auto()
+
+    @staticmethod
+    def default() -> WeaponCategory:
+        return WeaponCategory.melee
+
+    @classmethod
+    @cache
+    def list(cls: type[WeaponCategory]) -> Sequence[WeaponCategory]:
+        return list(cls)
 
 
 class WeaponData(BaseModel):
@@ -56,29 +67,47 @@ class WeaponPropertiesData(BaseModel):
     type: WeaponCategory
     firerate: int
     fire_animation_length: float
+    burst: int
+    burst_delay: float
+    projectile_count: int
     shiftX: int
     shiftY: int
+    downwards_recoil: bool
     recoil_per_shot: float
-    recoil_control: int
-    max_recoil: int
+    recoil_control: float
+    max_recoil: float
 
 
 class WeaponAmmoData(BaseModel):
     bullets: int
+    bullet_in_chamber: bool
     mags: int
     mag_time: float
     reload_time: float
+    reload_type: int
     reload_on_empty: float
 
 
+class ProjectileType(StrEnum):
+    bullet = auto()
+    arrow = auto()
+
+
+class ProjectileTracer(BaseModel):
+    color: tuple[int, int, int]
+
+
 class WeaponProjectileData(BaseModel):
+    type: ProjectileType
     damage: float
     head_mult: float
+    armour_pierce: int
     dropoff: float
     speed: int
-    penetration: int
+    penetration: float
     shiftX: int
     shiftY: int
+    tracer: ProjectileTracer | bool
 
 
 def parse_requirement(data: dict[str, Any]) -> WeaponRequirement:
@@ -99,7 +128,6 @@ class WeaponStoreData(BaseModel):
 
 
 class WeaponRequirement(BaseModel): ...
-
 
 
 class WeaponPrevPurchaseRequirement(WeaponRequirement):

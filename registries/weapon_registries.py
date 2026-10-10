@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class WeaponRegistry:
     def __init__(self) -> None:
-        self.weapons: dict[WeaponCategory, dict[str, WeaponData]] = {}
+        self.weapons: dict[WeaponCategory, dict[str, WeaponData]] = {cat: {} for cat in WeaponCategory}
         self.render_plain = pg.sprite.RenderPlain(())
         resource_loader = ResourceLoader("weapons", "attributes")
         resource_loader.load_all()
@@ -25,7 +25,6 @@ class WeaponRegistry:
             weapon = WeaponData(**data)
             category = weapon.properties.type
             self.weapons[category].update({name: weapon})
-            self.weapons[data["properties"]["type"]].update(weapon)
 
     def check_requirements(self, cat, name):
         weapon = self.weapons[cat][name]
@@ -59,8 +58,8 @@ class EquippedWeaponRegistry:
         self.equipped_index = 0
         self.render_plain = pg.sprite.RenderPlain(())
 
-    def equip(self, weapon: dict, cat: str):
-        self.weapons[cat] = Weapon(**weapon, projectile_registry=self.bullet_registry, bus="ui_bus")
+    def equip(self, weapon: WeaponData, cat: str):
+        self.weapons[cat] = Weapon(**weapon.model_dump(), projectile_registry=self.bullet_registry, bus="ui_bus")
 
     def get(self, cat: str) -> Weapon | None:
         return self.weapons[cat]

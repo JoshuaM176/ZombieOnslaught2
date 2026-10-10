@@ -64,20 +64,20 @@ class ProgressBar:
         self.color = color
         self.text = Text(text, int(height), x + width / 2, y + height / 2, align="CENTER") if text is not None else None
 
-    def update_pos(self, x: float, y: float):
+    def update_pos(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
         if self.text:
             self.text.update_pos(x + self.width / 2, y + self.height / 2)
 
-    def update_text(self, text: str):
+    def update_text(self, text: str) -> None:
         if self.text:
             self.text.update_text(text)
 
-    def update_progress(self, progress: float):
+    def update_progress(self, progress: float) -> None:
         self.progress = progress
 
-    def update(self, screen: pg.Surface):
+    def update(self, screen: pg.Surface) -> None:
         pg.draw.rect(screen, self.color, (self.x, self.y, self.progress * self.width, self.height))
         pg.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width, self.height), 1)
         if self.text:

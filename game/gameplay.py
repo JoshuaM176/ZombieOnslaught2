@@ -4,6 +4,7 @@ from random import choice, uniform
 
 import pygame as pg
 
+from data.weapons import WeaponCategory
 from game.game_over import GameOver
 from game.game_ui import UI
 from game.hut import Hut
@@ -13,7 +14,6 @@ from game.weapon_store import WeaponStore
 from game.zombiepedia import Zombiepedia
 from objects.entities import Player
 from registries import BulletRegistry, GenericRegistry, ProjectileRegistry, WeaponRegistry, ZombieRegistry
-from registries.weapon_registries import weapon_categories
 from util.event_bus import event_bus
 from util.resource_loading import ResourceLoader, save_data
 
@@ -58,7 +58,7 @@ class Game(ScreenPage):
     def _create_player(self):
         player_key_map = self.settings.player_key_map
         self.player = Player(200, 500, self.projectile_registries, self.weapon_registry, player_key_map, self.screen)
-        self.player.set_equipped_weapon(weapon_categories[0])
+        self.player.set_equipped_weapon(WeaponCategory.default())
 
     def _create_screens(self, rsrc_ldr: ResourceLoader):
         self.game_over = GameOver(self.screen)
@@ -196,9 +196,9 @@ class Game(ScreenPage):
         game_info.update({"settings": {"key_map": self.settings.key_map}})
         save_data("game", "attributes", game_info)
         weapon_info = {}
-        for cat in weapon_categories:
+        for cat in WeaponCategory:
             for weapon in self.weapon_registry.get_available_weapons(cat):
-                weapon_info.update({weapon["name"]: {"player": {"owned": weapon["player"]["owned"]}}})
+                weapon_info.update({weapon.name: {"player": {"owned": weapon.player.owned}}})
         save_data("weapons", "attributes", weapon_info)
         player_info = {}
         player_properties = {
