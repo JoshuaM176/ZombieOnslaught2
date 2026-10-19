@@ -28,13 +28,13 @@ class Text:
             self.font = pg.font.Font(pg.font.get_default_font(), size)
         self.text = self.font.render(text, True, color)
 
-    def update_text(self, text: str):
+    def update_text(self, text: str) -> None:
         self.text = self.font.render(text, True, self.color)
 
     def update_color(self, color: tuple) -> None:
         self.color = color
 
-    def update_pos(self, x: float, y: float):
+    def update_pos(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
 
@@ -235,7 +235,7 @@ class TextButton(Button):
             "align": "CENTER",
         }
         kwargs.update(asdict(text_kwargs) or {})
-        self.text = Text(**kwargs)  # pyrefly: ignore[bad-argument-type]
+        self.text = Text(**kwargs) # pyrefly: ignore[bad-argument-type]
 
     @override
     def update(self) -> None:

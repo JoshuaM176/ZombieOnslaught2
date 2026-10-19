@@ -49,14 +49,13 @@ class Weapon(pg.sprite.Sprite):
     ):
         super().__init__()
         self.sprites = data.sprites.model_dump()
-        self.image, self.rect = (
-            self.sprites["default"],
-            self.sprites["default"].get_rect()
-        )
+        self.image, self.rect = (self.sprites["default"], self.sprites["default"].get_rect())
         self.temp_sprite = None
         self.projectile = data.projectile.model_dump()
         projectile_type = self.projectile.pop("type")
-        self.base_properties = WeaponProperties(name=data.name, projectile_type=projectile_type, **data.properties.model_dump())
+        self.base_properties = WeaponProperties(
+            name=data.name, projectile_type=projectile_type, **data.properties.model_dump()
+        )
         self.properties = self.base_properties
         self.player = data.player
         self.projectile_registry = projectile_registry

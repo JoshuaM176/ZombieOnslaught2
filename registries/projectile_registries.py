@@ -14,14 +14,14 @@ class ProjectileRegistry[P: Projectile]:
         self.alpha_screen = alpha_screen
         self.index = 0
         self.size = size
-        self.projectiles: list[P] = [None] * size
+        self.projectiles: list[P | None] = [None] * size
 
     def update(self, frame_time):
         for projectile in self.projectiles:
             if projectile:
                 projectile.update(frame_time, self.screen, self.alpha_screen)
 
-    def add(self, projectile: Projectile):
+    def add(self, projectile: P):
         self.projectiles[self.index] = projectile
         self.index += 1
         if self.index >= self.size:

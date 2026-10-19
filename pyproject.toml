@@ -29,6 +29,7 @@ select = ["ALL"]
 ignore = [
     "ANN401",
     "COM812",
+    "CPY001",
     "D101",
     "D102",
     "D103",
@@ -41,8 +42,8 @@ ignore = [
     ]
 
 pylint = {
-    "max-args" = 10,
-    "max-positional-args" = 10
+    "max-args" = 15,
+    "max-positional-args" = 5
 }
 
 [tool.pyrefly]

@@ -62,13 +62,13 @@ class ResourceLoader:
         self.files = path.glob("*json")
         self.save_files = save_path.glob("*json")
 
-    def load(self, path: Path):
+    def load(self, path: Path) -> None:
         with open(path) as f:
             data = json.load(f)
         for key, value in data.items():
             self.resources[key] = value
 
-    def load_all(self):
+    def load_all(self) -> None:
         for file in self.files:
             self.load(file)
         for file in self.save_files:
@@ -77,7 +77,7 @@ class ResourceLoader:
             for key in save_data:
                 self.resources[key] = self.update(self.resources[key], save_data[key])
 
-    def update(self, data: dict, new_data: dict):
+    def update(self, data: dict, new_data: dict) -> dict:
         rtn_data = deepcopy(data)
         for key, value in new_data.items():
             if isinstance(value, dict):
@@ -89,11 +89,11 @@ class ResourceLoader:
                 rtn_data[key] = value
         return rtn_data
 
-    def set_defaults(self):
+    def set_defaults(self) -> None:
         for key in self.resources:
             self.resources[key] = self.update(self.resources["default"], self.resources[key])
 
-    def get(self, name: str):
+    def get(self, name: str) -> Any:
         return self.resources[name]
 
     def get_all(self) -> dict[str, Any]:

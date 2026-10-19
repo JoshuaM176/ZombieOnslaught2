@@ -167,7 +167,7 @@ class Zombie(Entity[ZombieProperties]):
         weapon_data = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
         self.projectile_registry = projectile_registries["zombie_projectile_registry"]
         self.bullet_registry = projectile_registries["zombie_bullet_registry"]
-        self.weapon = Weapon(data = weapon_data, projectile_registry=self.bullet_registry, bus="trash")
+        self.weapon = Weapon(data=weapon_data, projectile_registry=self.bullet_registry, bus="trash")
         if attrs["weapon_stats"].get("projectile"):
             self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()
