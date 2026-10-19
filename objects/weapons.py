@@ -4,6 +4,7 @@ from random import uniform
 
 import pygame as pg
 
+from data.weapons import WeaponData
 from objects.projectiles.arrow import Arrow
 from registries.projectile_registries import ProjectileRegistry
 from util.event_bus import event_bus
@@ -40,28 +41,24 @@ class WeaponProperties:
 class Weapon(pg.sprite.Sprite):
     def __init__(
         self,
-        name: str,
-        player: dict,
-        properties: dict,
-        sprites: dict,
-        ammo: dict,
-        projectile: dict,
+        data: WeaponData,
         projectile_registry: ProjectileRegistry | None = None,
         projectile_registries: ProjectileRegistry | None = None,
         bus: str = "trash",
         **_,
     ):
         super().__init__()
-        self.sprites = sprites
+        self.sprites = data.sprites.model_dump()
         self.image, self.rect = (
             self.sprites["default"],
-            self.sprites["default"].get_rect(),
+            self.sprites["default"].get_rect()
         )
         self.temp_sprite = None
-        self.projectile = projectile.copy()
-        self.base_properties = WeaponProperties(name=name, projectile_type=self.projectile.pop("type"), **properties)
+        self.projectile = data.projectile.model_dump()
+        projectile_type = self.projectile.pop("type")
+        self.base_properties = WeaponProperties(name=data.name, projectile_type=projectile_type, **data.properties.model_dump())
         self.properties = self.base_properties
-        self.player = player
+        self.player = data.player
         self.projectile_registry = projectile_registry
         if not self.projectile_registry:
             self.projectile_registry = (
@@ -69,7 +66,7 @@ class Weapon(pg.sprite.Sprite):
                 if self.properties.projectile_type == "bullet"
                 else projectile_registries["zombie_projectile_registry"]
             )
-        self.ammo = Ammo(**ammo)
+        self.ammo = Ammo(**data.ammo.model_dump())
         self.ui_bus = event_bus.put_events(bus)
         self.ui_bus.send(None)
 

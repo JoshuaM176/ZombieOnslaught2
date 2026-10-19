@@ -8,6 +8,7 @@ from typing import override
 
 import pygame as pg
 
+from data.weapons import WeaponData
 from objects.generic.blood import Blood
 from objects.hitreg import HitBox
 from objects.projectiles import Projectile
@@ -81,7 +82,7 @@ class Entity[P: EntityProperties](pg.sprite.Sprite):
             self.damage_number = FloatingNumber(2)
         self.properties: P = property_class(**properties)
 
-    def update(self):
+    def update(self, frame_time: float, screen: pg.Surface):
         self.rect.topleft = (self.x, self.y)
 
     def update_movement(self, frame_time):
@@ -163,10 +164,10 @@ class Zombie(Entity[ZombieProperties]):
         self.summoned_zombies = []
         super().__init__(screen, x, y, damage_numbers=True, property_class=ZombieProperties, **attrs)
         self.properties._round_scale_init(round_scaling)
-        weapon = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
+        weapon_data = weapon_registry.get_weapon(attrs["weapon_stats"]["category"], attrs["weapon_stats"]["name"])
         self.projectile_registry = projectile_registries["zombie_projectile_registry"]
         self.bullet_registry = projectile_registries["zombie_bullet_registry"]
-        self.weapon = Weapon(**weapon.model_dump(), projectile_registry=self.bullet_registry, bus="trash")
+        self.weapon = Weapon(data = weapon_data, projectile_registry=self.bullet_registry, bus="trash")
         if attrs["weapon_stats"].get("projectile"):
             self.weapon.projectile.update(attrs["weapon_stats"]["projectile"])
         self.weapon.flip_sprites()
@@ -231,7 +232,7 @@ class Zombie(Entity[ZombieProperties]):
         super().body_hit(bullet)
         self.update_health_bar()
 
-    def update(self, frame_time: float, screen: pg.Surface):
+    def update(self, frame_time: float, screen: pg.Surface) -> None:
         if not self.properties.frozen:
             self.update_movement(frame_time)
             self.animation_time += frame_time
@@ -318,14 +319,14 @@ class Player(Entity[PlayerProperties]):
         }
         self.key_map = key_map
         self.weapons = EquippedWeaponRegistry(self.bullet_registry)
-        self.equipped_weapon = None
+        self.equipped_weapon: Weapon | None = None
         for weapon in resources["equipped_weapons"]:
             weapon_dict = weapon_registry.get_weapon(weapon["cat"], weapon["name"])
             self.set_weapon(weapon_dict, weapon["cat"])
         self.ui_bus = event_bus.put_events("ui_bus")
         self.ui_bus.send(None)
 
-    def set_weapon(self, weapon: dict, cat: str):
+    def set_weapon(self, weapon: WeaponData, cat: str):
         self.weapons.equip(weapon, cat)
 
     def set_equipped_weapon(self, cat: str):
@@ -333,6 +334,8 @@ class Player(Entity[PlayerProperties]):
             if self.equipped_weapon:
                 self.render_plain.remove(self.equipped_weapon)
             self.equipped_weapon = self.weapons.get(cat)
+            if not self.equipped_weapon:
+                raise AttributeError("No weapon available for category.")
             self.render_plain.add(self.equipped_weapon)
             self.ui_bus.send(
                 {
@@ -406,7 +409,7 @@ class Player(Entity[PlayerProperties]):
         )
 
     def update_movement(self, frame_time):
-        self.properties.current_speed = self.properties.speed * self.equipped_weapon.player["movement"]
+        self.properties.current_speed = self.properties.speed * self.equipped_weapon.player.movement
         self.movement["horizontal"] = self.input_dict["right"] - self.input_dict["left"]
         self.movement["vertical"] = self.input_dict["down"] - self.input_dict["up"]
         sprint = self.input_dict["sprint"] + 1

@@ -235,7 +235,7 @@ class TextButton(Button):
             "align": "CENTER",
         }
         kwargs.update(asdict(text_kwargs) or {})
-        self.text = Text(**kwargs)
+        self.text = Text(**kwargs)  # pyrefly: ignore[bad-argument-type]
 
     @override
     def update(self) -> None:

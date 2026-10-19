@@ -59,7 +59,7 @@ class EquippedWeaponRegistry:
         self.render_plain = pg.sprite.RenderPlain(())
 
     def equip(self, weapon: WeaponData, cat: str):
-        self.weapons[cat] = Weapon(**weapon.model_dump(), projectile_registry=self.bullet_registry, bus="ui_bus")
+        self.weapons[cat] = Weapon(data=weapon, projectile_registry=self.bullet_registry, bus="ui_bus")
 
     def get(self, cat: str) -> Weapon | None:
         return self.weapons[cat]

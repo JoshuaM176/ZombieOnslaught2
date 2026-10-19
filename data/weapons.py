@@ -40,7 +40,7 @@ class WeaponCategory(StrEnum):
 class WeaponData(BaseModel):
     name: str
     player: WeaponPlayerData
-    sprites: WeaponSprites
+    sprites: WeaponSpritesData
     properties: WeaponPropertiesData
     ammo: WeaponAmmoData
     projectile: WeaponProjectileData
@@ -54,7 +54,7 @@ class WeaponPlayerData(BaseModel):
     default: bool
 
 
-class WeaponSprites(BaseModel):
+class WeaponSpritesData(BaseModel):
     default: Annotated[pg.Surface, BeforeValidator(convert_weapon_to_sprite)]
     reloading: Annotated[list[pg.Surface], BeforeValidator(convert_weapons_to_sprite)]
     extra_reload_sprite: Annotated[pg.Surface, BeforeValidator(convert_weapon_to_sprite)]
